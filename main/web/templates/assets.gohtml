@@ -1,0 +1,27 @@
+{{define "underConstruction"}}
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold text-body-emphasis">Under construction</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">This site and its corresponding features are currently under construction</p>
+            <div class="col">
+                <img class="rounded-3"
+                     src="https://media0.giphy.com/media/kHfUyPaDUDBY11l4DZ/200.webp?cid=ecf05e47qqumsu9kig0w980lbogsoxbjdhh7wx7cqu1d97l3&ep=v1_gifs_search&rid=200.webp&ct=g">
+            </div>
+        </div>
+    </div>
+{{end}}
+
+{{define "featureDisabled"}}
+    <div class="text-light-emphasis d-flex justify-content-center align-items-center">
+        <div style="width: fit-content;"
+             class="bg-danger px-4 py-3 my-5 rounded shadow-3 d-flex flex-row justify-content-center align-items-center">
+            <span class="fs-1 material-icons mb-2">warning</span>
+            <div class="d-flex flex-column justify-content-center text-center">
+                <p class="fs-3">Note that the {{template "featureDisabledDescription"}} features are enabled for testing
+                    purposes.</p>
+                <p class="fs-3">All data will be removed on the final release!</p>
+            </div>
+            <span class="fs-1 material-icons ms-2">warning</span>
+        </div>
+    </div>
+{{end}}
