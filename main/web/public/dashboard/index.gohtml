@@ -2,30 +2,34 @@
 {{define "metaDescription"}}Welcome to the vibrant world of Weebs Kingdom! Explore our homepage and immerse yourself in a community that celebrates all things anime, gaming, and more. Join us on an exciting journey filled with fun, friendship, and endless adventures. 🎉🏰{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-
-    <div class="row vh-20 position-absolute start-0 end-0 bg-primary" style="z-index: -1">
-        <div class="w-100 vh-25 p-4" style="background-color: #6495edff">
+    <div class="d-flex flex-row">
+        <div class="row vh-20 position-absolute start-0 end-0 bg-body-tertiary shadow-sm" style="z-index: -1">
+            <div class="w-100 vh-25 p-4">
+            </div>
         </div>
-    </div>
-         <div class =" w-25 vh-100 bg-info rounded-end">
-             <p class= "text-black">Navigationsbar
+        <div class="vh-100 p-3 bg-body-tertiary rounded-end shadow-sm" style="width: 160px">
+            <p class="text-white">Navigationsbar
             </p>
             <p>
-                <a class="link-opacity-50-hover text-white bg-primary d-flex align-items-center" href="#">
+                <a class="link-opacity-50-hover text-white d-flex align-items-center" href="#">
                     <span class="material-icons">home</span>
                     Dashboard
                 </a>
             </p>
             <p>
-                <a class="link-opacity-50-hover text-black d-flex align-items-center" href="#">
+                <a class="link-opacity-50-hover text-white d-flex align-items-center" href="#">
                     <span class="material-icons">filter_list</span>
-                    Stundenpläne
+                    Timetables
                 </a>
             </p>
-         </div>
+        </div>
+        <div class="d-flex flex-row justify-content-center bg-body-tertiary shadow-sm rounded ">
+            <p class="text-white"></p>
+        </div>
+    </div>
 
     <style>
-</style>
+    </style>
 
     {{template "footer"}}
     {{template "botdoc"}}
