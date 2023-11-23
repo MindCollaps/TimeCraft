@@ -3,31 +3,42 @@
 {{define "content"}}
     {{template "topdoc"}}
     <div class="d-flex flex-row">
-        <div class="row vh-20 position-absolute start-0 end-0 bg-body-tertiary shadow-sm" style="z-index: -1">
-            <div class="w-100 vh-25 p-4">
 
+        <div class="row vh-10 position-absolute start-0 end-0 bg-body-tertiary shadow-sm" style="z-index: -1">
+            <div class="d-flex p-4 justify-content-center"> <!--justify content center -->
+                <span class="material-icons">arrow_back</span>
+                <div class="text-white">
+                    Week from 20.11.23-25.11.23
+                </div>
+                <span class="material-icons">arrow_forward</span>
             </div>
         </div> <!-- Navbar top -->
-        <div class="vh-100 p-3 bg-body-tertiary rounded-end shadow-sm" style="width: 160px">
-            <div class="d-grid gap-2">
-                <a class="link-opacity-50-hover text-white d-flex align-items-center" href="#"> <!--sort item navbar-->
-                    <span class = "material-icons">sort</span>
-                </a>
-                <a class="link-opacity-50-hover text-white d-flex align-items-center" href="#"> <!--dashboard icon and text-->
-                    <span class="material-icons">home</span>
-                    Dashboard
-                </a>
-                <a class="link-opacity-50-hover text-white d-flex align-items-center" href="#"> <!--timetables icon and text-->
-                    <span class="material-icons">filter_list</span>
-                    Timetables
-                </a>
-                <a class ="link-opacity-50-hover text-white d-flex aling-items-center" href = "#"> <!--favorit icon and text-->
-                    <span class="material-icons">star</span>
-                    Favorits
-                </a>
-        </div>
+        <nav class="navbar bg-body-tertiary rounded-end shadow-sm p-0 m-0"> <!--navbar right-->
+            <ul class="navbar-nav container-fluid rounded-end shadow-sm">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Navbar</a>
+                </li>
+                <li class="nav-item">
+                    <div class="d-inline-flex align-items-center">
+                        <a class ="nav-link" href="#"><span class="material-icons">home</span></a>
+                        <a class ="nav-link" href="#">Dashboard</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="d-inline-flex align-items-center">
+                        <a class ="nav-link" href="#"><span class="material-icons">filter_list</span></a>
+                        <a class="nav-link" href="#">Timetables</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class ="d-inline-flex align-items-center">
+                        <a class = "nav-link" href="#"><span class="material-icons">star</span></a>
+                        <a class="nav-link" href="#">Favorites</a>
+                    </div>
+                </li>
+            </ul>
+    </nav>
     </div> <!-- Navbar rigth -->
-
         <div class="d-flex flex-row-reverse justify-content-center bg-body-tertiary shadow-sm rounded-end m-5 w-80 vh-60"> <!-- container for timetable-->
         </div>
 
