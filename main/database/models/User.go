@@ -8,7 +8,4 @@ type User struct {
 	Password        string             `json:"password" bson:"password"`
 	IsVerifiedEmail bool               `json:"isVerifiedEmail" bson:"isVerifiedEmail"`
 	Username        string             `json:"username" bson:"username"`
-	IsAdmin         bool               `json:"isAdmin" bson:"isAdmin"`
-	IsLecturer      bool               `json:"isLecturer" bson:"isLecturer"`
-	IsStudent       bool               `json:"isStudent" bson:"isStudent"`
 }
