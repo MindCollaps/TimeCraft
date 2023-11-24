@@ -8,6 +8,7 @@ import (
 	"src/main/core"
 	"src/main/crypt"
 	"src/main/database"
+	"src/main/router"
 )
 
 func main() {
@@ -26,6 +27,8 @@ func main() {
 
 	core.LoadTemplates(r)
 	core.LoadServerAssets(r)
+
+	router.InitRouter(r)
 
 	//set address
 	address := os.Getenv("ADDRESS")
