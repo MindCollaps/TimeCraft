@@ -12,7 +12,7 @@ Das Ziel nach der Erstellung der Software ist es, dieses Projekt als OpenSource 
 * Emilia Ziegler: Design and Frontend
 * Nina Glock: Design and Frontend
 * Tim Niess: Backend
-* Noah Till: Teamleader, Backend, Frontend
+* Noah Till: Teamleader, Backend and Frontend
 * Lennart Meyer: Backend and Documentation
 * Louis Trenkner: Backend
 * Leon Winands: Backend and Communication
