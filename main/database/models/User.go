@@ -9,5 +9,6 @@ type User struct {
 	IsVerifiedEmail bool               `json:"isVerifiedEmail" bson:"isVerifiedEmail"`
 	Username        string             `json:"username" bson:"username"`
 	IsAdmin         bool               `json:"isAdmin" bson:"isAdmin"`
-	IsDeveloper     bool               `json:"isDeveloper" bson:"isDeveloper"`
+	IsLecturer      bool               `json:"isLecturer" bson:"isLecturer"`
+	IsStudent       bool               `json:"isStudent" bson:"isStudent"`
 }
