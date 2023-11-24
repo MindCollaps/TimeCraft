@@ -20,12 +20,6 @@ func userHandler(cg *gin.RouterGroup) {
 
 	})
 
-	cg.GET("/reg", func(c *gin.Context) {
-		nachricht := "Registrierung"
-		print(nachricht)
-
-	})
-
 	cg.POST("/reg", func(c *gin.Context) {
 
 		var requestBody struct {
