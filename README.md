@@ -9,13 +9,13 @@ Das Ziel nach der Erstellung der Software ist es, dieses Projekt als OpenSource 
 * **Roomplanning:** Our software can also provide you with the perfect room planning if you enter your room properties
 
 # Developer
-* Emilia Ziegler
-* Nina Glock
-* Tim Niess
-* Noah Till
-* Lennart Meyer
-* Louis Trenkner
-* Leon Winands
+* Emilia Ziegler: Design and Frontend
+* Nina Glock: Design and Frontend
+* Tim Niess: Backend
+* Noah Till: Teamleader, Backend, Frontend
+* Lennart Meyer: Backend and Documentation
+* Louis Trenkner: Backend
+* Leon Winands: Backend and Communication
 
 # License
 TimeCraft is an open-source project released under the MIT License.
