@@ -8,6 +8,15 @@ Das Ziel nach der Erstellung der Software ist es, dieses Projekt als OpenSource 
 * **Create the ideal Timetable:** Enter the information of the lecturer's time, the semester period, the subjects etc. and create with the algorithm the ideal timetable
 * **Roomplanning:** Our software can also provide you with the perfect room planning if you enter your room properties
 
+# Developer
+* Emilia Ziegler
+* Nina Glock
+* Tim Niess
+* Noah Till
+* Lennart Meyer
+* Louis Trenkner
+* Leon Winands
+
 # License
 TimeCraft is an open-source project released under the MIT License.
 
