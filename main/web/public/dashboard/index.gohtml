@@ -13,39 +13,33 @@
                 <span class="material-icons">arrow_forward</span>
             </div>
         </div> <!-- Navbar top -->
-        <nav class="navbar bg-body-tertiary rounded-end shadow-sm p-0 m-0"> <!--navbar right-->
-            <ul class="navbar-nav container-fluid rounded-end shadow-sm">
-                <div class="collapse" id="navbarToggleExternalContent">
-                <div class="m-2">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Navbar</a>
-                    </li>
-                    <li class="nav-item">
-                        <div class="d-inline-flex align-items-center">
-                            <div class="m-0.5"><a class ="nav-link" href="#" ><span class="material-icons">home</span></a></div>
-                            <a class ="nav-link" href="#">Dashboard</a>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class="d-inline-flex align-items-center">
-                            <div class="m-0.5"><a class ="nav-link" href="#"><span class="material-icons">filter_list</span></a></div>
-                            <a class="nav-link" href="#">Timetables</a>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <div class ="d-inline-flex align-items-center">
-                            <div class="m-0.5"><a class = "nav-link" href="#"><span class="material-icons">star</span></a></div>
-                            <a class="nav-link" href="#">Favorites</a>
-                        </div>
-                    </li>
-                </div>
-                </div>
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-body-tertiary" style="width: 280px;">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <span class="fs-4">Sidebar</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" aria-current="page">
+                        <span class="material-symbols-outlined">home</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link text-white">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+                        Timetables
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link text-white">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"/></svg>
+                        Favorites
+                    </a>
+                </li>
             </ul>
-    </nav>
+            <hr>
+        </div>
     </div> <!-- Navbar rigth -->
         <div class="d-flex flex-row-reverse justify-content-center bg-body-tertiary shadow-sm rounded-end m-5 w-80 vh-60"> <!-- container for timetable-->
         </div>
