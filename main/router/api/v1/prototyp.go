@@ -26,37 +26,18 @@ type Lessons struct {
 	Lecturer        string `json:"lecturer"`
 	IsEvent         bool   `json:"isEvent"`
 }
-type Montag struct {
+type Day struct {
 	Date    string    `json:"date"`
 	Lessons []Lessons `json:"lessons"`
 }
-type Dienstag struct {
-	Date    string    `json:"date"`
-	Lessons []Lessons `json:"lessons"`
-}
-type Mittwoch struct {
-	Date    string    `json:"date"`
-	Lessons []Lessons `json:"lessons"`
-}
-type Donnerstag struct {
-	Date    string    `json:"date"`
-	Lessons []Lessons `json:"lessons"`
-}
-type Freitag struct {
-	Date    string    `json:"date"`
-	Lessons []Lessons `json:"lessons"`
-}
-type Samstag struct {
-	Date    string    `json:"date"`
-	Lessons []Lessons `json:"lessons"`
-}
+
 type Days struct {
-	Montag     Montag     `json:"Montag"`
-	Dienstag   Dienstag   `json:"Dienstag"`
-	Mittwoch   Mittwoch   `json:"Mittwoch"`
-	Donnerstag Donnerstag `json:"Donnerstag"`
-	Freitag    Freitag    `json:"Freitag"`
-	Samstag    Samstag    `json:"Samstag"`
+	Montag     Day `json:"Montag"`
+	Dienstag   Day `json:"Dienstag"`
+	Mittwoch   Day `json:"Mittwoch"`
+	Donnerstag Day `json:"Donnerstag"`
+	Freitag    Day `json:"Freitag"`
+	Samstag    Day `json:"Samstag"`
 }
 
 func prtHandler(cg *gin.RouterGroup) {
