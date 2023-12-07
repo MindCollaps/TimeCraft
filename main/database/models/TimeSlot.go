@@ -16,4 +16,5 @@ type TimeSlot struct {
 	WasMoved        bool               `json:"wasMoved" bson:"wasMoved"`
 	IsEvent         bool               `json:"isEvent" bson:"isEvent"`
 	RoomConfigID    primitive.ObjectID `json:"roomConfigID" bson:"roomConfigID"`
+	LastUpdated     primitive.DateTime `json:"lastUpdated" bson:"lastUpdated"`
 }
