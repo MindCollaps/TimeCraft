@@ -1,6 +1,8 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type User struct {
 	ID              primitive.ObjectID   `json:"id" bson:"_id"`
@@ -9,4 +11,5 @@ type User struct {
 	IsVerifiedEmail bool                 `json:"isVerifiedEmail" bson:"isVerifiedEmail"`
 	Username        string               `json:"username" bson:"username"`
 	Permissions     []primitive.ObjectID `json:"permissions" bson:"permissions"`
+	SSOToken        string               `json:"SSOToken" bson:"SSOToken"`
 }
