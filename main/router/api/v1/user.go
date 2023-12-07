@@ -40,19 +40,19 @@ func userHandler(cg *gin.RouterGroup) {
 				//generate jwt token
 				token, err := crypt.GenerateLoginToken(user.ID)
 				if err != nil {
-					c.JSON(500, gin.H{"message": "Internal server error"})
+					c.JSON(500, gin.H{"msg": "Internal server error"})
 					return
 				}
 
 				//set cookie with age of 2 days, setting maxAge to: 3600 * 24 * 2
 				c.SetCookie("auth", token, 3600*24*2, "/", "", false, false)
 
-				c.JSON(200, gin.H{"status": 200, "message": "Logged in"})
+				c.JSON(200, gin.H{"status": 200, "msg": "Logged in"})
 			} else {
-				c.JSON(401, gin.H{"message": "Unauthorized"})
+				c.JSON(401, gin.H{"msg": "Not Authorized"})
 			}
 		} else {
-			c.JSON(401, gin.H{"message": "Unauthorized"})
+			c.JSON(401, gin.H{"msg": "Not Authorized"})
 		}
 	})
 
