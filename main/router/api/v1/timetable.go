@@ -56,26 +56,4 @@ func tblHandler(cg *gin.RouterGroup) {
 
 	})
 
-	cg.GET("/{id}", func(c *gin.Context) {
-
-		id := c.Query("id")
-		if id == "" {
-			c.JSON(400, gin.H{
-				"message": "Please give correct ID",
-			})
-			return
-		} else {
-			//Abfrage aus der DB
-		}
-	})
-
-	cg.PATCH("/{id}", func(c *gin.Context) {
-
-		//Updatefunktion
-	})
-
-	cg.DELETE("/{id}", func(c *gin.Context) {
-
-		//Deletefunktion
-	})
 }
