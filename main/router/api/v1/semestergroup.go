@@ -56,6 +56,28 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())
-		c.JSON(http.StatusOK, gin.H{"status": 200, "message": "Created Semester Group"})
+		c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "Created Semester Group"})
+	})
+
+	cg.GET("/{id}", func(c *gin.Context) {
+		id := c.Query("id")
+		if id == "" {
+			c.JSON(400, gin.H{
+				"msg": "Please give correct ID",
+			})
+			return
+		} else {
+			//DB query
+		}
+	})
+
+	cg.PATCH("/{id}", func(c *gin.Context) {
+
+		//Update
+	})
+
+	cg.DELETE("/{id}", func(c *gin.Context) {
+
+		//Delete
 	})
 }
