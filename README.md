@@ -1,6 +1,6 @@
 # TimeCraft
 Wir sind ein ProjektTeam der Leibniz Fachhochschule.
-TimeCraft ist eine Stundenplansoftware, die mithilfe einen Algorithmus den idealen Stundenplan erstellt, als auch eine Raumplanung mit einbezieht.
+TimeCraft ist eine Stundenplansoftware, die mithilfe eines Algorithmus den idealen Stundenplan erstellt, als auch eine Raumplanung mit einbezieht.
 Das Ziel nach der Erstellung der Software ist es, dieses Projekt als OpenSource an verschiedenen Hochschulen in Deutschland anzubieten.
 
 # Features
