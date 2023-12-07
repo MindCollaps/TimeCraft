@@ -51,7 +51,6 @@ func LoadTemplates(r *gin.Engine) {
 	adminGroup.Use(middleware.VerifyAdmin())
 	devGroup := r.Group("/dev")
 	devGroup.Use(middleware.LoginToken())
-	devGroup.Use(middleware.VerifyDeveloper())
 
 	// Walk through the "public" folder and all its subdirectories
 	err := filepath.Walk("main/web/public", func(path string, info os.FileInfo, err error) error {

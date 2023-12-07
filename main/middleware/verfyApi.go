@@ -133,23 +133,3 @@ func VerifyAdmin() gin.HandlerFunc {
 		c.AbortWithStatus(401)
 	}
 }
-
-func VerifyDeveloper() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if c.GetBool("loggedIn") {
-			user, ok := c.Get("user")
-			if ok {
-				dUser := user.(models.User)
-				if dUser.IsDeveloper {
-					c.Next()
-					return
-				}
-			}
-		}
-		c.JSON(401, gin.H{
-			"message": "Unauthorized",
-		})
-
-		c.Abort()
-	}
-}
