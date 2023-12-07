@@ -4,12 +4,15 @@ import "github.com/gin-gonic/gin"
 
 func Handler(rg *gin.RouterGroup) {
 	user := rg.Group("/usr")
-	timetable := rg.Group("/tbl")
-	semestergroup := rg.Group("/sgrp")
-	studygroup := rg.Group("/stygrp")
 	userHandler(user)
+
+	timetable := rg.Group("/tbl")
 	tblHandler(timetable)
-	stygrpHandler(studygroup)
-	sgrpHandler(semestergroup)
+
+	semestergroup := rg.Group("/sgrp")
+	stygrpHandler(semestergroup)
+
+	studygroup := rg.Group("/stygrp")
+	sgrpHandler(studygroup)
 
 }
