@@ -1,0 +1,292 @@
+{{define "title"}}TimeCraft{{end}}
+{{define "metaDescription"}}Welcome to TimeCraft{{end}}
+{{define "content"}}
+    {{template "topdoc"}}
+    <div class="row w-100 position-absolute start-0 end-0 bg-body-tertiary shadow-sm" style="z-index: -1">
+        <div class="d-flex p-4 justify-content-center"> <!--justify content center -->
+            <span class="material-icons">arrow_back</span>
+            <div class="text-white">
+                Week from 20.11.23-25.11.23
+            </div>
+            <span class="material-icons">arrow_forward</span>
+        </div>
+    </div>
+    <div class="h-100 w-100"> <!--TOPBAR-->
+        <div class="row h-100 w-100">
+            <div class=" d-flex h-100 flex-column flex-shrink-0 p-3 text-white bg-body-tertiary rounded-end"
+                 style="width: 12%;">
+                <!--SIDEBAR-->
+                <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                    <span class="fs-4">Sidebar</span>
+                </a>
+                <hr>
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item">
+                        <button type="button" data-bs-toggle="tab" id="dashboard-tab"
+                                data-bs-target="#dashboard-tab-pane" role="tab"
+                                aria-controls="dashboard-tab-pane" aria-selected="true"
+                                class="nav-link d-flex justify-content-center align-items-center"
+                                aria-current="page">
+                            <span href="#" class="nav-link material-symbols-outlined">speed</span>
+                            <span class="align-middle">Dashboard</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" data-bs-toggle="tab" id="timetable-tab"
+                                data-bs-target="#timetable-tab-pane" role="tab"
+                                aria-controls="timetable-tab-pane" aria-selected="true"
+                                class="nav-link d-flex justify-content-center align-items-center"
+                                aria-current="page">
+                            <span class="nav-link material-symbols-outlined">table_chart</span>
+                            <span class="align-middle">Timetables</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" data-bs-toggle="tab" id="favorites-tab"
+                                data-bs-target="#favorites-tab-pane" role="tab"
+                                aria-controls="favorites-tab-pane" aria-selected="true"
+                                class="nav-link d-flex justify-content-center align-items-center"
+                                aria-current="page">
+                            <span href="#" class="nav-link material-symbols-outlined">star</span>
+                            <span class="align-middle">Favorites</span>
+                        </button>
+                    </li>
+                </ul>
+                <hr>
+            </div>
+            <div class="container col p-5 h-100 pane-animation">
+                <div class="tab-content h-100 mt-5" id="v-pills-tabContent">
+                    <div class="tab-pane fade h-100" id="dashboard-tab-pane" role="tabpanel"
+                         aria-labelledby="dashboard-tab"
+                         tabindex="0">
+                        <div class="h-100 d-flex flex-column align-items-stretch">
+                            Dashboard
+                        </div>
+                    </div>
+                    <div class="tab-pane fade w-100 h-100" id="timetable-tab-pane" role="tabpanel"
+                         aria-labelledby="timetable-tab"
+                         tabindex="0">
+                        <div class="h-100 w-100 d-flex flex-column align-items-stretch">
+                            <div class="d-flex w-100 align-items-center flex-column overflow-auto">
+                                <div class="accordion w-100" id="studyGroups">
+                                    <div class="accordion-item">
+                                        <h4 class="accordion-header">
+                                            <button class="accordion-button bg-dark box-shadow-secondary text-white"
+                                                    type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#collapseOne" aria-expanded="false"
+                                                    aria-controls="collapseOne">
+                                                IT-Security
+                                            </button>
+                                        </h4>
+                                        <div id="collapseOne" class="accordion-collapse collapse"
+                                             data-bs-parent="#studyGroups" style="">
+                                            <div class="accordion-body">
+
+                                                <div class="accordion" id="semesterGroupDITJHG2022">
+                                                    <div class="accordion-item">
+                                                        <h4 class="accordion-header">
+                                                            <button class="accordion-button bg-dark box-shadow-secondary text-white"
+                                                                    style="color: dimgrey" type="button"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#collapseOneDITJHG2022"
+                                                                    aria-expanded="false"
+                                                                    aria-controls="collapseOneDITJHG2022">
+                                                                Jahrgang 2022
+                                                            </button>
+                                                        </h4>
+                                                        <div id="collapseOneDITJHG2022"
+                                                             class="accordion-collapse collapse"
+                                                             data-bs-parent="#semesterGroupDITJHG2022" style="">
+                                                            <div class="accordion-body">
+                                                            </div>
+                                                            <div class="accordion" id="semesterGroupDIT2022-S1">
+                                                                <div class="accordion-item">
+                                                                    <h4 class="accordion-header">
+                                                                        <button class="accordion-button bg-dark text-white"
+                                                                                type="button" data-bs-toggle="collapse"
+                                                                                data-bs-target="#collapseOneDIT2022-S1"
+                                                                                aria-expanded="false"
+                                                                                aria-controls="collapseOneDIT2022-S1">
+                                                                            S1
+                                                                        </button>
+                                                                    </h4>
+                                                                    <div id="collapseOneDIT2022-S1"
+                                                                         class="accordion-collapse collapse"
+                                                                         data-bs-parent="#semesterGroupDIT2022-S1"
+                                                                         style="">
+                                                                        <div class="accordion-body">
+                                                                            <div class="d-flex flex-column">
+                                                                                <ul class="list-group">
+                                                                                    <li class="list-group-item d-flex flex-row justify-content-between text-white">
+                                                                                        S1-1
+                                                                                        <button><span
+                                                                                                    class="material-symbols-outlined">star</span>
+                                                                                        </button>
+                                                                                    </li>
+                                                                                    <li class="list-group-item d-flex flex-row justify-content-between text-white">
+                                                                                        S1-2
+                                                                                        <button><span
+                                                                                                    class="material-symbols-outlined">star</span>
+                                                                                        </button>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="accordion" id="semesterGroupDIT2022-S2">
+                                                                <div class="accordion-item">
+                                                                    <h4 class="accordion-header">
+                                                                        <button class="accordion-button bg-dark text-white"
+                                                                                style="color: dimgrey" type="button"
+                                                                                data-bs-toggle="collapse"
+                                                                                data-bs-target="#collapseOneDIT2022-S2"
+                                                                                aria-expanded="false"
+                                                                                aria-controls="collapseOneDIT2022-S2">
+                                                                            S2
+                                                                        </button>
+                                                                    </h4>
+                                                                    <div id="collapseOneDIT2022-S2"
+                                                                         class="accordion-collapse collapse"
+                                                                         data-bs-parent="#semesterGroupDIT2022-S2"
+                                                                         style="">
+                                                                        <div class="accordion-body">
+                                                                            <div class="d-flex flex-column">
+                                                                                <ul class="list-group">
+                                                                                    <li class="list-group-item d-flex flex-row justify-content-between text-white">
+                                                                                        S2-1
+                                                                                        <button><span
+                                                                                                    class="material-symbols-outlined">star</span>
+                                                                                        </button>
+                                                                                    </li>
+                                                                                    <li class="list-group-item d-flex flex-row justify-content-between text-white">
+                                                                                        S2-2
+                                                                                        <button><span
+                                                                                                    class="material-symbols-outlined">star</span>
+                                                                                        </button>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <br>
+                                                    <div class="accordion" id="semesterGroupDITJHG2023">
+                                                        <div class="accordion-item">
+                                                            <h4 class="accordion-header">
+                                                                <button class="accordion-button bg-dark text-white"
+                                                                        style="color: dimgrey" type="button"
+                                                                        data-bs-toggle="collapse"
+                                                                        data-bs-target="#collapseOneDITJHG2023"
+                                                                        aria-expanded="false"
+                                                                        aria-controls="collapseOneDITJHG2023">
+                                                                    Jahrgang 2023
+                                                                </button>
+                                                            </h4>
+                                                            <div id="collapseOneDITJHG2023"
+                                                                 class="accordion-collapse collapse"
+                                                                 data-bs-parent="#semesterGroupDITJHG2023" style="">
+                                                                <div class="accordion-body">
+                                                                </div>
+                                                                <div class="accordion" id="semesterGroupDIT2023-S1">
+                                                                    <div class="accordion-item">
+                                                                        <h4 class="accordion-header">
+                                                                            <button class="accordion-button bg-dark text-white"
+                                                                                    style="color: dimgrey" type="button"
+                                                                                    data-bs-toggle="collapse"
+                                                                                    data-bs-target="#collapseOneDIT2023-S1"
+                                                                                    aria-expanded="false"
+                                                                                    aria-controls="collapseOneDIT2023-S1">
+                                                                                S1
+                                                                            </button>
+                                                                        </h4>
+                                                                        <div id="collapseOneDIT2023-S1"
+                                                                             class="accordion-collapse collapse"
+                                                                             data-bs-parent="#semesterGroupDIT2023-S1"
+                                                                             style="">
+                                                                            <div class="accordion-body">
+                                                                                <div class="d-flex flex-column">
+                                                                                    <ul class="list-group">
+                                                                                        <li class="list-group-item d-flex flex-row justify-content-between text-white">
+                                                                                            S1-1
+                                                                                            <button><span
+                                                                                                        class="material-symbols-outlined">star</span>
+                                                                                            </button>
+                                                                                        </li>
+                                                                                        <li class="list-group-item d-flex flex-row justify-content-between text-white">
+                                                                                            S1-2
+                                                                                            <button><span
+                                                                                                        class="material-symbols-outlined">star</span>
+                                                                                            </button>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="accordion" id="semesterGroupDIT2023-S2">
+                                                                    <div class="accordion-item">
+                                                                        <h4 class="accordion-header">
+                                                                            <button class="accordion-button bg-dark text-white"
+                                                                                    style="color: dimgrey" type="button"
+                                                                                    data-bs-toggle="collapse"
+                                                                                    data-bs-target="#collapseOneDIT2023-S2"
+                                                                                    aria-expanded="false"
+                                                                                    aria-controls="collapseOneDIT2023-S2">
+                                                                                S2
+                                                                            </button>
+                                                                        </h4>
+                                                                        <div id="collapseOneDIT2023-S2"
+                                                                             class="accordion-collapse collapse"
+                                                                             data-bs-parent="#semesterGroupDIT2023-S2"
+                                                                             style="">
+                                                                            <div class="accordion-body">
+                                                                                <div class="d-flex flex-column">
+                                                                                    <ul class="list-group">
+                                                                                        <li class="list-group-item d-flex flex-row justify-content-between text-white">
+                                                                                            S2-1
+                                                                                            <button><span
+                                                                                                        class="material-symbols-outlined">star</span>
+                                                                                            </button>
+                                                                                        </li>
+                                                                                        <li class="list-group-item d-flex flex-row justify-content-between text-white">
+                                                                                            S2-2
+                                                                                            <button><span
+                                                                                                        class="material-symbols-outlined">star</span>
+                                                                                            </button>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade h-100" id="favorites-tab-pane" role="tabpanel"
+                         aria-labelledby="favorites-tab"
+                         tabindex="0">
+                        <div class="h-100 d-flex flex-column align-items-stretch">
+                            Favorites Tab
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{template "botdoc"}}
+{{end}}
