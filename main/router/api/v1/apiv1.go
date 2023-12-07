@@ -7,3 +7,9 @@ func Handler(rg *gin.RouterGroup) {
 
 	userHandler(user)
 }
+
+func Handler2(rg *gin.RouterGroup) {
+	timetable := rg.Group("/tbl")
+
+	tblHandler(timetable)
+}
