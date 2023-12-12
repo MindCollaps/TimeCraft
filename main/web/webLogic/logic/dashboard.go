@@ -2,9 +2,10 @@ package logic
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"src/main/database/models"
 )
+
+const timeFormat = "2006-01-02 15:04:05"
 
 type DashboardStruct struct {
 	TimeTables []models.TimeTableStruct
@@ -20,7 +21,7 @@ func Dashboard(c *gin.Context) DashboardStruct {
 
 	user := usr.(models.User)
 
-	timeTables, err := LoadTimeTables(c, user.StaredTimeTableIds)
+	timeTables, err := models.LoadTimeTables(c, user.StaredTimeTableIds)
 
 	if err != nil {
 		return DashboardStruct{
@@ -30,12 +31,5 @@ func Dashboard(c *gin.Context) DashboardStruct {
 
 	return DashboardStruct{
 		TimeTables: timeTables,
-	}
-}
-
-func LoadTimeTables(c *gin.Context, timeTables []primitive.ObjectID) ([]models.TimeTableStruct, error) {
-	var timeTablesStruct []models.TimeTableStruct
-	for i := 0; i < len(timeTables); i++ {
-
 	}
 }
