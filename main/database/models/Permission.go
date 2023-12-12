@@ -9,3 +9,11 @@ type Permission struct {
 	Expires           primitive.DateTime   `json:"username" bson:"username"`
 	PermissionEditIds []primitive.ObjectID `json:"permissionEditIds" bson:"permissionEditIds"`
 }
+
+type PermissionStruct struct {
+	ID                string           `json:"id" bson:"_id"`
+	Name              string           `json:"name" bson:"name"`
+	IsAdmin           bool             `json:"isAdmin" bson:"isAdmin"`
+	Expires           string           `json:"username" bson:"username"`
+	PermissionEditIds []EditPermission `json:"permissionEditIds" bson:"permissionEditIds"`
+}

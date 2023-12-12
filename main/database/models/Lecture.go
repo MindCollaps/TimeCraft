@@ -7,3 +7,9 @@ type Lecture struct {
 	Name         string             `json:"name" bson:"name"`
 	ContactHours int                `json:"contactHours" bson:"contactHours"`
 }
+
+type LectureStruct struct {
+	ID           string `json:"id" bson:"_id"`
+	Name         string `json:"name" bson:"name"`
+	ContactHours int    `json:"contactHours" bson:"contactHours"`
+}

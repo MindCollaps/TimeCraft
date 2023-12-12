@@ -11,3 +11,11 @@ type LecturersPreferedLecture struct {
 	MaxPerDay  int                `json:"maxPerDay" bson:"maxPerDay"`
 	Type       int                `json:"type" bson:"type"`
 }
+
+type LecturersPreferedLectureStruct struct {
+	ID         string  `json:"id" bson:"_id"`
+	LectureId  Lecture `json:"lectureId" bson:"lectureId"`
+	MaxPerWeek int     `json:"maxPerWeek" bson:"maxPerWeek"`
+	MaxPerDay  int     `json:"maxPerDay" bson:"maxPerDay"`
+	Type       int     `json:"type" bson:"type"`
+}

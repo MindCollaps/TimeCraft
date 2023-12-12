@@ -7,3 +7,9 @@ type EditPermission struct {
 	DbName      string             `json:"dbName" bson:"dbName"`
 	DbElementId primitive.ObjectID `json:"dbElementId" bson:"dbElementId"`
 }
+
+type EditPermissionStruct struct {
+	ID          string `json:"id" bson:"_id"`
+	DbName      string `json:"dbName" bson:"dbName"`
+	DbElementId string `json:"dbElementId" bson:"dbElementId"`
+}

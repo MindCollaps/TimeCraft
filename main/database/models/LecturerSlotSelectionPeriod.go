@@ -12,3 +12,12 @@ type LecturerSlotSelection struct {
 	NotifyEmail      bool                 `json:"notifyEmail" bson:"notifyEmail"`
 	IsDone           bool                 `json:"isDone" bson:"isDone"`
 }
+
+type LecturerSlotSelectionStruct struct {
+	ID               string     `json:"id" bson:"_id"`
+	PeriodBeginn     string     `json:"periodBeginn" bson:"periodBeginn"`
+	PeriodEnd        string     `json:"periodEnd" bson:"periodEnd"`
+	SlotSelectionIds []TimeSlot `json:"slotSelectionIds" bson:"slotSelectionIds"`
+	NotifyEmail      bool       `json:"notifyEmail" bson:"notifyEmail"`
+	IsDone           bool       `json:"isDone" bson:"isDone"`
+}

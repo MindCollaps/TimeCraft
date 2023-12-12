@@ -7,3 +7,9 @@ type LectureGroup struct {
 	Name        string             `json:"name" bson:"name"`
 	TimeTableId primitive.ObjectID `json:"timeTableId" bson:"timeTableId"`
 }
+
+type LectureGroupStruct struct {
+	ID          string    `json:"id" bson:"_id"`
+	Name        string    `json:"name" bson:"name"`
+	TimeTableId TimeTable `json:"timeTableId" bson:"timeTableId"`
+}

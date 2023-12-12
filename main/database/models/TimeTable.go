@@ -9,3 +9,9 @@ type TimeTable struct {
 	Name string               `json:"name" bson:"name"`
 	Days []primitive.ObjectID `json:"days" bson:"days"`
 }
+
+type TimeTableStruct struct {
+	ID   string         `json:"id" bson:"_id"`
+	Name string         `json:"name" bson:"name"`
+	Days []TimeTableDay `json:"days" bson:"days"`
+}

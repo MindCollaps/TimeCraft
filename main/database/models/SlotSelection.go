@@ -15,3 +15,15 @@ type SlotSelection struct {
 	IsBlocked                     bool                 `json:"isBlocked" bson:"isBlocked"`
 	Priority                      int                  `json:"priority" bson:"priority"`
 }
+
+type SlotSelectionStruct struct {
+	ID                            string               `json:"id" bson:"_id"`
+	LectureIds                    []Lecture            `json:"lectureIds" bson:"lectureIds"`
+	BeginnDate                    string               `json:"beginnDate" bson:"beginnDate"`
+	EndDate                       string               `json:"endDate" bson:"endDate"`
+	LecturerId                    Lecturer             `json:"lecturerId" bson:"lecturerId"`
+	PreferedOnline                bool                 `json:"preferedOnline" bson:"preferedOnline"`
+	PreferedRoomSpecialisationIds []RoomSpecialisation `json:"preferedRoomSpecialisationIds" bson:"preferedRoomSpecialisationIds"`
+	IsBlocked                     bool                 `json:"isBlocked" bson:"isBlocked"`
+	Priority                      int                  `json:"priority" bson:"priority"`
+}
