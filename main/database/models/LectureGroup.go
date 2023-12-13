@@ -40,7 +40,7 @@ func LoadLectureGroups(c *gin.Context, lectureGroupIDs []primitive.ObjectID) ([]
 	var lectureGroupsStruct []LectureGroupStruct
 	for _, lectureGroupID := range lectureGroupIDs {
 		var lectureGroup LectureGroup
-		err := database.MongoDB.Collection("LectureGroups").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("LectureGroup").FindOne(c, bson.M{
 			"_id": lectureGroupID,
 		}).Decode(&lectureGroup)
 

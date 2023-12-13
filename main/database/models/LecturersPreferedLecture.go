@@ -46,7 +46,7 @@ func LoadLecturersPreferedLectures(c *gin.Context, preferedLectureIDs []primitiv
 	var preferedLecturesStruct []LecturersPreferedLectureStruct
 	for _, preferedLectureID := range preferedLectureIDs {
 		var preferedLecture LecturersPreferedLecture
-		err := database.MongoDB.Collection("LecturersPreferedLectures").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("LecturersPreferedLecture").FindOne(c, bson.M{
 			"_id": preferedLectureID,
 		}).Decode(&preferedLecture)
 

@@ -59,7 +59,7 @@ func LoadRoomConfigs(c *gin.Context, roomConfigIDs []primitive.ObjectID) ([]Room
 	var roomConfigsStruct []RoomConfigStruct
 	for _, roomConfigID := range roomConfigIDs {
 		var roomConfig RoomConfig
-		err := database.MongoDB.Collection("RoomConfigs").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("RoomConfig").FindOne(c, bson.M{
 			"_id": roomConfigID,
 		}).Decode(&roomConfig)
 

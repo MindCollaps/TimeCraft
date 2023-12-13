@@ -50,7 +50,7 @@ func LoadLecturerSlotSelections(c *gin.Context, lecturerSlotSelectionIDs []primi
 	var lecturerSlotSelectionsStruct []LecturerSlotSelectionStruct
 	for _, lecturerSlotSelectionID := range lecturerSlotSelectionIDs {
 		var lecturerSlotSelection LecturerSlotSelection
-		err := database.MongoDB.Collection("LecturerSlotSelections").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("LecturerSlotSelection").FindOne(c, bson.M{
 			"_id": lecturerSlotSelectionID,
 		}).Decode(&lecturerSlotSelection)
 

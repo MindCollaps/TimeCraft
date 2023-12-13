@@ -34,7 +34,7 @@ func LoadLectures(c *gin.Context, lectureIDs []primitive.ObjectID) ([]LectureStr
 	var lecturesStruct []LectureStruct
 	for _, lectureID := range lectureIDs {
 		var lecture Lecture
-		err := database.MongoDB.Collection("Lectures").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("Lecture").FindOne(c, bson.M{
 			"_id": lectureID,
 		}).Decode(&lecture)
 

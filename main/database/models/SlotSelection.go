@@ -74,7 +74,7 @@ func LoadSlotSelections(c *gin.Context, slotSelectionIDs []primitive.ObjectID) (
 	var slotSelectionsStruct []SlotSelectionStruct
 	for _, slotSelectionID := range slotSelectionIDs {
 		var slotSelection SlotSelection
-		err := database.MongoDB.Collection("SlotSelections").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("SlotSelection").FindOne(c, bson.M{
 			"_id": slotSelectionID,
 		}).Decode(&slotSelection)
 

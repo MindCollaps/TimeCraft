@@ -55,7 +55,7 @@ func LoadStudentGroups(c *gin.Context, studentGroupIDs []primitive.ObjectID) ([]
 	var studentGroupsStruct []StudentGroupStruct
 	for _, studentGroupID := range studentGroupIDs {
 		var studentGroup StudentGroup
-		err := database.MongoDB.Collection("StudentGroups").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{
 			"_id": studentGroupID,
 		}).Decode(&studentGroup)
 

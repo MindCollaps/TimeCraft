@@ -65,7 +65,7 @@ func LoadSemesterGroups(c *gin.Context, semesterGroupIDs []primitive.ObjectID) (
 	var semesterGroupsStruct []SemesterGroupStruct
 	for _, semesterGroupID := range semesterGroupIDs {
 		var semesterGroup SemesterGroup
-		err := database.MongoDB.Collection("SemesterGroups").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{
 			"_id": semesterGroupID,
 		}).Decode(&semesterGroup)
 
