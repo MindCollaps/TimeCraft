@@ -11,7 +11,7 @@ type DashboardStruct struct {
 	TimeTables []models.TimeTableStruct
 }
 
-func Dashboard(c *gin.Context) DashboardStruct {
+func Dashboard(c *gin.Context) any {
 	usr, ok := c.Get("user")
 	if !ok {
 		return DashboardStruct{
