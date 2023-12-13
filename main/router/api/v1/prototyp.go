@@ -84,11 +84,11 @@ func parse_json(data ExcelJson, c *gin.Context) {
 	for _, element := range data {
 
 		if element.StudySubject != "" {
-			fmt.Println("this is the header")
+			fmt.Println("parsing the header")
 			LastChanged = getLastChanged(element.LastChanged)
 			Name = fmt.Sprint(element.StudySubject, " ", element.SemesterGroup, " ", strings.Replace(element.SemesterYear, " ", "", 1))
 		} else {
-			fmt.Println("this is the content")
+			fmt.Println(fmt.Sprintf("parsing calendarweek %d", element.Calendarweek))
 
 			// make it iterable
 			DaysToParse := element.Days
@@ -136,6 +136,7 @@ func parse_json(data ExcelJson, c *gin.Context) {
 			}
 		}
 	}
+
 	TimeTable.ID = primitive.NewObjectID()
 	TimeTable.Name = Name
 	TimeTable.Days = TimeTableDays
@@ -185,9 +186,7 @@ func getLecturer(lecturer string) primitive.ObjectID {
 		}).Decode(&lecturerObj)
 
 		if err != nil {
-			fmt.Println("Error finding lecturer:", err)
-			fmt.Println("Creating new lecturer")
-
+			fmt.Println(fmt.Sprintf("Creating new lecturer '%s'", lecturer))
 			return saveLecturer(lecturer)
 		} else {
 			return lecturerObj.ID
@@ -221,9 +220,7 @@ func getLecture(lecture string) primitive.ObjectID {
 		}).Decode(&lectureObj)
 
 		if err != nil {
-			fmt.Println("Error finding lecture:", err)
-			fmt.Println("Creating new lecture")
-
+			fmt.Println(fmt.Sprintf("Creating new lecture '%s'", lecture))
 			return saveLecture(lecture)
 		} else {
 			return lectureObj.ID
