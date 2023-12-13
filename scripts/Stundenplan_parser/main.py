@@ -266,7 +266,7 @@ class excel_parser():
                                     text = "no lesson --> freetime"
                                     table["days"][current_day]["lessons"][index_counter]["isHoliday"] = False
                                 else:
-                                    table["days"][current_day]["lessons"][index_counter]["isHoliday"] = True
+                                    table["days"][current_day]["lessons"][index_counter]["isHoliday"] = False
                                     text = lesson
 
                                 skip = False
