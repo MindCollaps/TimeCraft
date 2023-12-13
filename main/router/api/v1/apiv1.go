@@ -11,4 +11,11 @@ func Handler(rg *gin.RouterGroup) {
 
 	timetable := rg.Group("/tbl")
 	tblHandler(timetable)
+
+	semestergroup := rg.Group("/sgrp")
+	stygrpHandler(semestergroup)
+
+	studygroup := rg.Group("/stygrp")
+	sgrpHandler(studygroup)
+
 }

@@ -1,10 +1,13 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"reflect"
+	"src/main/database"
 	"src/main/database/models"
 	"strings"
 	"time"
@@ -110,7 +113,7 @@ func parse_json(data ExcelJson, c *gin.Context) {
 					timeslot := models.TimeSlot{
 						ID:              primitive.NewObjectID(),
 						Name:            lesson.Name,
-						LecturerID:      primitive.NilObjectID,
+						LecturerID:      get_lecturer(lesson.Lecturer),
 						LectureID:       primitive.ObjectID{},
 						TimeStart:       startTime,
 						TimeEnd:         endTime,
@@ -151,4 +154,40 @@ func parse_time(lessonTime string) (primitive.DateTime, primitive.DateTime) {
 
 	return primitive.NewDateTimeFromTime(startTime), primitive.NewDateTimeFromTime(endTime)
 
+}
+
+func get_lecturer(lecturer string) primitive.ObjectID {
+	if lecturer == "" {
+		return primitive.NilObjectID
+	} else {
+		var lecturerObj models.Lecturer
+
+		err := database.MongoDB.Collection("Lecturer").FindOne(context.Background(), bson.M{
+			"sureName": lecturer,
+		}).Decode(&lecturerObj)
+
+		if err != nil {
+			fmt.Println("Error finding lecturer:", err)
+			fmt.Println("Creating new lecturer")
+
+			return save_lectuerer(lecturer)
+		} else {
+			return lecturerObj.ID
+		}
+	}
+}
+
+func save_lectuerer(lecturer string) primitive.ObjectID {
+	lecturerObj := models.Lecturer{
+		ID:       primitive.NewObjectID(),
+		SureName: lecturer,
+	}
+
+	_, err := database.MongoDB.Collection("Lecturer").InsertOne(context.Background(), lecturerObj)
+	if err != nil {
+		fmt.Println("Error creating new lecturer:", err)
+		return primitive.NilObjectID
+	} else {
+		return lecturerObj.ID
+	}
 }

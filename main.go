@@ -14,7 +14,7 @@ import (
 func main() {
 	r := gin.Default()
 	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
+		log.Println("No ..env file found")
 	}
 
 	err := crypt.KeySetup()
@@ -34,7 +34,7 @@ func main() {
 	address := os.Getenv("ADDRESS")
 
 	if address == "" {
-		log.Println("No address set in .env file")
+		log.Println("No address set in ..env file")
 		address = ":8080"
 		log.Println("Defaulting to " + address)
 	} else {
