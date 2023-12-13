@@ -86,7 +86,7 @@ func parse_json(data ExcelJson, c *gin.Context) {
 		if element.StudySubject != "" {
 			fmt.Println("this is the header")
 			LastChanged = getLastChanged(element.LastChanged)
-			Name = fmt.Sprint(element.StudySubject, " ", element.SemesterGroup, " ", element.SemesterYear)
+			Name = fmt.Sprint(element.StudySubject, " ", element.SemesterGroup, " ", strings.Replace(element.SemesterYear, " ", "", 1))
 		} else {
 			fmt.Println("this is the content")
 
