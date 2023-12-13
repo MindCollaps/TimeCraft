@@ -109,6 +109,11 @@ func parse_json(data ExcelJson, c *gin.Context) {
 
 				// iterate over the lessons
 				for _, lesson := range day.Interface().(Day).Lessons {
+					// skip empty time slots
+					if strings.HasPrefix(lesson.Name, "no lesson") {
+						continue
+					}
+
 					startTime, endTime := getStartAndEndTime(lesson.Time)
 					timeslot := models.TimeSlot{
 						ID:              primitive.NewObjectID(),
