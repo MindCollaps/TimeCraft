@@ -694,11 +694,14 @@ if __name__ == "__main__":
 
     # get all *.xlsx files from the current directory
     for file in glob.glob("*.xlsx"):
+        print(f"Parsing {file}")
         parser = excel_parser(file)
         tables = parser.extract_tables(parser.rows)
 
         with open(file.replace(".xlsx", ".json"), 'w', encoding='utf-8') as f:
             json.dump(tables, f, ensure_ascii=False, indent=4, default=str)
+
+    print("Done")
 
 # TODO: support for 
 # EAC S2-1 (Arnold) / (durchgestrichen)
