@@ -114,7 +114,7 @@ func parse_json(data ExcelJson, c *gin.Context) {
 						ID:              primitive.NewObjectID(),
 						Name:            lesson.Name,
 						LecturerId:      getLecturer(lesson.Lecturer),
-						LectureId:       getLecture(lesson.Name),
+						LectureId:       getLecture(lesson),
 						TimeStart:       startTime,
 						TimeEnd:         endTime,
 						IsOnline:        lesson.IsOnline,
@@ -209,19 +209,19 @@ func saveLecturer(lecturer string) primitive.ObjectID {
 	}
 }
 
-func getLecture(lecture string) primitive.ObjectID {
-	if lecture == "" {
+func getLecture(lecture Lesson) primitive.ObjectID {
+	if lecture.Name == "" || lecture.IsEvent || lecture.IsExam || lecture.IsReExamination || strings.HasPrefix(lecture.Name, "Feiertag") || strings.HasPrefix(lecture.Name, "no lesson") {
 		return primitive.NilObjectID
 	} else {
 		var lectureObj models.Lecture
 
 		err := database.MongoDB.Collection("Lecture").FindOne(context.Background(), bson.M{
-			"name": lecture,
+			"name": lecture.Name,
 		}).Decode(&lectureObj)
 
 		if err != nil {
-			fmt.Println(fmt.Sprintf("Creating new lecture '%s'", lecture))
-			return saveLecture(lecture)
+			fmt.Println(fmt.Sprintf("Creating new lecture '%s'", lecture.Name))
+			return saveLecture(lecture.Name)
 		} else {
 			return lectureObj.ID
 		}
