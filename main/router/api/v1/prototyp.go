@@ -114,7 +114,7 @@ func parse_json(data ExcelJson, c *gin.Context) {
 						ID:              primitive.NewObjectID(),
 						Name:            lesson.Name,
 						LecturerId:      getLecturer(lesson.Lecturer),
-						LectureId:       getLecture(element.StudySubject),
+						LectureId:       getLecture(lesson.Name),
 						TimeStart:       startTime,
 						TimeEnd:         endTime,
 						IsOnline:        lesson.IsOnline,
