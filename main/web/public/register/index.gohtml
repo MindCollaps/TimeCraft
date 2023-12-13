@@ -1,0 +1,65 @@
+{{define "title"}}WeebsKingdom{{end}}
+{{define "metaDescription"}}Welcome to TimeCraft{{end}}
+{{define "content"}}
+    {{template "topdoc"}}
+    <div id="register" class="vh-100">
+        <div class="d-flex align-items-stretch flex-column h-100">
+            <div class="d-flex justify-content-center align-items-center flex-column h-100 w-100">
+                <div>
+                    <h1 class="text-white mb-3">
+                        <img src="https://media.discordapp.net/attachments/556768793708462080/1182271466977370112/WhatsApp_Bild_2023-12-07_um_11.42.57_4046a687.jpg?ex=6584171b&is=6571a21b&hm=dbcd9c975ebdaf3e7dcab61a906b6b86548fd2b830274883aa105196d75bcf7e&=&format=webp" height="60" width="60">
+                        Register
+                    </h1>
+                    <div class="form-floating mb-3">
+                        <input v-model="username" type="text" class="form-control" id="username"
+                               placeholder="ASO">
+                        <label for="username">Username</label>
+                        <div id="helper" class="form-text">The Username should be:
+                            Between 3 and 30 characters long,
+                            contains only upper
+                            and lower case characters,
+                            . and _ (but not at the end)
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input v-model="email" type="email" class="form-control" id="email"
+                               placeholder="ASO">
+                        <label for="email">E-Mail</label>
+                        <div id="helper" class="form-text">The Email should be:
+                            Between 5 and 50 characters long.
+                            The Email is looked up for validation.
+                        </div>
+                    </div>
+                    <div class="mb-3 form-floating">
+                        <input v-model="password1" type="password" class="form-control" id="password"
+                               placeholder="Password" @keyup.enter="register()">
+                        <label for="password">Password</label>
+                        <div id="helper" class="form-text">The Password should be:
+                            Between 8 and 50 characters long,
+                            contains only upper and lower case characters,
+                            numbers,
+                            and special characters . _ ! ? # - *
+                        </div>
+                    </div>
+                    <div class="mb-3 form-floating">
+                        <input v-model="password2" type="password" class="form-control" id="repeatPassword"
+                               placeholder="Repeat Password" @keyup.enter="register()">
+                        <label for="repeatPassword">Repeat Password</label>
+                    </div>
+                    <div class="mb-3 d-flex justify-content-center">
+                        <button @click="register()" class="btn btn-primary align-center">Register</button>
+                    </div>
+                    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                        <div id="theToast" class="toast text-bg-warning align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    ${error}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    {{template "botdoc"}}
+{{end}}
