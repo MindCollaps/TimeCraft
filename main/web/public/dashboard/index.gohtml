@@ -60,21 +60,22 @@
                          aria-labelledby="dashboard-tab"
                          tabindex="0">
                         <div class="h-100 w-100 d-flex flex-column align-items-stretch">
-                            <div class="h-100 w-100 d-flex flex-row align-items-stretch justify-content-between">
-                                <div class="h-100 d-flex flex-column">
+                            <div class="h-100 w-100 d-flex flex-row align-items-stretch justify-content-between position-relative">
+                                <div class="d-flex flex-column position-absolute h-100 w-100">
                                     Times
                                     <div class="h-100 d-flex flex-column justify-content-between">
-                                        <div v-for="time in times">
+                                        <div v-for="(time, index) in times" class="h-100" :class="Math.floor(index) % 2 == 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
                                             ${time}
                                         </div>
                                     </div>
                                 </div>
+                                <div></div> <!--For the times-->
                                 <div v-for="day in week" class="h-100 d-flex flex-column justify-content-between">
                                     <div>
                                         ${day.day}
                                     </div>
                                     <div class="h-100">
-                                        <div v-for="lesson in day.lessons" class="position-relative bg-primary-subtle" :style="{'top': lesson.val, 'height': lesson.valH}">
+                                        <div v-for="lesson in day.lessons" class="position-relative bg-primary" :style="{'top': lesson.val, 'height': lesson.valH}">
                                             ${lesson.name}
                                         </div>
                                     </div>
@@ -314,17 +315,15 @@
             var app = Vue.createApp({
                 delimiters: ['${', '}'],
                 data: () => ({
-                    data: [],
-                    scalarMin: 9,
-                    scalarMax: 17,
+                    data: {{.TimeTables}},
+                    scalarMin: 7,
+                    scalarMax: 20,
+                    checkerHeight: "100%",
+                    checkerWidth: "100%",
                     times: [],
-                    week: [
-                        {day: "Montag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "0:00", timeEnd: "1:00"}]},
-                        {day: "Dienstag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "10:00", timeEnd: "22:00"}]},
-                        {day: "Mittwoch", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "9:00", timeEnd: "14:00"}]},
-                        {day: "Donnerstag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "9:00", timeEnd: "10:00"}]},
-                        {day: "Freitag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "9:00", timeEnd: "12:00"}]},
-                        {day: "Samstag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "22:00", timeEnd: "23:00"}]},
+                    selectedTimeTables: [],
+                    weeks: [],
+                    selectedWeek: [
                     ],
                 }),
                 mounted(){

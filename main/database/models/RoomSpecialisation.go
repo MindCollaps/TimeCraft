@@ -30,7 +30,7 @@ func LoadRoomSpecialisations(c *gin.Context, specialisationIDs []primitive.Objec
 	var specialisationsStruct []RoomSpecialisationStruct
 	for _, specialisationID := range specialisationIDs {
 		var specialisation RoomSpecialisation
-		err := database.MongoDB.Collection("RoomSpecialisations").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("RoomSpecialisation").FindOne(c, bson.M{
 			"_id": specialisationID,
 		}).Decode(&specialisation)
 

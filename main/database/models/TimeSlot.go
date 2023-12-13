@@ -81,7 +81,7 @@ func LoadTimeSlots(c *gin.Context, timeSlotIDs []primitive.ObjectID) ([]TimeSlot
 	var timeSlotsStruct []TimeSlotStruct
 	for _, timeSlotID := range timeSlotIDs {
 		var timeSlot TimeSlot
-		err := database.MongoDB.Collection("TimeSlots").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("TimeSlot").FindOne(c, bson.M{
 			"_id": timeSlotID,
 		}).Decode(&timeSlot)
 

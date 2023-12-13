@@ -32,7 +32,7 @@ func LoadEditPermissions(c *gin.Context, editPermissionIDs []primitive.ObjectID)
 	var editPermissionsStruct []EditPermissionStruct
 	for _, editPermissionID := range editPermissionIDs {
 		var editPermission EditPermission
-		err := database.MongoDB.Collection("EditPermissions").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("EditPermission").FindOne(c, bson.M{
 			"_id": editPermissionID,
 		}).Decode(&editPermission)
 

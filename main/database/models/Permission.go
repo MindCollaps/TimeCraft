@@ -47,7 +47,7 @@ func LoadPermissions(c *gin.Context, permissionIDs []primitive.ObjectID) ([]Perm
 	var permissionsStruct []PermissionStruct
 	for _, permissionID := range permissionIDs {
 		var permission Permission
-		err := database.MongoDB.Collection("Permissions").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("Permission").FindOne(c, bson.M{
 			"_id": permissionID,
 		}).Decode(&permission)
 

@@ -57,7 +57,6 @@ func userHandler(cg *gin.RouterGroup) {
 	})
 
 	cg.POST("/register", func(c *gin.Context) {
-
 		var requestBody struct {
 			Username string `json:"username"`
 			Password string `json:"password"`

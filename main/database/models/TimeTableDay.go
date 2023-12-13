@@ -44,7 +44,7 @@ func LoadTimeTableDays(c *gin.Context, timeTableDayIDs []primitive.ObjectID) ([]
 	var timeTableDaysStruct []TimeTableDayStruct
 	for _, timeTableDayID := range timeTableDayIDs {
 		var timeTableDay TimeTableDay
-		err := database.MongoDB.Collection("TimeTableDays").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("TimeTableDay").FindOne(c, bson.M{
 			"_id": timeTableDayID,
 		}).Decode(&timeTableDay)
 

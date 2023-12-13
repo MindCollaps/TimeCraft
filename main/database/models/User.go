@@ -60,7 +60,7 @@ func LoadUsers(c *gin.Context, userIDs []primitive.ObjectID) ([]UserStruct, erro
 	var usersStruct []UserStruct
 	for _, userID := range userIDs {
 		var user User
-		err := database.MongoDB.Collection("Users").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("User").FindOne(c, bson.M{
 			"_id": userID,
 		}).Decode(&user)
 

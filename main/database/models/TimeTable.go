@@ -40,7 +40,7 @@ func LoadTimeTables(c *gin.Context, timeTableIDs []primitive.ObjectID) ([]TimeTa
 	var timeTablesStruct []TimeTableStruct
 	for _, timeTableID := range timeTableIDs {
 		var timeTable TimeTable
-		err := database.MongoDB.Collection("TimeTables").FindOne(c, bson.M{
+		err := database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{
 			"_id": timeTableID,
 		}).Decode(&timeTable)
 
