@@ -173,7 +173,9 @@ func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTi
 }
 
 func convertToDateTime(layout string, input string) primitive.DateTime {
-	parsedTime, err := time.Parse(layout, input)
+	//set timezone to local
+	loc, _ := time.LoadLocation("Europe/Berlin")
+	parsedTime, err := time.ParseInLocation(layout, input, loc)
 	if err != nil {
 		fmt.Println("Error parsing time:", err)
 	}
