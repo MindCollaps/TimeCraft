@@ -11,7 +11,7 @@
             <span class="material-icons">arrow_forward</span>
         </div>
     </div>
-    <div class="h-100 w-100"> <!--TOPBAR-->
+    <div id="app"  class="h-100 w-100"> <!--TOPBAR-->
         <div class="row h-100 w-100">
             <div class=" d-flex h-100 flex-column flex-shrink-0 p-3 text-white bg-body-tertiary rounded-end"
                  style="width: 12%;">
@@ -56,56 +56,28 @@
             </div>
             <div class="container col p-5 h-100 pane-animation">
                 <div class="tab-content h-100 mt-5" id="v-pills-tabContent">
-                    <div class="tab-pane fade h-100" id="dashboard-tab-pane" role="tabpanel"
+                    <div class="tab-pane fade w-100 h-100" id="dashboard-tab-pane" role="tabpanel"
                          aria-labelledby="dashboard-tab"
                          tabindex="0">
-                        <div class="h-100 d-flex flex-row align-items-stretch justify-content-space-between">
-                            <div>
-                                <div>
-                                    Montag
+                        <div class="h-100 w-100 d-flex flex-column align-items-stretch">
+                            <div class="h-100 w-100 d-flex flex-row align-items-stretch justify-content-between">
+                                <div class="h-100 d-flex flex-column">
+                                    Times
+                                    <div class="h-100 d-flex flex-column justify-content-between">
+                                        <div v-for="time in times">
+                                            ${time}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-
-                                </div>
-                            </div>
-                            <div>
-                                <div>
-                                    Diesntag
-                                </div>
-                                <div>
-
-                                </div>
-                            </div>
-                            <div>
-                                <div>
-                                    Mittwoch
-                                </div>
-                                <div>
-
-                                </div>
-                            </div>
-                            <div>
-                                <div>
-                                    Donnerstag
-                                </div>
-                                <div>
-
-                                </div>
-                            </div>
-                            <div>
-                                <div>
-                                    Freitag
-                                </div>
-                                <div>
-
-                                </div>
-                            </div>
-                            <div>
-                                <div>
-                                    Samstag
-                                </div>
-                                <div>
-
+                                <div v-for="day in week" class="h-100 d-flex flex-column justify-content-between">
+                                    <div>
+                                        ${day.day}
+                                    </div>
+                                    <div class="h-100">
+                                        <div v-for="lesson in day.lessons" class="position-relative bg-primary-subtle" :style="{'top': lesson.val, 'height': lesson.valH}">
+                                            ${lesson.name}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -335,5 +307,57 @@
             </div>
         </div>
     </div>
+
+        <script>
+
+
+            var app = Vue.createApp({
+                delimiters: ['${', '}'],
+                data: () => ({
+                    data: [],
+                    scalarMin: 9,
+                    scalarMax: 17,
+                    times: [],
+                    week: [
+                        {day: "Montag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "0:00", timeEnd: "1:00"}]},
+                        {day: "Dienstag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "10:00", timeEnd: "22:00"}]},
+                        {day: "Mittwoch", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "9:00", timeEnd: "14:00"}]},
+                        {day: "Donnerstag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "9:00", timeEnd: "10:00"}]},
+                        {day: "Freitag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "9:00", timeEnd: "12:00"}]},
+                        {day: "Samstag", lessons: [{name: "test", val: "0%", valH: "0%", timeStart: "22:00", timeEnd: "23:00"}]},
+                    ],
+                }),
+                mounted(){
+                    for (let i = 0
+                        ; i < this.scalarMax - this.scalarMin; i++) {
+                        this.times.push(this.scalarMin + i + ":00");
+                    }
+                    for (let i = 0; i < this.week.length; i++) {
+                        let week = this.week[i];
+                        for (let j = 0; j < week.lessons.length; j++) {
+                            //if value out of range, delete
+                            if (this.timeToPercent(week.lessons[j].timeStart) < this.timeToPercent(this.scalarMin + ":00") || this.timeToPercent(week.lessons[j].timeEnd) > this.timeToPercent(this.scalarMax + ":00")) {
+                                week.lessons.splice(j, 1);
+                                j--;
+                                continue;
+                            }
+                            let lesson = week.lessons[j];
+                            lesson.val = this.timeToPercent(lesson.timeStart) + "%";
+                            lesson.valH = this.timeToPercent(lesson.timeEnd) - this.timeToPercent(lesson.timeStart) + "%";
+                        }
+                    }
+                },
+                methods: {
+                    timeToPercent(time) {
+                        let timeArray = time.split(":");
+                        let hours = parseInt(timeArray[0]);
+                        let minutes = parseInt(timeArray[1]);
+                        let scalar = hours - this.scalarMin;
+                        let scalarMinutes = minutes / 60;
+                        return (scalar + scalarMinutes) / (this.scalarMax - this.scalarMin) * 100;
+                    },
+                }
+            }).mount('#app')
+        </script>
     {{template "botdoc"}}
 {{end}}
