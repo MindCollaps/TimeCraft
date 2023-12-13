@@ -258,9 +258,12 @@ class excel_parser():
 
                                 if self.isHoliday(lesson):
                                     text = f"Feiertag: {lesson}"
+                                    table["days"][current_day]["lessons"][index_counter]["isHoliday"] = True
                                 elif lesson == "":
                                     text = "no lesson --> freetime"
+                                    table["days"][current_day]["lessons"][index_counter]["isHoliday"] = False
                                 else:
+                                    table["days"][current_day]["lessons"][index_counter]["isHoliday"] = True
                                     text = lesson
 
                                 skip = False
