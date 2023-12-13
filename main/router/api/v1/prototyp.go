@@ -104,7 +104,7 @@ func parse_json(data ExcelJson, c *gin.Context) {
 				var TimeTableDay models.TimeTableDay
 				var TimeSlotIds []primitive.ObjectID
 				TimeTableDay.ID = primitive.NewObjectID()
-				TimeTableDay.Date = convertToDateTime("02.01.2006 00:00:00", dayDate)
+				TimeTableDay.Date = convertToDateTime("2006-01-02 00:00:00", dayDate)
 				TimeTableDay.LastUpdated = LastChanged
 
 				// iterate over the lessons
