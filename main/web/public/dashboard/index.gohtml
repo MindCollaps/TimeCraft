@@ -3,85 +3,92 @@
 {{define "content"}}
     {{template "topdoc"}}
     <div id="app" class="vh-100 vw-100">
-        <div class="row w-100 position-absolute start-0 end-0 bg-body-tertiary shadow-sm" style="z-index: -1">
-            <div class="d-flex p-4 justify-content-center"> <!--justify content center -->
-                <span class="material-icons" @click="previousWeek()">arrow_back</span>
-                <div class="text-white">
-                    ${weekString}
-                </div>
-                <span class="material-icons" @click="nextWeek()">arrow_forward</span>
+        <div class="h-100 w-100 d-flex flex-row">
+            <div class=" d-flex h-100 flex-column flex-shrink-0 text-white bg-body-tertiary rounded-end"
+                 style="width: 12%;">
+                <!--SIDEBAR-->
+                <a href="/"
+                   class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                    <span class="fs-4">Time Craft</span>
+                </a>
+                <hr>
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item">
+                        <button type="button" data-bs-toggle="tab" id="dashboard-tab"
+                                data-bs-target="#dashboard-tab-pane" role="tab"
+                                aria-controls="dashboard-tab-pane" aria-selected="true"
+                                class="nav-link d-flex justify-content-center align-items-center"
+                                aria-current="page">
+                            <span href="#" class="nav-link material-symbols-outlined">speed</span>
+                            <span class="align-middle">Dashboard</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" data-bs-toggle="tab" id="timetable-tab"
+                                data-bs-target="#timetable-tab-pane" role="tab"
+                                aria-controls="timetable-tab-pane" aria-selected="true"
+                                class="nav-link d-flex justify-content-center align-items-center"
+                                aria-current="page">
+                            <span class="nav-link material-symbols-outlined">table_chart</span>
+                            <span class="align-middle">Timetables</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" data-bs-toggle="tab" id="favorites-tab"
+                                data-bs-target="#favorites-tab-pane" role="tab"
+                                aria-controls="favorites-tab-pane" aria-selected="true"
+                                class="nav-link d-flex justify-content-center align-items-center"
+                                aria-current="page">
+                            <span href="#" class="nav-link material-symbols-outlined">star</span>
+                            <span class="align-middle">Favorites</span>
+                        </button>
+                    </li>
+                </ul>
+                <hr>
             </div>
-        </div>
-        <div class="h-100 w-100"> <!--TOPBAR-->
-            <div class="row h-100 w-100">
-                <div class=" d-flex h-100 flex-column flex-shrink-0 p-3 text-white bg-body-tertiary rounded-end"
-                     style="width: 12%;">
-                    <!--SIDEBAR-->
-                    <a href="/"
-                       class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <span class="fs-4">Sidebar</span>
-                    </a>
-                    <hr>
-                    <ul class="nav nav-pills flex-column mb-auto">
-                        <li class="nav-item">
-                            <button type="button" data-bs-toggle="tab" id="dashboard-tab"
-                                    data-bs-target="#dashboard-tab-pane" role="tab"
-                                    aria-controls="dashboard-tab-pane" aria-selected="true"
-                                    class="nav-link d-flex justify-content-center align-items-center"
-                                    aria-current="page">
-                                <span href="#" class="nav-link material-symbols-outlined">speed</span>
-                                <span class="align-middle">Dashboard</span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" data-bs-toggle="tab" id="timetable-tab"
-                                    data-bs-target="#timetable-tab-pane" role="tab"
-                                    aria-controls="timetable-tab-pane" aria-selected="true"
-                                    class="nav-link d-flex justify-content-center align-items-center"
-                                    aria-current="page">
-                                <span class="nav-link material-symbols-outlined">table_chart</span>
-                                <span class="align-middle">Timetables</span>
-                            </button>
-                        </li>
-                        <li>
-                            <button type="button" data-bs-toggle="tab" id="favorites-tab"
-                                    data-bs-target="#favorites-tab-pane" role="tab"
-                                    aria-controls="favorites-tab-pane" aria-selected="true"
-                                    class="nav-link d-flex justify-content-center align-items-center"
-                                    aria-current="page">
-                                <span href="#" class="nav-link material-symbols-outlined">star</span>
-                                <span class="align-middle">Favorites</span>
-                            </button>
-                        </li>
-                    </ul>
-                    <hr>
-                </div>
-                <div class="container col p-5 h-100 pane-animation">
-                    <div class="tab-content h-100 mt-5" id="v-pills-tabContent">
+            <div class="h-100 w-100 d-flex flex-column">
+                <div class="col h-100 pane-animation">
+                    <div class="tab-content h-100 " id="v-pills-tabContent">
                         <div class="tab-pane fade w-100 h-100" id="dashboard-tab-pane" role="tabpanel"
                              aria-labelledby="dashboard-tab"
                              tabindex="0">
-                            <div class="h-100 w-100 d-flex flex-column align-items-stretch">
-                                <div class="h-100 w-100 d-flex flex-row align-items-stretch justify-content-between position-relative">
-                                    <div class="d-flex flex-column position-absolute h-100 w-100">
-                                        Times
-                                        <div class="h-100 d-flex flex-column justify-content-between">
-                                            <div v-for="(time, index) in times" class="h-100"
-                                                 :class="Math.floor(index) % 2 == 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
-                                                ${time}
+                            <div class="w-100 h-100 d-flex flex-column">
+                                <div class="row w-100 bg-body-tertiary shadow-sm">
+                                    <div class="d-flex p-4 justify-content-center gap-3 align-items-center">
+                                        <button class="btn btn-secondary" @click="previousWeek()"><span
+                                                    class="material-icons">arrow_back</span></button>
+                                        <div class="text-white">
+                                            ${weekString}
+                                        </div>
+                                        <button class="btn btn-secondary" @click="nextWeek()"><span
+                                                    class="material-icons">arrow_forward</span></button>
+                                        <button class="btn btn-primary" @click="selectClosestWeek()"><span
+                                                    class="material-icons">today</span></button>
+                                    </div>
+                                </div>
+                                <div class="h-100 w-100 d-flex flex-column align-items-stretch p-3">
+                                    <div class="h-100 w-100 d-flex flex-row align-items-stretch justify-content-between position-relative">
+                                        <div class="d-flex flex-column position-absolute h-100 w-100">
+                                            Times
+                                            <div class="h-100 d-flex flex-column justify-content-between">
+                                                <div v-for="(time, index) in times" class="h-100"
+                                                     :class="Math.floor(index) % 2 == 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
+                                                    ${time}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div></div> <!--For the times-->
-                                    <div v-for="day in selectedWeek.days"
-                                         class="h-100 d-flex flex-column justify-content-between">
-                                        <div>
-                                            ${day.date}
-                                        </div>
-                                        <div class="h-100">
-                                            <div v-for="slot in day.timeSlotIds" class="position-relative bg-primary"
-                                                 :style="{'top': slot.val, 'height': slot.valH}">
-                                                ${slot.name}
+                                        <div></div> <!--For the times-->
+                                        <div v-for="day in selectedWeek.days"
+                                             class="h-100 d-flex flex-column justify-content-between">
+                                            <div>
+                                                ${day.date}
+                                            </div>
+                                            <div class="h-100">
+                                                <div v-for="slot in day.timeSlotIds"
+                                                     class="position-relative bg-primary"
+                                                     :style="{'top': slot.val, 'height': slot.valH}">
+                                                    ${slot.name}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -91,7 +98,7 @@
                         <div class="tab-pane fade w-100 h-100" id="timetable-tab-pane" role="tabpanel"
                              aria-labelledby="timetable-tab"
                              tabindex="0">
-                            <div class="h-100 w-100 d-flex flex-column align-items-stretch">
+                            <div class="h-100 w-100 d-flex flex-column align-items-stretch p-3">
                                 <div class="d-flex w-100 align-items-center flex-column overflow-auto">
                                     <div class="accordion w-100" id="studyGroups">
                                         <div class="accordion-item">
@@ -305,7 +312,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade h-100" id="favorites-tab-pane" role="tabpanel"
+                        <div class="tab-pane fade h-100 p-3" id="favorites-tab-pane" role="tabpanel"
                              aria-labelledby="favorites-tab"
                              tabindex="0">
                             <div class="h-100 d-flex flex-column align-items-stretch">
@@ -316,6 +323,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     <script>
@@ -344,43 +352,59 @@
                     let week = this.weeks.find(week => week.weekNumber === index + 1);
                     if (week !== undefined) {
                         this.selectedWeek = week;
-                        this.weekString = this.getWeekStringByWeekNumber(week.weekNumber);
+                        this.weekString = this.getWeekStringByWeek(week);
                     } else {
-                        this.weekString = this.getWeekStringByWeekNumber(this.selectedWeek.weekNumber);
+                        let weekDate = new Date(this.selectedWeek.date);
+                        weekDate.setDate(weekDate.getDate() + 7);
                         this.selectedWeek = {
                             weekNumber: this.selectedWeek.weekNumber + 1,
                             days: [],
+                            date: weekDate
                         };
+
+                        this.weekString = this.getWeekStringByWeek(this.selectedWeek);
                     }
                 },
                 previousWeek() {
                     let index = this.selectedWeek.weekNumber;
                     let week = this.weeks.find(week => week.weekNumber === index - 1);
+
                     if (week !== undefined) {
                         this.selectedWeek = week;
-                        this.weekString = this.getWeekStringByWeekNumber(week.weekNumber);
+                        this.weekString = this.getWeekStringByWeek(week);
                     } else {
-                        this.weekString = this.getWeekStringByWeekNumber(this.selectedWeek.weekNumber);
+                        let weekDate = new Date(this.selectedWeek.date);
+                        weekDate.setDate(weekDate.getDate() - 7);
                         this.selectedWeek = {
                             weekNumber: this.selectedWeek.weekNumber - 1,
                             days: [],
+                            date: weekDate
                         };
+                        this.weekString = this.getWeekStringByWeek(this.selectedWeek);
                     }
                 },
-                getWeekStringByWeekNumber(weekNumber) {
+                getWeekStringByWeek(week) {
                     //week string like 02.01.2021 - 08.01.2021
-                    //week number is a number
-                    //calculate which days are in the week of the weekNumber using date
-                    //also the year can be accessed by data[0].days[0].date
-                    let date = new Date(this.data[0].days[0].date);
-                    let firstDay = new Date(date.setDate(date.getDate() - date.getDay() + 1 + (weekNumber - 1) * 7));
-                    let lastDay = new Date(date.setDate(date.getDate() - date.getDay() + 7 + (weekNumber - 1) * 7));
+                    let firstDay = week.date;
+                    let lastDay = new Date(firstDay);
+                    lastDay.setDate(lastDay.getDate() + 6);
+                    return this.formatDate(firstDay) + " - " + this.formatDate(lastDay);
+                },
+                formatDate(date) {
+                    let dd = date.getDate();
+                    let mm = date.getMonth() + 1;
+                    const yyyy = date.getFullYear();
 
-                    return firstDay + " - " + lastDay;
+                    if (dd < 10) dd = '0' + dd;
+                    if (mm < 10) mm = '0' + mm;
+
+                    return dd + '.' + mm + '.' + yyyy;
                 },
                 selectClosestWeek() {
                     let date = new Date();
                     let weekNumber = this.getWeekNumber(date);
+
+                    //TODO:: Use date instead of weekNumber
                     let week = this.weeks.find(week => week.weekNumber === weekNumber);
                     this.selectedWeek = week;
 
@@ -389,7 +413,7 @@
                     }
 
                     if (week.days.length > 0)
-                        this.weekString = this.getWeekStringByWeekNumber(week.weekNumber);
+                        this.weekString = this.getWeekStringByWeek(week);
                     else
                         this.weekString = "No lessons in timetable.";
                 },
@@ -417,6 +441,7 @@
                                 week = {
                                     weekNumber: weekNumber,
                                     days: [],
+                                    date: date,
                                 };
                                 weeks.push(week);
                             }
@@ -428,12 +453,17 @@
                         let lastWeek = weeks[weeks.length - 1];
                         let firstWeekNumber = firstWeek.weekNumber;
                         let lastWeekNumber = lastWeek.weekNumber;
+                        //calulate the date of the week
+                        let firstWeekDate = new Date(firstWeek.date);
                         for (let j = firstWeekNumber; j < lastWeekNumber; j++) {
                             let week = weeks.find(week => week.weekNumber === j);
+                            let weeksDate = new Date(firstWeekDate);
+                            weeksDate.setDate(weeksDate.getDate() + (j - firstWeekNumber) * 7);
                             if (week === undefined) {
                                 week = {
                                     weekNumber: j,
                                     days: [],
+                                    date: weeksDate,
                                 };
                                 weeks.push(week);
                             }
@@ -448,14 +478,17 @@
                             let timeSlotIds = [];
                             if (day.timeSlotIds == undefined)
                                 day.timeSlotIds = [];
+                            let heightCount = 0
                             for (let k = 0; k < day.timeSlotIds.length; k++) {
                                 let timeSlot = day.timeSlotIds[k];
                                 //make timeStart and timeEnd time only
                                 timeSlot.timeStart = timeSlot.timeStart.split(" ")[1];
                                 timeSlot.timeEnd = timeSlot.timeEnd.split(" ")[1];
                                 let val = this.timeToPercent(timeSlot.timeStart)
-                                timeSlot.val = val + "%";
-                                timeSlot.valH = (this.timeToPercent(timeSlot.timeEnd) - val) + "%"
+                                timeSlot.val = (val - heightCount) + "%";
+                                let height = (this.timeToPercent(timeSlot.timeEnd) - val)
+                                timeSlot.valH = height + "%"
+                                heightCount += height;
                                 timeSlotIds.push(timeSlot);
                             }
                             day.timeSlotIds = timeSlotIds;
