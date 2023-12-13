@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"reflect"
 	"src/main/database"
 	"src/main/database/models"
 	"strings"
@@ -19,7 +18,7 @@ type ExcelJson []struct {
 	Semester      string `json:"semester"`
 	SemesterYear  string `json:"semester_year"`
 	LastChanged   string `json:"last_changed"`
-	Days          Days   `json:"days"`
+	Days          []Day  `json:"days"`
 	Calendarweek  int    `json:"calendarweek"`
 	StartRow      int    `json:"start_row"`
 	EndRow        int    `json:"end_row"`
@@ -39,15 +38,6 @@ type Lesson struct {
 type Day struct {
 	Date    string   `json:"date"`
 	Lessons []Lesson `json:"lessons"`
-}
-
-type Days struct {
-	Montag     Day `json:"Montag"`
-	Dienstag   Day `json:"Dienstag"`
-	Mittwoch   Day `json:"Mittwoch"`
-	Donnerstag Day `json:"Donnerstag"`
-	Freitag    Day `json:"Freitag"`
-	Samstag    Day `json:"Samstag"`
 }
 
 func prtHandler(cg *gin.RouterGroup) {
@@ -93,14 +83,8 @@ func parse_json(data ExcelJson, c *gin.Context) {
 
 			// make it iterable
 			DaysToParse := element.Days
-			v := reflect.ValueOf(DaysToParse)
-			// typeOfDays := v.Type()
-
-			// iterate over the days
-			for i := 0; i < v.NumField(); i++ {
-				day := v.Field(i)
-				// dayName := typeOfDays.Field(i).Name
-				dayDate := day.Interface().(Day).Date
+			for _, day := range DaysToParse {
+				dayDate := day.Date
 
 				var TimeTableDay models.TimeTableDay
 				var TimeSlotIds []primitive.ObjectID
@@ -109,7 +93,7 @@ func parse_json(data ExcelJson, c *gin.Context) {
 				TimeTableDay.LastUpdated = LastChanged
 
 				// iterate over the lessons
-				for _, lesson := range day.Interface().(Day).Lessons {
+				for _, lesson := range day.Lessons {
 					// skip empty time slots
 					if strings.HasPrefix(lesson.Name, "no lesson") {
 						continue
