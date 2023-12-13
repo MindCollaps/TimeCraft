@@ -21,6 +21,7 @@ type TimeSlot struct {
 	IsCancelled     bool               `json:"isCancelled" bson:"isCancelled"`
 	WasMoved        bool               `json:"wasMoved" bson:"wasMoved"`
 	IsEvent         bool               `json:"isEvent" bson:"isEvent"`
+	IsHoliday       bool               `json:"isHoliday" bson:"isHoliday"`
 	RoomConfigId    primitive.ObjectID `json:"roomConfigId" bson:"roomConfigId"`
 	LastUpdated     primitive.DateTime `json:"lastUpdated" bson:"lastUpdated"`
 }
@@ -37,6 +38,7 @@ type TimeSlotStruct struct {
 	IsCancelled     bool             `json:"isCancelled" bson:"isCancelled"`
 	WasMoved        bool             `json:"wasMoved" bson:"wasMoved"`
 	IsEvent         bool             `json:"isEvent" bson:"isEvent"`
+	IsHoliday       bool             `json:"isHoliday" bson:"isHoliday"`
 	RoomConfigId    RoomConfigStruct `json:"roomConfigId" bson:"roomConfigId"`
 	LastUpdated     string           `json:"lastUpdated" bson:"lastUpdated"`
 }
@@ -53,6 +55,7 @@ func TimeSlotToStruct(c *gin.Context, timeSlot TimeSlot) (TimeSlotStruct, error)
 		IsCancelled:     timeSlot.IsCancelled,
 		WasMoved:        timeSlot.WasMoved,
 		IsEvent:         timeSlot.IsEvent,
+		IsHoliday:       timeSlot.IsHoliday,
 		LastUpdated:     timeSlot.LastUpdated.Time().Format(time.DateTime),
 	}
 

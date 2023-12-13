@@ -34,6 +34,7 @@ type Lesson struct {
 	WasMoved        bool   `json:"wasMoved"`
 	Lecturer        string `json:"lecturer"`
 	IsEvent         bool   `json:"isEvent"`
+	IsHoliday       bool   `json:"isHoliday"`
 }
 type Day struct {
 	Date    string   `json:"date"`
@@ -128,6 +129,7 @@ func parse_json(data ExcelJson, c *gin.Context) {
 						IsCancelled:     lesson.WasCanceled,
 						WasMoved:        lesson.WasMoved,
 						IsEvent:         lesson.IsEvent,
+						IsHoliday:       lesson.IsHoliday,
 						RoomConfigId:    primitive.NilObjectID, // TODO: support rooms
 						LastUpdated:     LastChanged,
 					}
@@ -220,7 +222,7 @@ func saveLecturer(lecturer string) primitive.ObjectID {
 }
 
 func getLecture(lecture Lesson) primitive.ObjectID {
-	if lecture.Name == "" || lecture.IsEvent || lecture.IsExam || lecture.IsReExamination || strings.HasPrefix(lecture.Name, "Feiertag") || strings.HasPrefix(lecture.Name, "no lesson") {
+	if lecture.Name == "" || lecture.IsEvent || lecture.IsExam || lecture.IsReExamination || lecture.IsHoliday || strings.HasPrefix(lecture.Name, "no lesson") {
 		return primitive.NilObjectID
 	} else {
 		var lectureObj models.Lecture
