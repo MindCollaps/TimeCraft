@@ -165,8 +165,11 @@ func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTi
 	startTimeStr := timeRange[0]
 	endTimeStr := timeRange[1]
 
-	startTime := convertToDateTime("15:04", startTimeStr)
-	endTime := convertToDateTime("15:04", endTimeStr)
+	startTimeStr = "2020-01-01 " + startTimeStr + ":00"
+	endTimeStr = "2020-01-01 " + endTimeStr + ":00"
+
+	startTime := convertToDateTime(time.DateTime, startTimeStr)
+	endTime := convertToDateTime(time.DateTime, endTimeStr)
 
 	return startTime, endTime
 
