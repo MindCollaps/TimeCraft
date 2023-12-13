@@ -76,10 +76,13 @@ func prtHandler(cg *gin.RouterGroup) {
 
 func parse_json(data ExcelJson, c *gin.Context) {
 	// parse json file and save to database
+	var LastChanged = time.Time{}
 	for _, element := range data {
 
 		if element.StudySubject != "" {
 			fmt.Println("this is the header")
+			LastChanged = getLastChanged(element.LastChanged)
+			fmt.Println(LastChanged)
 		} else {
 			fmt.Println("this is the content")
 
@@ -88,7 +91,6 @@ func parse_json(data ExcelJson, c *gin.Context) {
 			v := reflect.ValueOf(DaysToParse)
 			typeOfDays := v.Type()
 
-			var TimeSlots []models.TimeSlot
 			// iterate over the days
 			for i := 0; i < v.NumField(); i++ {
 				// get the day
@@ -99,22 +101,12 @@ func parse_json(data ExcelJson, c *gin.Context) {
 
 				// iterate over the lessons
 				for _, lesson := range day.Interface().(Day).Lessons {
-					// get the lesson
-
-					// TODO:
-					//	- get the id of the lectuerer
-					// 		- lesson has no lectuerer --> return primitive.NilObjectID
-					// 		- lecturer doesn't exist in DB yet --> create new lecturer and return the id
-					// 		- lecturer exists in DB --> return the id
-					//
-					//	- same for the LectureID and RoomConfigID
-
-					startTime, endTime := parse_time(lesson.Time)
+					startTime, endTime := getStartAndEndTime(lesson.Time)
 					timeslot := models.TimeSlot{
 						ID:              primitive.NewObjectID(),
 						Name:            lesson.Name,
-						LecturerID:      get_lecturer(lesson.Lecturer),
-						LectureID:       primitive.ObjectID{},
+						LecturerId:      getLecturer(lesson.Lecturer),
+						LectureId:       getLecture(element.StudySubject),
 						TimeStart:       startTime,
 						TimeEnd:         endTime,
 						IsOnline:        lesson.IsOnline,
@@ -123,9 +115,10 @@ func parse_json(data ExcelJson, c *gin.Context) {
 						IsCancelled:     lesson.WasCanceled,
 						WasMoved:        lesson.WasMoved,
 						IsEvent:         lesson.IsEvent,
-						RoomConfigID:    primitive.ObjectID{},
+						RoomConfigId:    primitive.NilObjectID, // TODO: support rooms
+						LastUpdated:     primitive.NewDateTimeFromTime(LastChanged),
 					}
-					TimeSlots = append(TimeSlots, timeslot)
+					saveTimeSlot(timeslot)
 				}
 
 			}
@@ -139,7 +132,20 @@ func parse_json(data ExcelJson, c *gin.Context) {
 	c.JSON(201, gin.H{"msg": "created"})
 }
 
-func parse_time(lessonTime string) (primitive.DateTime, primitive.DateTime) {
+func getLastChanged(input string) time.Time {
+	if strings.HasPrefix(input, "Stand: ") {
+		input = strings.TrimPrefix(input, "Stand: ")
+	}
+	LastChanged, err := time.Parse("02.01.2006", input)
+	if err != nil {
+		fmt.Println("Error parsing time:", err)
+		return time.Time{}
+	} else {
+		return LastChanged
+	}
+}
+
+func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTime) {
 	timeRange := strings.Split(lessonTime, "-")
 	startTimeStr := timeRange[0]
 	endTimeStr := timeRange[1]
@@ -156,7 +162,7 @@ func parse_time(lessonTime string) (primitive.DateTime, primitive.DateTime) {
 
 }
 
-func get_lecturer(lecturer string) primitive.ObjectID {
+func getLecturer(lecturer string) primitive.ObjectID {
 	if lecturer == "" {
 		return primitive.NilObjectID
 	} else {
@@ -170,14 +176,14 @@ func get_lecturer(lecturer string) primitive.ObjectID {
 			fmt.Println("Error finding lecturer:", err)
 			fmt.Println("Creating new lecturer")
 
-			return save_lectuerer(lecturer)
+			return saveLecturer(lecturer)
 		} else {
 			return lecturerObj.ID
 		}
 	}
 }
 
-func save_lectuerer(lecturer string) primitive.ObjectID {
+func saveLecturer(lecturer string) primitive.ObjectID {
 	lecturerObj := models.Lecturer{
 		ID:       primitive.NewObjectID(),
 		SureName: lecturer,
@@ -189,5 +195,51 @@ func save_lectuerer(lecturer string) primitive.ObjectID {
 		return primitive.NilObjectID
 	} else {
 		return lecturerObj.ID
+	}
+}
+
+func getLecture(lecture string) primitive.ObjectID {
+	if lecture == "" {
+		return primitive.NilObjectID
+	} else {
+		var lectureObj models.Lecture
+
+		err := database.MongoDB.Collection("Lecture").FindOne(context.Background(), bson.M{
+			"name": lecture,
+		}).Decode(&lectureObj)
+
+		if err != nil {
+			fmt.Println("Error finding lecture:", err)
+			fmt.Println("Creating new lecture")
+
+			return saveLecture(lecture)
+		} else {
+			return lectureObj.ID
+		}
+	}
+}
+
+func saveLecture(lecture string) primitive.ObjectID {
+	lectureObj := models.Lecture{
+		ID:   primitive.NewObjectID(),
+		Name: lecture,
+	}
+
+	_, err := database.MongoDB.Collection("Lecture").InsertOne(context.Background(), lectureObj)
+	if err != nil {
+		fmt.Println("Error creating new lecture:", err)
+		return primitive.NilObjectID
+	} else {
+		return lectureObj.ID
+	}
+}
+
+func saveTimeSlot(timeSlot models.TimeSlot) primitive.ObjectID {
+	_, err := database.MongoDB.Collection("TimeSlot").InsertOne(context.Background(), timeSlot)
+	if err != nil {
+		fmt.Println("Error creating new timeSlot:", err)
+		return primitive.NilObjectID
+	} else {
+		return timeSlot.ID
 	}
 }
