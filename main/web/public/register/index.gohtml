@@ -1,18 +1,17 @@
-{{define "title"}}WeebsKingdom{{end}}
+l{{define "title"}}WeebsKingdom{{end}}
 {{define "metaDescription"}}Welcome to TimeCraft{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-    <div id="register" class="vh-100">
+    <div id="app" class="vh-100">
         <div class="d-flex align-items-stretch flex-column h-100">
             <div class="d-flex justify-content-center align-items-center flex-column h-100 w-100">
                 <div>
                     <h1 class="text-white mb-3">
-                        <img src="https://media.discordapp.net/attachments/556768793708462080/1182271466977370112/WhatsApp_Bild_2023-12-07_um_11.42.57_4046a687.jpg?ex=6584171b&is=6571a21b&hm=dbcd9c975ebdaf3e7dcab61a906b6b86548fd2b830274883aa105196d75bcf7e&=&format=webp" height="60" width="60">
                         Register
                     </h1>
                     <div class="form-floating mb-3">
                         <input v-model="username" type="text" class="form-control" id="username"
-                               placeholder="ASO">
+                               placeholder="ASO" name="username">
                         <label for="username">Username</label>
                         <div id="helper" class="form-text">The Username should be:
                             Between 3 and 30 characters long,
@@ -23,7 +22,7 @@
                     </div>
                     <div class="form-floating mb-3">
                         <input v-model="email" type="email" class="form-control" id="email"
-                               placeholder="ASO">
+                               placeholder="ASO" name="email">
                         <label for="email">E-Mail</label>
                         <div id="helper" class="form-text">The Email should be:
                             Between 5 and 50 characters long.
@@ -61,5 +60,45 @@
                     </div>
                 </div>
             </div>
+
+            <script>
+                var app = Vue.createApp({
+                    delimiters: ['${', '}'],
+                    data:  () => ({
+                        username: "",
+                        email: "",
+                        password: "",
+                        password2: "",
+                    }),
+                    methods: {
+                        async register() {
+                            if (this.username == '' || this.email == '' || this.password == ''|| this.password2 == '') {
+                                alert('Please fill in all fields')
+                                return
+                            }
+
+                            let response = await fetch('/api/v1/register', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    username: this.username,
+                                    email: this.email,
+                                    password: this.password,
+                                    password2: this.password2,
+                                })
+                            }).then((res) => {
+                                return res;
+                            });
+
+                            if (response.status == 200) {
+                            } else {
+                                alert('Invalid username or password')
+                            }
+                        }
+                    }
+                }).mount("#app")
+            </script>
     {{template "botdoc"}}
 {{end}}
