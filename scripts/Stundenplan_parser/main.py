@@ -15,6 +15,7 @@ class excel_parser():
         self.TABLE_START_OFFSET = 4
 
         self.weekdays = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
+
         self.holidays = ["Tag der Deutschen Einheit", "Reformationstag", "Allerheiligen", "Buß- und Bettag",
                          "Weihnachten", "Neujahr", "Heilige Drei Könige", "Karfreitag", "Ostermontag", "Tag der Arbeit",
                          "Christi Himmelfahrt", "Pfingstmontag", "Fronleichnam"]
@@ -197,7 +198,10 @@ class excel_parser():
                         cell.value = cell_content
 
                         if self.isWeekday(cell_content):
-                            table["days"][cell_content] = {}
+                            if table["days"] == {}:
+                                table["days"] = []
+                            table["days"].append({})
+                            table["days"][self.current_day_counter] = {}
 
                             self.updateDayCounter()
 
@@ -208,14 +212,13 @@ class excel_parser():
                                 table["calendarweek"] = cell_content
 
                         elif self.isDatetime(cell_content):
-                            current_day = self.getWeekdayByIndex(self.current_day_counter)
 
-                            table["days"][current_day]["date"] = cell_content
+                            table["days"][self.current_day_counter]["date"] = cell_content
                             self.updateDayCounter()
 
                         elif self.containsTime(cell_content):
                             # save the time for each day
-                            for day in self.weekdays:
+                            for day in range (0, 6):
                                 if "lessons" not in table["days"][day]:
                                     table["days"][day]["lessons"] = []
 
@@ -236,7 +239,7 @@ class excel_parser():
                             # lesson contains the modified cellcontent
                             for lesson in lessons:
                                 current_time = self.getTimesByIndex(self.current_time_counter)
-                                current_day = self.getWeekdayByIndex(self.current_day_counter)
+                                current_day = self.current_day_counter
                                 index_counter = len(table["days"][current_day]["lessons"])
 
                                 table["days"][current_day]["lessons"].append({})
