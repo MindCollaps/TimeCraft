@@ -76,28 +76,36 @@ func prtHandler(cg *gin.RouterGroup) {
 
 func parse_json(data ExcelJson, c *gin.Context) {
 	// parse json file and save to database
-	var LastChanged = time.Time{}
+	var LastChanged primitive.DateTime
+	var Name string
+	var TimeTableDays []primitive.ObjectID
+	var TimeTable models.TimeTable
+
 	for _, element := range data {
 
 		if element.StudySubject != "" {
 			fmt.Println("this is the header")
 			LastChanged = getLastChanged(element.LastChanged)
-			fmt.Println(LastChanged)
+			Name = fmt.Sprint(element.StudySubject, " ", element.SemesterGroup, " ", element.SemesterYear)
 		} else {
 			fmt.Println("this is the content")
 
 			// make it iterable
 			DaysToParse := element.Days
 			v := reflect.ValueOf(DaysToParse)
-			typeOfDays := v.Type()
+			// typeOfDays := v.Type()
 
 			// iterate over the days
 			for i := 0; i < v.NumField(); i++ {
-				// get the day
 				day := v.Field(i)
-				// get the day name
-				dayName := typeOfDays.Field(i).Name
-				fmt.Println(dayName)
+				// dayName := typeOfDays.Field(i).Name
+				dayDate := day.Interface().(Day).Date
+
+				var TimeTableDay models.TimeTableDay
+				var TimeSlotIds []primitive.ObjectID
+				TimeTableDay.ID = primitive.NewObjectID()
+				TimeTableDay.Date = convertToDateTime("02.01.2006 00:00:00", dayDate)
+				TimeTableDay.LastUpdated = LastChanged
 
 				// iterate over the lessons
 				for _, lesson := range day.Interface().(Day).Lessons {
@@ -116,33 +124,34 @@ func parse_json(data ExcelJson, c *gin.Context) {
 						WasMoved:        lesson.WasMoved,
 						IsEvent:         lesson.IsEvent,
 						RoomConfigId:    primitive.NilObjectID, // TODO: support rooms
-						LastUpdated:     primitive.NewDateTimeFromTime(LastChanged),
+						LastUpdated:     LastChanged,
 					}
-					saveTimeSlot(timeslot)
+
+					TimeSlotIds = append(TimeSlotIds, saveTimeSlot(timeslot))
 				}
 
+				TimeTableDay.TimeSlotIds = TimeSlotIds
+				id := saveTimeTableDay(TimeTableDay)
+				TimeTableDays = append(TimeTableDays, id)
 			}
-
-			// make a new struct from the database models for each day
-			// save the struct to the database
-
 		}
 	}
+	TimeTable.ID = primitive.NewObjectID()
+	TimeTable.Name = Name
+	TimeTable.Days = TimeTableDays
+
+	id := saveTimeTable(TimeTable)
+	fmt.Println(id)
 
 	c.JSON(201, gin.H{"msg": "created"})
 }
 
-func getLastChanged(input string) time.Time {
+func getLastChanged(input string) primitive.DateTime {
 	if strings.HasPrefix(input, "Stand: ") {
 		input = strings.TrimPrefix(input, "Stand: ")
 	}
-	LastChanged, err := time.Parse("02.01.2006", input)
-	if err != nil {
-		fmt.Println("Error parsing time:", err)
-		return time.Time{}
-	} else {
-		return LastChanged
-	}
+
+	return convertToDateTime("02.01.2006", input)
 }
 
 func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTime) {
@@ -150,16 +159,19 @@ func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTi
 	startTimeStr := timeRange[0]
 	endTimeStr := timeRange[1]
 
-	layout := "15:04"
-	startTime, err := time.Parse(layout, startTimeStr)
-	endTime, err := time.Parse(layout, endTimeStr)
+	startTime := convertToDateTime("15:04", startTimeStr)
+	endTime := convertToDateTime("15:04", endTimeStr)
 
+	return startTime, endTime
+
+}
+
+func convertToDateTime(layout string, input string) primitive.DateTime {
+	parsedTime, err := time.Parse(layout, input)
 	if err != nil {
 		fmt.Println("Error parsing time:", err)
 	}
-
-	return primitive.NewDateTimeFromTime(startTime), primitive.NewDateTimeFromTime(endTime)
-
+	return primitive.DateTime(primitive.NewDateTimeFromTime(parsedTime))
 }
 
 func getLecturer(lecturer string) primitive.ObjectID {
@@ -241,5 +253,25 @@ func saveTimeSlot(timeSlot models.TimeSlot) primitive.ObjectID {
 		return primitive.NilObjectID
 	} else {
 		return timeSlot.ID
+	}
+}
+
+func saveTimeTableDay(timeTableDay models.TimeTableDay) primitive.ObjectID {
+	_, err := database.MongoDB.Collection("TimeTableDay").InsertOne(context.Background(), timeTableDay)
+	if err != nil {
+		fmt.Println("Error creating new timeTableDay:", err)
+		return primitive.NilObjectID
+	} else {
+		return timeTableDay.ID
+	}
+}
+
+func saveTimeTable(timeTable models.TimeTable) primitive.ObjectID {
+	_, err := database.MongoDB.Collection("TimeTable").InsertOne(context.Background(), timeTable)
+	if err != nil {
+		fmt.Println("Error creating new timeTable:", err)
+		return primitive.NilObjectID
+	} else {
+		return timeTable.ID
 	}
 }
