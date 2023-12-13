@@ -1,7 +1,13 @@
 package v1
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"reflect"
+	"src/main/database/models"
+	"strings"
+	"time"
 )
 
 type ExcelJson []struct {
@@ -15,7 +21,7 @@ type ExcelJson []struct {
 	StartRow      int    `json:"start_row"`
 	EndRow        int    `json:"end_row"`
 }
-type Lessons struct {
+type Lesson struct {
 	Time            string `json:"time"`
 	Name            string `json:"name"`
 	IsOnline        bool   `json:"isOnline"`
@@ -27,8 +33,8 @@ type Lessons struct {
 	IsEvent         bool   `json:"isEvent"`
 }
 type Day struct {
-	Date    string    `json:"date"`
-	Lessons []Lessons `json:"lessons"`
+	Date    string   `json:"date"`
+	Lessons []Lesson `json:"lessons"`
 }
 
 type Days struct {
@@ -67,5 +73,82 @@ func prtHandler(cg *gin.RouterGroup) {
 
 func parse_json(data ExcelJson, c *gin.Context) {
 	// parse json file and save to database
+	for _, element := range data {
+
+		if element.StudySubject != "" {
+			fmt.Println("this is the header")
+		} else {
+			fmt.Println("this is the content")
+
+			// make it iterable
+			DaysToParse := element.Days
+			v := reflect.ValueOf(DaysToParse)
+			typeOfDays := v.Type()
+
+			var TimeSlots []models.TimeSlot
+			// iterate over the days
+			for i := 0; i < v.NumField(); i++ {
+				// get the day
+				day := v.Field(i)
+				// get the day name
+				dayName := typeOfDays.Field(i).Name
+				fmt.Println(dayName)
+
+				// iterate over the lessons
+				for _, lesson := range day.Interface().(Day).Lessons {
+					// get the lesson
+
+					// TODO:
+					//	- get the id of the lectuerer
+					// 		- lesson has no lectuerer --> return primitive.NilObjectID
+					// 		- lecturer doesn't exist in DB yet --> create new lecturer and return the id
+					// 		- lecturer exists in DB --> return the id
+					//
+					//	- same for the LectureID and RoomConfigID
+
+					startTime, endTime := parse_time(lesson.Time)
+					timeslot := models.TimeSlot{
+						ID:              primitive.NewObjectID(),
+						Name:            lesson.Name,
+						LecturerID:      primitive.NilObjectID,
+						LectureID:       primitive.ObjectID{},
+						TimeStart:       startTime,
+						TimeEnd:         endTime,
+						IsOnline:        lesson.IsOnline,
+						IsReExamination: lesson.IsReExamination,
+						IsExam:          lesson.IsExam,
+						IsCancelled:     lesson.WasCanceled,
+						WasMoved:        lesson.WasMoved,
+						IsEvent:         lesson.IsEvent,
+						RoomConfigID:    primitive.ObjectID{},
+					}
+					TimeSlots = append(TimeSlots, timeslot)
+				}
+
+			}
+
+			// make a new struct from the database models for each day
+			// save the struct to the database
+
+		}
+	}
+
 	c.JSON(201, gin.H{"msg": "created"})
+}
+
+func parse_time(lessonTime string) (primitive.DateTime, primitive.DateTime) {
+	timeRange := strings.Split(lessonTime, "-")
+	startTimeStr := timeRange[0]
+	endTimeStr := timeRange[1]
+
+	layout := "15:04"
+	startTime, err := time.Parse(layout, startTimeStr)
+	endTime, err := time.Parse(layout, endTimeStr)
+
+	if err != nil {
+		fmt.Println("Error parsing time:", err)
+	}
+
+	return primitive.NewDateTimeFromTime(startTime), primitive.NewDateTimeFromTime(endTime)
+
 }
