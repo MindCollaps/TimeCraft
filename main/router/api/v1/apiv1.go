@@ -6,6 +6,9 @@ func Handler(rg *gin.RouterGroup) {
 	user := rg.Group("/usr")
 	userHandler(user)
 
+	prototype := rg.Group("/prt")
+	prtHandler(prototype)
+
 	timetable := rg.Group("/tbl")
 	tblHandler(timetable)
 

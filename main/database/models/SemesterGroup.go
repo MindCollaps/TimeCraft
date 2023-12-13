@@ -39,7 +39,7 @@ func SemesterGroupToStruct(c *gin.Context, semesterGroup SemesterGroup) (Semeste
 	semesterGroupStruct.StudentGroupIds = studentGroups
 
 	// Convert SpecialisationsIds to []RoomSpecialisationStruct
-	specialisations, err := LoadRoomSpecialisations(c, semesterGroup.SpecialisationsIds)
+	specialisations, err := LoadStudentGroups(c, semesterGroup.SpecialisationsIds)
 	if err != nil {
 		return SemesterGroupStruct{}, err
 	}
