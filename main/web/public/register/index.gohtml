@@ -48,57 +48,62 @@ l{{define "title"}}WeebsKingdom{{end}}
                     <div class="mb-3 d-flex justify-content-center">
                         <button @click="register()" class="btn btn-primary align-center">Register</button>
                     </div>
-                    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-                        <div id="theToast" class="toast text-bg-warning align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div class="d-flex">
-                                <div class="toast-body">
-                                    ${error}
-                                </div>
-                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
+        </div>
+    </div>
 
             <script>
                 var app = Vue.createApp({
                     delimiters: ['${', '}'],
-                    data:  () => ({
+                    data: () => ({
                         username: "",
                         email: "",
-                        password: "",
+                        password1: "",
                         password2: "",
                     }),
                     methods: {
-                        async register() {
-                            if (this.username == '' || this.email == '' || this.password == ''|| this.password2 == '') {
-                                alert('Please fill in all fields')
-                                return
+                        invalidPasswords: function () {
+                            document.getElementById('password1').setAttribute('is-invalid', '');
+                            document.getElementById('password2').setAttribute('is-invalid', '');
+                        },
+                        register: async function () {
+                            if (this.password2 !== this.password1) {
+                                alert('Passwords do not match');
+
+                                this.invalidPasswords();
+                                return;
                             }
 
-                            let response = await fetch('/api/v1/register', {
+                            let res = await fetch('/api/v1/usr/register', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
                                 },
                                 body: JSON.stringify({
-                                    username: this.username,
+                                    password: this.password1,
                                     email: this.email,
-                                    password: this.password,
-                                    password2: this.password2,
+                                    username: this.username
                                 })
                             }).then((res) => {
                                 return res;
                             });
 
-                            if (response.status == 200) {
+                            if (res.status !== 200) {
+                                var data = await res.json();
+                                alert(data.message);
+                                document.getElementById('password1').setAttribute('value', '');
+                                document.getElementById('password2').setAttribute('value', '');
+                                return;
                             } else {
-                                alert('Invalid username or password')
+                                window.location.href="/login";
                             }
+
+                            document.getElementById('password1').removeAttribute('is-invalid');
+                            document.getElementById('password2').removeAttribute('is-invalid');
                         }
                     }
                 }).mount("#app")
             </script>
-    {{template "botdoc"}}
+            {{template "botdoc"}}
 {{end}}
