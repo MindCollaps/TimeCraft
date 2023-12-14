@@ -6,14 +6,15 @@
         <div class="w-50 vh-50">
             <div class="mb-3">
                 <label for="username" class="form-label">Email address or Username</label>
-                <input v-model="username" type="text" class="form-control" id="username" aria-describedby="emailHelp"
+                <input v-model="username" @keyup.enter="submit()" type="text" class="form-control" id="username" aria-describedby="emailHelp"
                        placeholder="Email/Username" name="username">
                 <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
                     else.</small>
             </div>
             <div class="mb-3">
                 <label for="password">Password</label>
-                <input v-model="password" type="password" name="password" class="form-control" id="password" placeholder="Password">
+                <input v-model="password" @keyup.enter="submit()" type="password" name="password" class="form-control" id="password"
+                       placeholder="Password">
             </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="Check1">
@@ -23,10 +24,10 @@
                 <button @click="submit()" class="btn btn-primary">Login</button>
             </div>
             <div>
-                <button type="button" class="btn btn-outline-primary">Reset Password</button>
+                <a href="/reset" type="button" class="btn btn-outline-primary">Reset Password</a>
             </div>
             <div>
-                <button type="button" class="btn btn-outline-primary">Register</button>
+                <a href="/register" type="button" class="btn btn-outline-primary">Register</a>
             </div>
         </div>
     </div>
@@ -34,7 +35,7 @@
     <script>
         var app = Vue.createApp({
             delimiters: ['${', '}'],
-            data:  () => ({
+            data: () => ({
                 username: "",
                 password: "",
             }),
@@ -45,7 +46,7 @@
                         return
                     }
 
-                    let response = await fetch('/api/v1/login', {
+                    let response = await fetch('/api/v1/usr/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -59,6 +60,7 @@
                     });
 
                     if (response.status == 200) {
+                        window.location.href = '/dashboard'
                     } else {
                         alert('Invalid username or password')
                     }
