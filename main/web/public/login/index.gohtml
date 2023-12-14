@@ -13,7 +13,8 @@
             </div>
             <div class="mb-3">
                 <label for="password">Password</label>
-                <input v-model="password" type="password" name="password" class="form-control" id="password" placeholder="Password">
+                <input v-model="password" type="password" name="password" class="form-control" id="password"
+                       placeholder="Password">
             </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="Check1">
@@ -34,7 +35,7 @@
     <script>
         var app = Vue.createApp({
             delimiters: ['${', '}'],
-            data:  () => ({
+            data: () => ({
                 username: "",
                 password: "",
             }),
