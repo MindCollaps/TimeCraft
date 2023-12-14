@@ -1,0 +1,72 @@
+{{define "title"}}Time Craft{{end}}
+{{define "metaDescription"}}Time Craft, your way of creating smart timetables{{end}}
+{{define "content"}}
+    {{template "topdoc"}}
+    <div id="app" class="d-flex justify-content-center align-items-center w-100 vh-100">
+        <div class="w-50 vh-50">
+            <div class="mb-3">
+                <label for="username" class="form-label">Email address or Username</label>
+                <input v-model="username" @keyup.enter="submit()" type="text" class="form-control" id="username" aria-describedby="emailHelp"
+                       placeholder="Email/Username" name="username">
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                    else.</small>
+            </div>
+            <div class="mb-3">
+                <label for="password">Password</label>
+                <input v-model="password" @keyup.enter="submit()" type="password" name="password" class="form-control" id="password"
+                       placeholder="Password">
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="Check1">
+                <label class="form-check-label" for="Check1">Remember me</label>
+            </div>
+            <div>
+                <button @click="submit()" class="btn btn-primary">Login</button>
+            </div>
+            <div>
+                <a href="/reset" type="button" class="btn btn-outline-primary">Reset Password</a>
+            </div>
+            <div>
+                <a href="/register" type="button" class="btn btn-outline-primary">Register</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var app = Vue.createApp({
+            delimiters: ['${', '}'],
+            data: () => ({
+                username: "",
+                password: "",
+            }),
+            methods: {
+                async submit() {
+                    if (this.username == '' || this.password == '') {
+                        alert('Please fill in all fields')
+                        return
+                    }
+
+                    let response = await fetch('/api/v1/usr/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: this.username,
+                            password: this.password
+                        })
+                    }).then((res) => {
+                        return res;
+                    });
+
+                    if (response.status == 200) {
+                        window.location.href = '/dashboard'
+                    } else {
+                        alert('Invalid username or password')
+                    }
+                }
+            }
+        }).mount("#app")
+    </script>
+    {{template "botdoc"}}
+{{end}}

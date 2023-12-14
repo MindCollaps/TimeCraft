@@ -2,7 +2,187 @@
 {{define "metaDescription"}}Time Craft, your way of creating smart timetables{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-        Hello world
-    {{template "footer"}}
+    <div class="h-100 w-100 d-flex flex-column justify-content-center">
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="d-flex justify-content-center flex-column w-100 h-100">
+                <div class="d-flex flex-column ">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <img class="me-2 theimage" style="width: 10vh" src="/favicon.ico" alt="ASO Icon">
+                        <div class="text-white mb-0 me-4 fs-2 welcome">Welcome to</div>
+                        <div class="aso me-2 position-relative text-white fs-1">Time Craft</div>
+                        <div class="ist me-2 position-relative text-white fs-5">Smart</div>
+                        <div class="das position-relative text-white fs-5">Simpel</div>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center mt-5">
+                        <a href="/login" class="btn btn-primary thebtn">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-5">
+            {{template "footer"}}
+        </div>
+    </div>
+
+    <script>
+        setTimeout(function () {
+            anime({
+                targets: '.aso',
+                scaleX: [
+                    {value: [1, 1.15], duration: 2000},
+                    {value: [1.15, 1], duration: 2000},
+                ],
+                scaleY: [
+                    {value: [1, 1.15], duration: 2000},
+                    {value: [1.15, 1], duration: 2000},
+                ],
+                easing: 'easeInOutQuad',
+                loop: true
+            })
+        }, 4000)
+
+
+        var tl = anime.timeline();
+
+        tl.add({
+            targets: '.welcome',
+            opacity: [
+                {value: 0, duration: 0},
+                {value: 1, duration: 1000},
+            ],
+            translateX: [
+                {value: 20, duration: 0},
+                {value: 0, duration: 1000},
+            ],
+            translateY: [
+                {value: 40, duration: 0},
+                {value: 0, duration: 1000},
+            ],
+            rotation: [
+                {value: -43, duration: 1000},
+                {value: 30, duration: 1000},
+            ],
+            easing: 'easeInOutQuad',
+            loop: false
+        }, 100)
+
+        tl.add({
+            targets: '.aso',
+            opacity: [
+                {value: 0, duration: 0},
+                {value: 1, duration: 100},
+            ],
+            translateX: [
+                {value: 250, duration: 0},
+                {value: 0, duration: 1000},
+            ],
+            translateY: [
+                {value: 40, duration: 0},
+                {value: 0, duration: 1000},
+            ],
+            scaleX: [
+                {value: [1.75, 1], duration: 200},
+            ],
+            scaleY: [
+                {value: [1.75, 1], duration: 200},
+            ],
+            easing: 'easeOutElastic(.1, 1)',
+            loop: false
+        }, 1100);
+
+        tl.add({
+            targets: '.ist',
+            opacity: [
+                {value: 0, duration: 0},
+                {value: 1, duration: 100},
+            ],
+            translateX: [
+                {value: -250, duration: 0},
+                {value: 0, duration: 1000},
+            ],
+            translateY: [
+                {value: 40, duration: 0},
+                {value: -20, duration: 1000},
+            ],
+            scaleX: [
+                {value: [1.75, 1], duration: 200},
+            ],
+            scaleY: [
+                {value: [1.75, 1], duration: 200},
+            ],
+            rotate: [
+                {value: 412, duration: 0},
+                {value: -29, duration: 1000},
+            ],
+            easing: 'easeOutElastic(.2, .5)',
+            loop: false
+        }, 1400)
+
+        tl.add({
+            targets: '.das',
+            opacity: [
+                {value: 0, duration: 0},
+                {value: 1, duration: 100},
+            ],
+            translateX: [
+                {value: -250, duration: 0},
+                {value: 0, duration: 1000},
+            ],
+            translateY: [
+                {value: 40, duration: 0},
+                {value: -6, duration: 1000},
+            ],
+            scaleX: [
+                {value: [1.75, 1], duration: 200},
+            ],
+            scaleY: [
+                {value: [1.75, 1], duration: 200},
+            ],
+            rotate: [
+                {value: -423, duration: 0},
+                {value: 32, duration: 1000},
+            ],
+            easing: 'easeOutElastic(.2, .5)',
+            loop: false
+        }, 1500)
+
+        tl.add({
+            targets: '.thebtn',
+            opacity: [
+                {value: 0, duration: 0},
+                {value: 1, duration: 1000},
+            ],
+            scaleX: [
+                {value: [0, 1], duration: 200},
+            ],
+            scaleY: [
+                {value: [0, 1], duration: 200},
+            ],
+            translateY: [
+                {value: 40, duration: 0},
+                {value: 0, duration: 1000},
+            ],
+            easing: 'easeOutElastic(.2, .5)',
+            loop: false
+        }, 2700)
+
+        tl.add({
+            targets: '.theimage',
+            opacity: [
+                {value: 0, duration: 0},
+                {value: 1, duration: 1000},
+            ],
+            scaleX: [
+                {value: [0, 1], duration: 200},
+            ],
+            scaleY: [
+                {value: [0, 1], duration: 200},
+            ],
+            translateY: [
+                {value: -40, duration: 0},
+                {value: 0, duration: 500},
+            ],
+        }, 2700)
+    </script>
     {{template "botdoc"}}
 {{end}}

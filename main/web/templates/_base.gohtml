@@ -16,11 +16,10 @@
     <meta name="description" content="{{template "metaDescription"}}">
     <!-- Copyright -->
     <meta name="author" content="Noah Elijah Till" />
-    <meta name="copyright" content="Weebs Kingdom" />
+    <meta name="copyright" content="TimeCraft" />
     <!-- Search -->
     <meta name="robots" content="index,follow" />
-    <meta name="keywords" content="weebs, weebskingdom, weebs kingdom, anime, twitch bot, discord bot, discord, community, {{template "metaKeywords"}}">
-    <!-- Google -->
+
     <meta name="googlebot" content="index,follow">
 
     <!-- Bootstrap -->
@@ -31,17 +30,21 @@
             integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
             crossorigin="anonymous"></script>
     <!-- Google Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
     <!-- Vue -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js" crossorigin="anonymous"></script>
+    <!-- Anime JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+            integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Custom Script -->
     <script src="/assets/script/baseScripts.js"></script>
     <!-- Custom Style -->
     <link href="/assets/style/colorMode.css" rel="stylesheet">
     <link href="/assets/style/main.css" rel="stylesheet">
 </head>
-<body>
+<body class="vw-100 vh-100">
 {{end}}
 
 {{define "topdocsimple"}}
@@ -90,7 +93,7 @@
 {{end}}
 
 {{define "footer"}}
-    <footer class="bg-body-tertiary text-light py-5 mt-5">
+    <footer class="bg-body-tertiary text-light py-5 w-100">
         <div class="container">
             <div class="row">
                 <div class="col">

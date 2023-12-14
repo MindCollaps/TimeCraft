@@ -8,12 +8,13 @@ import (
 	"src/main/core"
 	"src/main/crypt"
 	"src/main/database"
+	"src/main/router"
 )
 
 func main() {
 	r := gin.Default()
 	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
+		log.Println("No ..env file found")
 	}
 
 	err := crypt.KeySetup()
@@ -27,11 +28,13 @@ func main() {
 	core.LoadTemplates(r)
 	core.LoadServerAssets(r)
 
+	router.InitRouter(r)
+
 	//set address
 	address := os.Getenv("ADDRESS")
 
 	if address == "" {
-		log.Println("No address set in .env file")
+		log.Println("No address set in ..env file")
 		address = ":8080"
 		log.Println("Defaulting to " + address)
 	} else {
