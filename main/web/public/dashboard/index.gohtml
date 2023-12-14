@@ -68,18 +68,22 @@
                                 <div class="h-100 w-100 d-flex flex-column align-items-stretch p-3 mt-3">
                                     <div class="h-100 w-100 d-flex flex-row align-items-stretch gap-2 position-relative">
                                         <div class="d-flex flex-column position-absolute h-100 w-100">
-                                            <h3 class="m-0">Times</h3>
-                                            <div class="h-100 d-flex flex-row justify-content-between">
-                                                <div class="d-flex flex-column" style="width: 5%">
-                                                    <div v-for="(time, index) in times"
-                                                         class="h-100 d-flex justify-content-center"
-                                                         :class="Math.floor(index) % 2 == 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
-                                                        <p class="m-0">${time}</p>
-                                                    </div>
+                                            <h3 class="m-0 mb-3">Times</h3>
+                                            <div class="d-flex flex-column h-100">
+                                                <div class="position-relative" :style="timeLineStyle()">
                                                 </div>
-                                                <div class="d-flex flex-column w-100">
-                                                    <div v-for="(time, index) in times" class="h-100"
-                                                         :class="Math.floor(index) % 2 == 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
+                                                <div class="h-100 d-flex flex-row justify-content-between position-relative">
+                                                    <div class="d-flex flex-column" style="width: 5%">
+                                                        <div v-for="(time, index) in times"
+                                                             class="h-100 d-flex justify-content-center"
+                                                             :class="Math.floor(index) % 2 != 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
+                                                            <p class="m-0">${time}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex flex-column w-100">
+                                                        <div v-for="(time, index) in times" class="h-100"
+                                                             :class="Math.floor(index) % 2 != 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -88,45 +92,48 @@
                                         <div v-for="day in selectedWeek.days" style="flex: 1"
                                              class="h-100 d-flex flex-column flex-grow-1">
                                             <div class="text-center">
-                                                <h3 class="m-0">${day.weekDay}</h3>
+                                                <h3 class="m-0 mb-3">${day.weekDay}</h3>
                                             </div>
-                                            <div class="h-100">
-                                                <div v-for="slot in day.timeSlotIds"
-                                                     class="position-relative"
-                                                     :class="slotColor(slot)"
-                                                     :style="slotStyle(slot)">
-                                                    <div class="d-flex flex-column p-2 align-items-center h-100">
-                                                        <h4 class="text-white m-0 text-wrap" v-if="slot.name != ''">
-                                                            ${slot.name}</h4>
-                                                        <h4 class="text-white m-0 text-wrap"
-                                                            v-else-if="slot.lectureId != ''">${slot.lectureId.name}</h4>
-                                                        <h4 class="text-white m-0 text-wrap" v-else>Undefined name</h4>
+                                            <div class="h-100 d-flex flex-column">
+                                                <div :style="{height: currentTimeThickness}"></div>
+                                                <div class="h-100">
+                                                    <div v-for="slot in day.timeSlotIds"
+                                                         class="position-relative"
+                                                         :class="slotColor(slot)"
+                                                         :style="slotStyle(slot)">
+                                                        <div class="d-flex flex-column p-2 align-items-center h-100">
+                                                            <h4 class="text-white m-0 text-wrap" v-if="slot.name != ''">
+                                                                ${slot.name}</h4>
+                                                            <h4 class="text-white m-0 text-wrap"
+                                                                v-else-if="slot.lectureId != ''">${slot.lectureId.name}</h4>
+                                                            <h4 class="text-white m-0 text-wrap" v-else>Undefined name</h4>
 
-                                                        <div class="h-100 d-flex flex-column align-items-center justify-content-center">
-                                                            <p class="text-white" v-if="slot.lecturerId.id != ''">
-                                                                Lesson by ${slot.lecturerId.sureName}
-                                                            </p>
-                                                            <p class="text-white" v-if="slot.isCancelled">
-                                                                Cancelled!
-                                                            </p>
-                                                            <p class="text-white" v-if="slot.wasMoved">
-                                                                Moved!
-                                                            </p>
-                                                            <p class="text-white" v-if="slot.isExam">
-                                                                Exam!
-                                                            </p>
-                                                            <p class="text-white" v-if="slot.isReExamination">
-                                                                Re-Exam!
-                                                            </p>
-                                                            <p class="text-white" v-if="slot.isEvent">
-                                                                Event!
-                                                            </p>
-                                                            <p class="text-white" v-if="slot.isHoliday">
-                                                                Holiday!
-                                                            </p>
-                                                            <p class="text-white" v-if="slot.isOnline">
-                                                                Online!
-                                                            </p>
+                                                            <div class="h-100 d-flex flex-column align-items-center justify-content-center">
+                                                                <p class="text-white" v-if="slot.lecturerId.id != ''">
+                                                                    Lesson by ${slot.lecturerId.sureName}
+                                                                </p>
+                                                                <p class="text-white" v-if="slot.isCancelled">
+                                                                    Cancelled!
+                                                                </p>
+                                                                <p class="text-white" v-if="slot.wasMoved">
+                                                                    Moved!
+                                                                </p>
+                                                                <p class="text-white" v-if="slot.isExam">
+                                                                    Exam!
+                                                                </p>
+                                                                <p class="text-white" v-if="slot.isReExamination">
+                                                                    Re-Exam!
+                                                                </p>
+                                                                <p class="text-white" v-if="slot.isEvent">
+                                                                    Event!
+                                                                </p>
+                                                                <p class="text-white" v-if="slot.isHoliday">
+                                                                    Holiday!
+                                                                </p>
+                                                                <p class="text-white" v-if="slot.isOnline">
+                                                                    Online!
+                                                                </p>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -372,6 +379,7 @@
             delimiters: ['${', '}'],
             data: () => ({
                 weekDayCount: 6,
+                currentTimeThickness: 3,
                 scalarMin: 8,
                 scalarMax: 20,
                 days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -388,6 +396,16 @@
                 this.selectClosestWeek();
             },
             methods: {
+                timeLineStyle() {
+                    let time = new Date().toLocaleString().split(", ")[1].split(":").slice(0, 2).join(":");
+                    console.log(time);
+                    return {
+                        top: this.timeToPercent(time) + "%",
+                        height: this.currentTimeThickness + "px",
+                        zIndex: 100,
+                        background: "rgba(255, 0, 0, 0.6)"
+                    }
+                },
                 slotColor(slot) {
                     let classes = [
                         "rounded-2",
