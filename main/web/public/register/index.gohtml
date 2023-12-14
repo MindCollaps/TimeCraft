@@ -98,7 +98,7 @@ l{{define "title"}}WeebsKingdom{{end}}
                                 document.getElementById('password2').setAttribute('value', '');
                                 return;
                             } else {
-                                alert('Register is not correct');
+                                window.location.href="/login";
                             }
 
                             document.getElementById('password1').removeAttribute('is-invalid');
