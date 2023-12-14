@@ -10,5 +10,10 @@ func InitRouter(r *gin.Engine) bool {
 
 	v1.Handler(apiV1)
 
+	r.GET("/logout", func(c *gin.Context) {
+		c.SetCookie("auth", "", 0, "/", "", false, false)
+		c.Redirect(302, "/")
+	})
+
 	return true
 }

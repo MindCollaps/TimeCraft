@@ -64,9 +64,7 @@ l{{define "title"}}WeebsKingdom{{end}}
                     }),
                     methods: {
                         invalidPasswords: function () {
-
                             document.getElementById('password1').setAttribute('is-invalid', '');
-
                             document.getElementById('password2').setAttribute('is-invalid', '');
                         },
                         register: async function () {
@@ -93,7 +91,7 @@ l{{define "title"}}WeebsKingdom{{end}}
 
                             if (res.status !== 200) {
                                 var data = await res.json();
-                                alert('Error updating password ' + data.message);
+                                alert(data.message);
                                 document.getElementById('password1').setAttribute('value', '');
                                 document.getElementById('password2').setAttribute('value', '');
                                 return;
