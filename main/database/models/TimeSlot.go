@@ -30,6 +30,7 @@ type TimeSlotStruct struct {
 	ID              string           `json:"id" bson:"_id"`
 	Name            string           `json:"name" bson:"name"`
 	LectureId       LectureStruct    `json:"lectureId" bson:"lectureId"`
+	LecturerId      LecturerStruct   `json:"lecturerId" bson:"lecturerId"`
 	TimeStart       string           `json:"timeStart" bson:"timeStart"`
 	TimeEnd         string           `json:"timeEnd" bson:"timeEnd"`
 	IsOnline        bool             `json:"isOnline" bson:"isOnline"`
@@ -66,6 +67,15 @@ func TimeSlotToStruct(c *gin.Context, timeSlot TimeSlot) (TimeSlotStruct, error)
 			return TimeSlotStruct{}, err
 		}
 		timeSlotStruct.LectureId = lecture[0]
+	}
+
+	// Load LecturerId
+	if !timeSlot.LecturerId.IsZero() {
+		lecturer, err := LoadLecturers(c, []primitive.ObjectID{timeSlot.LecturerId})
+		if err != nil {
+			return TimeSlotStruct{}, err
+		}
+		timeSlotStruct.LecturerId = lecturer[0]
 	}
 
 	// Load RoomConfigId

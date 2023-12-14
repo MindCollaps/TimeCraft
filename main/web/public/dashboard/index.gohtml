@@ -7,40 +7,39 @@
             <div class=" d-flex h-100 flex-column flex-shrink-0 text-white bg-body-tertiary rounded-end"
                  style="width: 12%;">
                 <!--SIDEBAR-->
-                <a href="/"
-                   class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                    <span class="fs-4">Time Craft</span>
-                </a>
+                <div class="p-2 d-flex justify-content-center align-items-center">
+                    <h4 class="m-0">Time Craft</h4>
+                </div>
                 <hr>
-                <ul class="nav nav-pills flex-column mb-auto">
+                <ul class="nav nav-pills flex-column mb-auto align-items-center gap-2">
                     <li class="nav-item">
                         <button type="button" data-bs-toggle="tab" id="dashboard-tab"
                                 data-bs-target="#dashboard-tab-pane" role="tab"
                                 aria-controls="dashboard-tab-pane" aria-selected="true"
-                                class="nav-link d-flex justify-content-center align-items-center"
+                                class="nav-link d-flex justify-content-between align-items-center p-3 w-100 gap-2"
                                 aria-current="page">
-                            <span href="#" class="nav-link material-symbols-outlined">speed</span>
-                            <span class="align-middle">Dashboard</span>
+                            <span class="nav-link material-symbols-outlined p-0">speed</span>
+                            <span class="w-100">Dashboard</span>
                         </button>
                     </li>
                     <li>
                         <button type="button" data-bs-toggle="tab" id="timetable-tab"
                                 data-bs-target="#timetable-tab-pane" role="tab"
                                 aria-controls="timetable-tab-pane" aria-selected="true"
-                                class="nav-link d-flex justify-content-center align-items-center"
+                                class="nav-link d-flex justify-content-between align-items-center p-3 w-100 gap-2"
                                 aria-current="page">
-                            <span class="nav-link material-symbols-outlined">table_chart</span>
-                            <span class="align-middle">Timetables</span>
+                            <span class="nav-link material-symbols-outlined p-0">table_chart</span>
+                            <span class="w-100">Timetables</span>
                         </button>
                     </li>
                     <li>
                         <button type="button" data-bs-toggle="tab" id="favorites-tab"
                                 data-bs-target="#favorites-tab-pane" role="tab"
                                 aria-controls="favorites-tab-pane" aria-selected="true"
-                                class="nav-link d-flex justify-content-center align-items-center"
+                                class="nav-link d-flex justify-content-between align-items-center p-3 w-100 gap-2"
                                 aria-current="page">
-                            <span href="#" class="nav-link material-symbols-outlined">star</span>
-                            <span class="align-middle">Favorites</span>
+                            <span class="nav-link p-0 material-symbols-outlined">star</span>
+                            <span class="w-100">Favorites</span>
                         </button>
                     </li>
                 </ul>
@@ -66,28 +65,70 @@
                                                     class="material-icons">today</span></button>
                                     </div>
                                 </div>
-                                <div class="h-100 w-100 d-flex flex-column align-items-stretch p-3">
-                                    <div class="h-100 w-100 d-flex flex-row align-items-stretch justify-content-between position-relative">
+                                <div class="h-100 w-100 d-flex flex-column align-items-stretch p-3 mt-3">
+                                    <div class="h-100 w-100 d-flex flex-row align-items-stretch gap-2 position-relative">
                                         <div class="d-flex flex-column position-absolute h-100 w-100">
-                                            Times
-                                            <div class="h-100 d-flex flex-column justify-content-between">
-                                                <div v-for="(time, index) in times" class="h-100"
-                                                     :class="Math.floor(index) % 2 == 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
-                                                    ${time}
+                                            <h3 class="m-0">Times</h3>
+                                            <div class="h-100 d-flex flex-row justify-content-between">
+                                                <div class="d-flex flex-column" style="width: 5%">
+                                                    <div v-for="(time, index) in times"
+                                                         class="h-100 d-flex justify-content-center"
+                                                         :class="Math.floor(index) % 2 == 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
+                                                        <p class="m-0">${time}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex flex-column w-100">
+                                                    <div v-for="(time, index) in times" class="h-100"
+                                                         :class="Math.floor(index) % 2 == 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div></div> <!--For the times-->
-                                        <div v-for="day in selectedWeek.days"
-                                             class="h-100 d-flex flex-column justify-content-between">
-                                            <div>
-                                                ${day.date}
+                                        <div class="flex-grow-1" style="flex: 1"></div> <!--For the times-->
+                                        <div v-for="day in selectedWeek.days" style="flex: 1"
+                                             class="h-100 d-flex flex-column flex-grow-1">
+                                            <div class="text-center">
+                                                <h3 class="m-0">${day.weekDay}</h3>
                                             </div>
                                             <div class="h-100">
                                                 <div v-for="slot in day.timeSlotIds"
-                                                     class="position-relative bg-primary"
-                                                     :style="{'top': slot.val, 'height': slot.valH}">
-                                                    ${slot.name}
+                                                     class="position-relative"
+                                                     :class="slotColor(slot)"
+                                                     :style="slotStyle(slot)">
+                                                    <div class="d-flex flex-column p-2 align-items-center h-100">
+                                                        <h4 class="text-white m-0 text-wrap" v-if="slot.name != ''">
+                                                            ${slot.name}</h4>
+                                                        <h4 class="text-white m-0 text-wrap"
+                                                            v-else-if="slot.lectureId != ''">${slot.lectureId.name}</h4>
+                                                        <h4 class="text-white m-0 text-wrap" v-else>Undefined name</h4>
+
+                                                        <div class="h-100 d-flex flex-column align-items-center justify-content-center">
+                                                            <p class="text-white" v-if="slot.lecturerId.id != ''">
+                                                                Lesson by ${slot.lecturerId.sureName}
+                                                            </p>
+                                                            <p class="text-white" v-if="slot.isCancelled">
+                                                                Cancelled!
+                                                            </p>
+                                                            <p class="text-white" v-if="slot.wasMoved">
+                                                                Moved!
+                                                            </p>
+                                                            <p class="text-white" v-if="slot.isExam">
+                                                                Exam!
+                                                            </p>
+                                                            <p class="text-white" v-if="slot.isReExamination">
+                                                                Re-Exam!
+                                                            </p>
+                                                            <p class="text-white" v-if="slot.isEvent">
+                                                                Event!
+                                                            </p>
+                                                            <p class="text-white" v-if="slot.isHoliday">
+                                                                Holiday!
+                                                            </p>
+                                                            <p class="text-white" v-if="slot.isOnline">
+                                                                Online!
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -330,11 +371,11 @@
         var app = Vue.createApp({
             delimiters: ['${', '}'],
             data: () => ({
+                weekDayCount: 6,
+                scalarMin: 8,
+                scalarMax: 20,
+                days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
                 data: {{.TimeTables}},
-                scalarMin: 7,
-                scalarMax: 22,
-                checkerHeight: "100%",
-                checkerWidth: "100%",
                 weekString: "",
                 times: [],
                 selectedTimeTables: [],
@@ -347,22 +388,60 @@
                 this.selectClosestWeek();
             },
             methods: {
+                slotColor(slot) {
+                    let classes = [
+                        "rounded-2",
+                        "shadow"
+                    ];
+
+                    if (slot.isOnline)
+                        classes.push("bg-warning");
+                    else if (slot.isCancelled) {
+                        //remove shadow
+                        classes.pop();
+                        classes.push("bg-danger");
+                    } else if (slot.isExam)
+                        classes.push("bg-success");
+                    else if (slot.isReExamination)
+                        classes.push("bg-success-subtle");
+                    else if (slot.isEvent)
+                        classes.push("bg-secondary");
+                    else if (slot.wasMoved)
+                        classes.push("bg-info")
+                    else if (slot.isHoliday)
+                        classes.push("bg-body-tertiary")
+                    else
+                        classes.push("bg-primary");
+
+                    return classes;
+                },
+                slotStyle(slot) {
+                    let style = {
+                        top: slot.val,
+                        height: slot.valH,
+                    }
+
+                    if (slot.isCancelled) {
+                        style["box-shadow"] = "inset 0 0 22px rgba(0, 0, 0, 0.8)";
+                        style["text-decoration"] = "line-through";
+                    }
+
+                    return style;
+                },
                 nextWeek() {
                     let index = this.selectedWeek.weekNumber;
                     let week = this.weeks.find(week => week.weekNumber === index + 1);
                     if (week !== undefined) {
-                        this.selectedWeek = week;
-                        this.weekString = this.getWeekStringByWeek(week);
+                        this.selectWeek(week);
                     } else {
                         let weekDate = new Date(this.selectedWeek.date);
                         weekDate.setDate(weekDate.getDate() + 7);
-                        this.selectedWeek = {
+                        week = {
                             weekNumber: this.selectedWeek.weekNumber + 1,
                             days: [],
                             date: weekDate
                         };
-
-                        this.weekString = this.getWeekStringByWeek(this.selectedWeek);
+                        this.selectWeek(week)
                     }
                 },
                 previousWeek() {
@@ -370,17 +449,16 @@
                     let week = this.weeks.find(week => week.weekNumber === index - 1);
 
                     if (week !== undefined) {
-                        this.selectedWeek = week;
-                        this.weekString = this.getWeekStringByWeek(week);
+                        this.selectWeek(week);
                     } else {
                         let weekDate = new Date(this.selectedWeek.date);
                         weekDate.setDate(weekDate.getDate() - 7);
-                        this.selectedWeek = {
+                        week = {
                             weekNumber: this.selectedWeek.weekNumber - 1,
                             days: [],
                             date: weekDate
                         };
-                        this.weekString = this.getWeekStringByWeek(this.selectedWeek);
+                        this.selectWeek(week)
                     }
                 },
                 getWeekStringByWeek(week) {
@@ -400,22 +478,50 @@
 
                     return dd + '.' + mm + '.' + yyyy;
                 },
+                selectWeek(week) {
+                    //Check for enough days in week and add them
+                    let currentDay = new Date(week.date);
+                    let days = [];
+                    for (let i = 0; i < this.weekDayCount; i++) {
+                        let day = week.days.find(day => new Date(day.date).getTime() == currentDay.getTime());
+                        if (day != undefined) {
+                            day.weekDay = this.days[i];
+                            days.push(day);
+                        } else {
+                            days.push({
+                                date: currentDay,
+                                timeSlotIds: [],
+                                weekDay: this.days[i]
+                            });
+                        }
+
+                        //current day add one day
+                        currentDay = new Date(currentDay.getTime() + 86400000);
+                    }
+
+                    week.days = days;
+
+                    if (week === undefined)
+                        this.weekString = "No lessons in timetable.";
+                    else if (week.days.length > 0)
+                        this.weekString = this.getWeekStringByWeek(week);
+                    else
+                        this.weekString = "No lessons in timetable.";
+
+                    this.selectedWeek = week;
+                },
                 selectClosestWeek() {
                     let date = new Date();
                     let weekNumber = this.getWeekNumber(date);
 
                     //TODO:: Use date instead of weekNumber
                     let week = this.weeks.find(week => week.weekNumber === weekNumber);
-                    this.selectedWeek = week;
 
                     if (week === undefined) {
-                        this.selectedWeek = this.weeks[0];
+                        this.selectWeek(this.weeks[0])
+                    } else {
+                        this.selectWeek(week);
                     }
-
-                    if (week.days.length > 0)
-                        this.weekString = this.getWeekStringByWeek(week);
-                    else
-                        this.weekString = "No lessons in timetable.";
                 },
                 calculateTimes() {
                     for (let i = 0

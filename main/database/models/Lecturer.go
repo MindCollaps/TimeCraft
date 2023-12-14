@@ -21,7 +21,7 @@ type Lecturer struct {
 type LecturerStruct struct {
 	ID           string          `json:"id" bson:"_id"`
 	FirstName    string          `json:"firstName" bson:"firstName"`
-	SureName     string          `json:"lastName" bson:"lastName"`
+	SureName     string          `json:"sureName" bson:"sureName"`
 	Title        string          `json:"title" bson:"title"`
 	CanHold      []LectureStruct `json:"canHold" bson:"canHold"`
 	ContactEmail string          `json:"contactEmail" bson:"contactEmail"`
