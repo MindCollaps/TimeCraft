@@ -380,7 +380,7 @@ class excel_parser():
 
     # "contains" methods
     def containsYear(self, value):
-        match = re.search(r'\d{4}', value)
+        match = re.search(r'\d{2,4}', value)
         return match != None
 
     def containsSemester(self, value):
@@ -642,7 +642,7 @@ class excel_parser():
     # extract methods
     def extractSemesterGroup(self, value):
         # https://regex101.com/r/nLR5HB/1
-        match = re.search(r'([a-zA-z]{3,5}\d{4})\s?([a-zA-Z]\d)?', value)
+        match = re.search(r'([a-zA-z]{3,5}\d{2,4})\s?([a-zA-Z]\d)?', value)
         return match.group(1), match.group(2)
 
     def extractCoordinates(self, text):
