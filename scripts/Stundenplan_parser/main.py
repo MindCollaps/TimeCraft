@@ -151,10 +151,10 @@ class excel_parser():
                         # empty cells in the header are not important
                         if cell.value != None:
 
-                            if self.containsYear(cell.value) and not ("WS" or "SS") in cell.value and not self.containsLastChanged(cell.value):
+                            if self.containsYear(cell.value) and not ("WS" in cell.value or "SS" in cell.value or "SoSe" in cell.value or "WiSe" in cell.value) and not self.containsLastChanged(cell.value):
                                 study_subject, semester_group = self.extractSemesterGroup(cell.value)
 
-                            elif ("WS" or "SS") in cell.value:
+                            elif ("WS" in cell.value or "SS" in cell.value or "SoSe" in cell.value or "WiSe" in cell.value):
                                 semester = cell.value
 
                             elif self.containsSemester(cell.value):
