@@ -26,9 +26,28 @@ class excel_parser():
         self.SemesterGroups = ["S1", "S2", "A1", "A2"]
         self.SpecialGroups = ["S1-1", "S1-2", "S2-1", "S2-2", "A1-1", "A1-2", "A2-1", "A2-2"]
 
-        self.KnownParallelLessons = ["EAC", "OOP", "Gruppensprecher-Runde", "Mathetutorium"]
+        self.KnownParallelLessons = ["EAC", "OOP", "Gruppensprecher-Runde", "Mathetutorium", "ITIL", "Krypto", "ITS-M",]
         self.KnownEvents = ["Science Winter", "Science Summer", "Science Spring", "Semesterinfo", "Ersti-Begrüßung",
                             "Gruppensprecher-Runde", "Präsentation PR1 Zweitversuch"]
+        
+        self.KnownLecturer = {
+            "S2": {
+                "Stat II": "Neumann-Brosig",
+                "Stat2": "Neumann-Brosig",
+                "AZ2": "Neumann-Brosig",
+                "PF": "Ahlers",
+                "GCC": "Werner",
+                "Projekt": "Lobachev",
+                "ACC": "Birzer",
+                "Krypto": "Neubauer",
+                "ITS-M": "Peine-Paulsen",
+                "IST-M": "Peine-Paulsen", # lol
+                "ITIL": "Schaper",
+                "ITAA": "Ibrahim",
+                "SiS": "Stephanus",
+                "ITG/C": "Riebandt",
+            }
+        }
 
         self.file_path = file_path
         self.matrix = None
@@ -105,7 +124,7 @@ class excel_parser():
 
         # header values
         study_subject = None            # dIT2022
-        semester_group = None           # S1, S2, A1, A2
+        self.semester_group = None           # S1, S2, A1, A2
         semester = None                 # WS2023/2024
         semester_year = None            # 3. Semester
         last_changed = None             # Stand: 06.11.2023
@@ -141,7 +160,7 @@ class excel_parser():
                             # save the header at the first position
                             tables.append({
                                 "study_subject": study_subject,
-                                "semester_group": semester_group,
+                                "semester_group": self.semester_group,
                                 "semester": semester,
                                 "semester_year": semester_year,
                                 "last_changed": last_changed,
@@ -152,7 +171,7 @@ class excel_parser():
                         if cell.value != None:
 
                             if self.containsYear(cell.value) and not ("WS" in cell.value or "SS" in cell.value or "SoSe" in cell.value or "WiSe" in cell.value) and not self.containsLastChanged(cell.value):
-                                study_subject, semester_group = self.extractSemesterGroup(cell.value)
+                                study_subject, self.semester_group = self.extractSemesterGroup(cell.value)
 
                             elif ("WS" in cell.value or "SS" in cell.value or "SoSe" in cell.value or "WiSe" in cell.value):
                                 semester = cell.value
@@ -244,7 +263,7 @@ class excel_parser():
 
                                 table["days"][current_day]["lessons"].append({})
 
-                                lesson = lesson.replace("*", "").replace("\n", " ").replace("online ", "")
+                                lesson = lesson.replace("*", "").replace("\n", " ").replace("online ", "").strip()
                                 if self.isCustomTime(lesson):
                                     time = self.getCustomTime(lesson)
                                     table["days"][current_day]["lessons"][index_counter]["time"] = self.parseTime(time, current_time)
@@ -335,7 +354,7 @@ class excel_parser():
                                     #     cell,
                                     #     table["days"][current_day]["date"],
                                     #     study_subject,
-                                    #     semester_group,
+                                    #     self.semester_group,
                                     #     lecturer
                                     # )
 
@@ -544,7 +563,7 @@ class excel_parser():
         if match:
             lecturer = match.group(1)
         else:
-            lecturer = None
+            lecturer = self.KnownLecturer.get(self.semester_group, {}).get(value, None)
 
         return lecturer
 
