@@ -31,21 +31,39 @@ class excel_parser():
                             "Gruppensprecher-Runde", "Präsentation PR1 Zweitversuch"]
         
         self.KnownLecturer = {
-            "S2": {
-                "Stat II": "Neumann-Brosig",
-                "Stat2": "Neumann-Brosig",
-                "AZ2": "Neumann-Brosig",
-                "PF": "Ahlers",
-                "GCC": "Werner",
-                "Projekt": "Lobachev",
-                "ACC": "Birzer",
-                "Krypto": "Neubauer",
-                "ITS-M": "Peine-Paulsen",
-                "IST-M": "Peine-Paulsen", # lol
-                "ITIL": "Schaper",
-                "ITAA": "Ibrahim",
-                "SiS": "Stephanus",
-                "ITG/C": "Riebandt",
+            "4. Semester": {
+                "S1": {
+                    "Stat II": "Neumann-Brosig",
+                    "Stat2": "Neumann-Brosig",
+                    "AZ2": "Neumann-Brosig",
+                    "PF": "Ahlers",
+                    "GCC": "Werner",
+                    "Projekt": "Schmidt",
+                    "ACC": "Birzer",
+                    "Krypto": "Neubauer",
+                    "ITS-M": "Peine-Paulsen",
+                    "IST-M": "Peine-Paulsen", # lol
+                    "ITIL": "Schaper",
+                    "ITAA": "Ibrahim",
+                    "SiS": "Stephanus",
+                    "ITG/C": "Riebandt",
+                },
+                "S2": {
+                    "Stat II": "Neumann-Brosig",
+                    "Stat2": "Neumann-Brosig",
+                    "AZ2": "Neumann-Brosig",
+                    "PF": "Ahlers",
+                    "GCC": "Werner",
+                    "Projekt": "Lobachev",
+                    "ACC": "Birzer",
+                    "Krypto": "Neubauer",
+                    "ITS-M": "Peine-Paulsen",
+                    "IST-M": "Peine-Paulsen", # lol
+                    "ITIL": "Schaper",
+                    "ITAA": "Ibrahim",
+                    "SiS": "Stephanus",
+                    "ITG/C": "Riebandt",
+                }
             }
         }
 
@@ -126,7 +144,7 @@ class excel_parser():
         study_subject = None            # dIT2022
         self.semester_group = None           # S1, S2, A1, A2
         semester = None                 # WS2023/2024
-        semester_year = None            # 3. Semester
+        self.semester_year = None            # 3. Semester
         last_changed = None             # Stand: 06.11.2023
 
         # start values
@@ -162,7 +180,7 @@ class excel_parser():
                                 "study_subject": study_subject,
                                 "semester_group": self.semester_group,
                                 "semester": semester,
-                                "semester_year": semester_year,
+                                "semester_year": self.semester_year,
                                 "last_changed": last_changed,
                             })
 
@@ -177,7 +195,7 @@ class excel_parser():
                                 semester = cell.value
 
                             elif self.containsSemester(cell.value):
-                                semester_year = cell.value
+                                self.semester_year = cell.value
 
                             elif self.containsLastChanged(cell.value):
                                 last_changed = cell.value
@@ -563,7 +581,7 @@ class excel_parser():
         if match:
             lecturer = match.group(1)
         else:
-            lecturer = self.KnownLecturer.get(self.semester_group, {}).get(value, None)
+            lecturer = self.KnownLecturer.get(self.semester_year, {}).get(self.semester_group, {}).get(value, None)
 
         return lecturer
 
