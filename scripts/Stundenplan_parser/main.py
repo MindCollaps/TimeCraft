@@ -34,7 +34,6 @@ class excel_parser():
             "4. Semester": {
                 "S1": {
                     "Stat II": "Neumann-Brosig",
-                    "Stat2": "Neumann-Brosig",
                     "AZ2": "Neumann-Brosig",
                     "PF": "Ahlers",
                     "GCC": "Werner",
@@ -42,7 +41,6 @@ class excel_parser():
                     "ACC": "Birzer",
                     "Krypto": "Neubauer",
                     "ITS-M": "Peine-Paulsen",
-                    "IST-M": "Peine-Paulsen", # lol
                     "ITIL": "Schaper",
                     "ITAA": "Ibrahim",
                     "SiS": "Stephanus",
@@ -50,7 +48,6 @@ class excel_parser():
                 },
                 "S2": {
                     "Stat II": "Neumann-Brosig",
-                    "Stat2": "Neumann-Brosig",
                     "AZ2": "Neumann-Brosig",
                     "PF": "Ahlers",
                     "GCC": "Werner",
@@ -58,7 +55,6 @@ class excel_parser():
                     "ACC": "Birzer",
                     "Krypto": "Neubauer",
                     "ITS-M": "Peine-Paulsen",
-                    "IST-M": "Peine-Paulsen", # lol
                     "ITIL": "Schaper",
                     "ITAA": "Ibrahim",
                     "SiS": "Stephanus",
@@ -606,6 +602,8 @@ class excel_parser():
             "LingAlg": "LinAlg",
             "Zeitversuch": "Zweitversuch",
             "Satistik": "Statistik",
+            "IST-M": "ITS-M",
+            "Stat2": "Stat II",
         }
 
         # only fix strings and skip integers
