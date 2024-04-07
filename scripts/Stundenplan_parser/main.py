@@ -407,8 +407,14 @@ class excel_parser():
                     cell_counter += 1
 
             else:
-                # row skipped successfully
-                skip_next_row = False
+                next_start_row = row_counter + 1
+                row_value = self.rows[next_start_row - 1][1]
+                if row_value.value == "KW":
+                    # row skipped successfully
+                    skip_next_row = False
+                else:
+                    print("Detected invalid space between two tables. Skipping this row ...")
+
                 skipped_rows += 1
 
             row_counter += 1
@@ -456,7 +462,7 @@ class excel_parser():
         return cell.font.b
 
     def isReExamination(self, cell):
-        return "NKL" in cell.value and self.isBold(cell)
+        return "NKL" in cell.value #and self.isBold(cell)
 
     def isExam(self, cell):
         return "Klausur" in cell.value and self.isBold(cell) and "NKL" not in cell.value
@@ -491,7 +497,9 @@ class excel_parser():
 
         if match or (self.getLecturer(value) == None and not self.isReExamination(cell) and not self.isExam(cell)
                      and not self.isHoliday(value) and not self.isSpeechLesson(value)
-                     and not value in self.KnownParallelLessons):
+                     and not value in self.KnownParallelLessons
+                     and not self.isReExamination(cell) and not self.isExam(cell)
+                     ):
             return True
         else:
             return False
