@@ -50,7 +50,7 @@ func prtHandler(cg *gin.RouterGroup) {
 		return
 	})
 
-	cg.POST("/import/exceljson", func(c *gin.Context) {
+	cg.POST("/import/json", func(c *gin.Context) {
 		// get json data from body
 		var requestBody struct {
 			JsonData ExcelJson `json:"json_data"`

@@ -26,9 +26,46 @@ class excel_parser():
         self.SemesterGroups = ["S1", "S2", "A1", "A2"]
         self.SpecialGroups = ["S1-1", "S1-2", "S2-1", "S2-2", "A1-1", "A1-2", "A2-1", "A2-2"]
 
-        self.KnownParallelLessons = ["EAC", "OOP", "Gruppensprecher-Runde", "Mathetutorium"]
+        self.KnownParallelLessons = ["EAC", "OOP", "Gruppensprecher-Runde", "Mathetutorium", "ITIL", "Krypto", "ITS-M",]
         self.KnownEvents = ["Science Winter", "Science Summer", "Science Spring", "Semesterinfo", "Ersti-Begrüßung",
                             "Gruppensprecher-Runde", "Präsentation PR1 Zweitversuch"]
+        
+        self.KnownLecturer = {
+            "4. Semester": {
+                "S1": {
+                    "Stat II": "Neumann-Brosig",
+                    "Stat2": "Neumann-Brosig",
+                    "AZ2": "Neumann-Brosig",
+                    "PF": "Ahlers",
+                    "GCC": "Werner",
+                    "Projekt": "Schmidt",
+                    "ACC": "Birzer",
+                    "Krypto": "Neubauer",
+                    "ITS-M": "Peine-Paulsen",
+                    "IST-M": "Peine-Paulsen", # lol
+                    "ITIL": "Schaper",
+                    "ITAA": "Ibrahim",
+                    "SiS": "Stephanus",
+                    "ITG/C": "Riebandt",
+                },
+                "S2": {
+                    "Stat II": "Neumann-Brosig",
+                    "Stat2": "Neumann-Brosig",
+                    "AZ2": "Neumann-Brosig",
+                    "PF": "Ahlers",
+                    "GCC": "Werner",
+                    "Projekt": "Lobachev",
+                    "ACC": "Birzer",
+                    "Krypto": "Neubauer",
+                    "ITS-M": "Peine-Paulsen",
+                    "IST-M": "Peine-Paulsen", # lol
+                    "ITIL": "Schaper",
+                    "ITAA": "Ibrahim",
+                    "SiS": "Stephanus",
+                    "ITG/C": "Riebandt",
+                }
+            }
+        }
 
         self.file_path = file_path
         self.matrix = None
@@ -105,9 +142,9 @@ class excel_parser():
 
         # header values
         study_subject = None            # dIT2022
-        semester_group = None           # S1, S2, A1, A2
+        self.semester_group = None           # S1, S2, A1, A2
         semester = None                 # WS2023/2024
-        semester_year = None            # 3. Semester
+        self.semester_year = None            # 3. Semester
         last_changed = None             # Stand: 06.11.2023
 
         # start values
@@ -141,9 +178,9 @@ class excel_parser():
                             # save the header at the first position
                             tables.append({
                                 "study_subject": study_subject,
-                                "semester_group": semester_group,
+                                "semester_group": self.semester_group,
                                 "semester": semester,
-                                "semester_year": semester_year,
+                                "semester_year": self.semester_year,
                                 "last_changed": last_changed,
                             })
 
@@ -151,14 +188,14 @@ class excel_parser():
                         # empty cells in the header are not important
                         if cell.value != None:
 
-                            if self.containsYear(cell.value) and not ("WS" or "SS") in cell.value and not self.containsLastChanged(cell.value):
-                                study_subject, semester_group = self.extractSemesterGroup(cell.value)
+                            if self.containsYear(cell.value) and not ("WS" in cell.value or "SS" in cell.value or "SoSe" in cell.value or "WiSe" in cell.value) and not self.containsLastChanged(cell.value):
+                                study_subject, self.semester_group = self.extractSemesterGroup(cell.value)
 
-                            elif ("WS" or "SS") in cell.value:
+                            elif ("WS" in cell.value or "SS" in cell.value or "SoSe" in cell.value or "WiSe" in cell.value):
                                 semester = cell.value
 
                             elif self.containsSemester(cell.value):
-                                semester_year = cell.value
+                                self.semester_year = cell.value
 
                             elif self.containsLastChanged(cell.value):
                                 last_changed = cell.value
@@ -206,7 +243,6 @@ class excel_parser():
                             self.updateDayCounter()
 
                         elif self.isNumber(cell_content):
-
                             # check if we are in the second row of the table
                             if (table["start_row"] + 1) == row_counter:
                                 table["calendarweek"] = cell_content
@@ -244,7 +280,7 @@ class excel_parser():
 
                                 table["days"][current_day]["lessons"].append({})
 
-                                lesson = lesson.replace("*", "").replace("\n", " ").replace("online ", "")
+                                lesson = lesson.replace("*", "").replace("\n", " ").replace("online ", "").strip()
                                 if self.isCustomTime(lesson):
                                     time = self.getCustomTime(lesson)
                                     table["days"][current_day]["lessons"][index_counter]["time"] = self.parseTime(time, current_time)
@@ -335,7 +371,7 @@ class excel_parser():
                                     #     cell,
                                     #     table["days"][current_day]["date"],
                                     #     study_subject,
-                                    #     semester_group,
+                                    #     self.semester_group,
                                     #     lecturer
                                     # )
 
@@ -370,8 +406,16 @@ class excel_parser():
                     cell_counter += 1
 
             else:
-                # row skipped successfully
-                skip_next_row = False
+                # check if the next row is actually the start of a new table
+                # if not, skip the row
+                next_start_row = row_counter + 1
+                row_value = self.rows[next_start_row - 1][1]
+                if row_value.value == "KW":
+                    # row skipped successfully
+                    skip_next_row = False
+                else:
+                    print("Detected invalid space between two tables. Skipping this row ...")
+
                 skipped_rows += 1
 
             row_counter += 1
@@ -380,7 +424,7 @@ class excel_parser():
 
     # "contains" methods
     def containsYear(self, value):
-        match = re.search(r'\d{4}', value)
+        match = re.search(r'\d{2,4}', value)
         return match != None
 
     def containsSemester(self, value):
@@ -419,7 +463,7 @@ class excel_parser():
         return cell.font.b
 
     def isReExamination(self, cell):
-        return "NKL" in cell.value and self.isBold(cell)
+        return "NKL" in cell.value #and self.isBold(cell)
 
     def isExam(self, cell):
         return "Klausur" in cell.value and self.isBold(cell) and "NKL" not in cell.value
@@ -454,7 +498,9 @@ class excel_parser():
 
         if match or (self.getLecturer(value) == None and not self.isReExamination(cell) and not self.isExam(cell)
                      and not self.isHoliday(value) and not self.isSpeechLesson(value)
-                     and not value in self.KnownParallelLessons):
+                     and not value in self.KnownParallelLessons
+                     and not self.isReExamination(cell) and not self.isExam(cell)
+                     ):
             return True
         else:
             return False
@@ -544,7 +590,7 @@ class excel_parser():
         if match:
             lecturer = match.group(1)
         else:
-            lecturer = None
+            lecturer = self.KnownLecturer.get(self.semester_year, {}).get(self.semester_group, {}).get(value, None)
 
         return lecturer
 
@@ -642,7 +688,7 @@ class excel_parser():
     # extract methods
     def extractSemesterGroup(self, value):
         # https://regex101.com/r/nLR5HB/1
-        match = re.search(r'([a-zA-z]{3,5}\d{4})\s?([a-zA-Z]\d)?', value)
+        match = re.search(r'([a-zA-z]{3,5}\d{2,4})\s?([a-zA-Z]\d)?', value)
         return match.group(1), match.group(2)
 
     def extractCoordinates(self, text):

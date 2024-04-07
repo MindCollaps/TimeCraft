@@ -1,8 +1,11 @@
-{{define "title"}} Default Title {{end}}
+{{define "metaDescriptionTitle"}}Default Title{{end}}
 {{define "metaDescription"}}Default Description{{end}}
 {{define "metaKeywords"}}{{end}}
-
+{{define "metaDescriptionUrl"}}{{end}}
+{{define "metaDescriptionImage"}}/favicon.ico{{end}}
+{{define "title"}}Default Title{{end}}
 {{define "topdoc"}}
+
 <html lang="en" data-bs-theme="dark">
 <head>
 <title>{{template "title"}}</title>
@@ -10,16 +13,16 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Meta Tags Links preview -->
-    <meta property="og:title" content="{{template "title"}}">
-    <meta property="og:description" content="{{template "metaDescription"}}">
     <meta name="description" content="{{template "metaDescription"}}">
+    <!-- OG Meta Tags Links preview -->
+    <meta property="og:title" content="{{template "metaDescriptionTitle"}}">
+    <meta property="og:description" content="{{template "metaDescription"}}">
+    <meta property="og:url" content="{{template "metaDescriptionUrl"}}" />
+    <meta property="og:image" content="{{template "metaDescriptionImage"}}" />
     <!-- Copyright -->
-    <meta name="author" content="Noah Elijah Till" />
     <meta name="copyright" content="TimeCraft" />
     <!-- Search -->
-    <meta name="robots" content="index,follow" />
-
+    <meta name="robots" content="index,follow,max-image-preview:large" />
     <meta name="googlebot" content="index,follow">
 
     <!-- Bootstrap -->
@@ -79,9 +82,6 @@
             document.title = "{{template "title"}} - 👋🏻 We miss you!";
         }
     }
-
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
 </body>
 </html>
