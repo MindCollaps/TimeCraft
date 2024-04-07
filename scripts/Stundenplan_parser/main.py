@@ -764,10 +764,6 @@ if __name__ == "__main__":
 
 # TODO: correct freetime
 #        --> 8:00-9:00 free and then a lesson from 10.45-12.15
-# TODO: add custom classes for lessons
 # TODO: parse Science Winter outside of a table
-# TODO: extract rooms from the Raumplan
-# TODO: get the timetable from the OneDrive
 # TODO: parse other timetables 
 #       --> S1, A1 etc
-#       --> no lecturer names in the WI time table

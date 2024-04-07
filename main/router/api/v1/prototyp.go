@@ -2,12 +2,19 @@ package v1
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"io"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
 	"src/main/database"
 	"src/main/database/models"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -42,12 +49,70 @@ type Day struct {
 
 func prtHandler(cg *gin.RouterGroup) {
 	cg.POST("/import/excel", func(c *gin.Context) {
+		const maxFileSize = 1 << 20 // 1 MiB
+
 		// get file from body
-		// save file to temp folder
-		// excecute Python script and generate json file
-		// parse json file and save to database
-		c.JSON(501, gin.H{"msg": "not implemented yet"})
-		return
+		file, header, err := c.Request.FormFile("file")
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Check the file extension
+		if !strings.HasSuffix(header.Filename, ".xlsx") {
+			c.JSON(400, gin.H{"error": "File is not an excel file"})
+			return
+		}
+
+		// Check the file size
+		size, err := file.Seek(0, io.SeekEnd)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Unable to determine file size"})
+			return
+		}
+		// Reset the read pointer to the start of the file
+		_, _ = file.Seek(0, io.SeekStart)
+
+		if size > int64(maxFileSize) {
+			c.JSON(400, gin.H{"error": "File size exceeds limit of " + fmt.Sprint(maxFileSize>>20) + " MiB"})
+			return
+		}
+
+		// get the path of the executable
+		ex, err := os.Executable()
+		if err != nil {
+			panic(err)
+		}
+		exPath := filepath.Dir(ex)
+
+		// create a unique file name
+		var tempFolderPath = filepath.ToSlash(exPath + "/temp")
+		var tempFileName = strconv.FormatInt(time.Now().Unix(), 10) + "_" + header.Filename
+		var tempFilePath = filepath.ToSlash(tempFolderPath + "/" + tempFileName)
+
+		// create the temporary folder
+		if _, err := os.Stat(tempFolderPath); os.IsNotExist(err) {
+			if err := os.Mkdir(tempFolderPath, os.ModePerm); err != nil {
+				c.JSON(500, gin.H{"error": "Unable to create temporary folder"})
+				return
+			}
+		}
+
+		// save file to disk into the temp folder
+		if err := c.SaveUploadedFile(header, tempFilePath); err != nil {
+			c.JSON(500, gin.H{"error": "Unable to save file"})
+			return
+		}
+
+		// parse the excel file and return the json data
+		var jsonData = parse_excel(tempFilePath, c)
+
+		if jsonData == nil {
+			c.JSON(500, gin.H{"error": "Unable to parse excel file"})
+		} else {
+			parse_json(jsonData, c)
+			os.Remove(tempFilePath)
+		}
 	})
 
 	cg.POST("/import/json", func(c *gin.Context) {
@@ -63,6 +128,44 @@ func prtHandler(cg *gin.RouterGroup) {
 
 		parse_json(requestBody.JsonData, c)
 	})
+}
+
+func parse_excel(filepath string, c *gin.Context) ExcelJson {
+	// parse excel file and return a json object
+
+	var pythonScript = "scripts/Stundenplan_parser/main.py"
+	var pythonPath string
+	var JsonFilePath = strings.TrimSuffix(filepath, ".xlsx") + ".json"
+
+	if runtime.GOOS == "windows" {
+		pythonPath = "python"
+	} else {
+		pythonPath = "python3"
+	}
+
+	cmd := exec.Command(pythonPath, pythonScript, "-f", filepath)
+	if err := cmd.Run(); err != nil {
+		fmt.Println("Error: ", err)
+	}
+
+	if _, err := os.Stat(JsonFilePath); err != nil {
+		return nil
+	}
+
+	// read the json file
+	file, err := os.Open(JsonFilePath)
+	if err != nil {
+		return nil
+	}
+
+	// bind the json data to the struct
+	var data ExcelJson
+	var jsonDecoder = json.NewDecoder(file)
+	if err := jsonDecoder.Decode(&data); err != nil {
+		return nil
+	}
+	os.Remove(JsonFilePath)
+	return data
 }
 
 func parse_json(data ExcelJson, c *gin.Context) {
