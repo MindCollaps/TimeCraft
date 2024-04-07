@@ -243,7 +243,6 @@ class excel_parser():
                             self.updateDayCounter()
 
                         elif self.isNumber(cell_content):
-
                             # check if we are in the second row of the table
                             if (table["start_row"] + 1) == row_counter:
                                 table["calendarweek"] = cell_content
@@ -407,6 +406,8 @@ class excel_parser():
                     cell_counter += 1
 
             else:
+                # check if the next row is actually the start of a new table
+                # if not, skip the row
                 next_start_row = row_counter + 1
                 row_value = self.rows[next_start_row - 1][1]
                 if row_value.value == "KW":
