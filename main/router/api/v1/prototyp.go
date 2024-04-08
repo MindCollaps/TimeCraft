@@ -89,6 +89,7 @@ func prtHandler(cg *gin.RouterGroup) {
 		var tempFolderPath = filepath.ToSlash(exPath + "/temp")
 		var tempFileName = strconv.FormatInt(time.Now().Unix(), 10) + "_" + header.Filename
 		var tempFilePath = filepath.ToSlash(tempFolderPath + "/" + tempFileName)
+		var JsonFilePath = strings.TrimSuffix(tempFilePath, ".xlsx") + ".json"
 
 		// create the temporary folder
 		if _, err := os.Stat(tempFolderPath); os.IsNotExist(err) {
@@ -104,14 +105,24 @@ func prtHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		// parse the excel file and return the json data
-		var jsonData = parse_excel(tempFilePath, c)
+		// parse the Excel file and return the json data
+		var jsonData = parseExcel(tempFilePath)
 
 		if jsonData == nil {
 			c.JSON(500, gin.H{"error": "Unable to parse excel file"})
 		} else {
-			parse_json(jsonData, c)
-			os.Remove(tempFilePath)
+			parseJson(jsonData, c)
+
+			// cleanup
+			err = os.Remove(tempFilePath)
+			if err != nil {
+				c.JSON(500, gin.H{"error": "Internal server error"})
+			}
+
+			err = os.Remove(JsonFilePath)
+			if err != nil {
+				c.JSON(500, gin.H{"error": "Internal server error"})
+			}
 		}
 	})
 
@@ -126,11 +137,11 @@ func prtHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		parse_json(requestBody.JsonData, c)
+		parseJson(requestBody.JsonData, c)
 	})
 }
 
-func parse_excel(filepath string, c *gin.Context) ExcelJson {
+func parseExcel(filepath string) ExcelJson {
 	// parse excel file and return a json object
 
 	var pythonScript = "scripts/Stundenplan_parser/main.py"
@@ -157,6 +168,7 @@ func parse_excel(filepath string, c *gin.Context) ExcelJson {
 	if err != nil {
 		return nil
 	}
+	defer file.Close()
 
 	// bind the json data to the struct
 	var data ExcelJson
@@ -164,11 +176,10 @@ func parse_excel(filepath string, c *gin.Context) ExcelJson {
 	if err := jsonDecoder.Decode(&data); err != nil {
 		return nil
 	}
-	os.Remove(JsonFilePath)
 	return data
 }
 
-func parse_json(data ExcelJson, c *gin.Context) {
+func parseJson(data ExcelJson, c *gin.Context) {
 	// parse json file and save to database
 	var LastChanged primitive.DateTime
 	var Name string
