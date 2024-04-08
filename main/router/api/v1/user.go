@@ -136,5 +136,20 @@ func userHandler(cg *gin.RouterGroup) {
 
 		c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "Created user"})
 	})
+
+	cg.DELETE("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid ID"})
+			return
+		}
+		_, err = database.MongoDB.Collection("user").DeleteOne(c, bson.M{"_id": objID})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Database error"})
+			fmt.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"msg": "Deleted user"})
 	})
 }
