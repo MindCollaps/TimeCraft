@@ -127,7 +127,12 @@ func userHandler(cg *gin.RouterGroup) {
 			Email:    email,
 		}
 
-		database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
+		_, err = database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Database error"})
+			fmt.Println(err)
+			return
+		}
 
 		c.JSON(http.StatusOK, gin.H{"status": 200, "message": "Created user"})
 	})
