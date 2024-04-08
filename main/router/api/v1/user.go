@@ -12,6 +12,7 @@ import (
 	"src/main/crypt"
 	"src/main/database"
 	"src/main/database/models"
+	"strings"
 )
 
 func userHandler(cg *gin.RouterGroup) {
@@ -28,7 +29,7 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		username := requestBody.Username
+		username := strings.ToLower(requestBody.Username)
 		password := requestBody.Password
 
 		//check if user exists
@@ -88,9 +89,9 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		username := requestBody.Username
+		username := strings.ToLower(requestBody.Username)
 		password := requestBody.Password
-		email := requestBody.Email
+		email := strings.ToLower(requestBody.Email)
 
 		// Check if the user already exists in the database by querying with the username
 		var existingUser models.User
