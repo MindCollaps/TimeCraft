@@ -23,7 +23,7 @@ func tblHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -35,12 +35,12 @@ func tblHandler(cg *gin.RouterGroup) {
 
 		if err == nil {
 			// Table with the same name already exists
-			c.JSON(http.StatusConflict, gin.H{"message": "TimeTable already exists"})
+			c.JSON(http.StatusConflict, gin.H{"msg": "TimeTable already exists"})
 			fmt.Println("TimeTable already exists")
 			return
 		} else if err != mongo.ErrNoDocuments {
 			// Handle other database query errors
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
 			fmt.Println(err)
 			return
 		}
@@ -52,7 +52,7 @@ func tblHandler(cg *gin.RouterGroup) {
 		}
 
 		database.MongoDB.Collection("TimeTable").InsertOne(c, newTable, options.InsertOne())
-		c.JSON(http.StatusOK, gin.H{"status": 200, "message": "Created Timetable"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable"})
 
 	})
 
@@ -60,9 +60,7 @@ func tblHandler(cg *gin.RouterGroup) {
 
 		id := c.Query("id")
 		if id == "" {
-			c.JSON(400, gin.H{
-				"message": "Please give correct ID",
-			})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "Please give correct ID"})
 			return
 		} else {
 			//Abfrage aus der DB

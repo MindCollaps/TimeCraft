@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -54,27 +55,27 @@ func prtHandler(cg *gin.RouterGroup) {
 		// get file from body
 		file, header, err := c.Request.FormFile("file")
 		if err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Check the file extension
 		if !strings.HasSuffix(header.Filename, ".xlsx") {
-			c.JSON(400, gin.H{"error": "File is not an excel file"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "File is not an excel file"})
 			return
 		}
 
 		// Check the file size
 		size, err := file.Seek(0, io.SeekEnd)
 		if err != nil {
-			c.JSON(500, gin.H{"error": "Unable to determine file size"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to determine file size"})
 			return
 		}
 		// Reset the read pointer to the start of the file
 		_, _ = file.Seek(0, io.SeekStart)
 
 		if size > int64(maxFileSize) {
-			c.JSON(400, gin.H{"error": "File size exceeds limit of " + fmt.Sprint(maxFileSize>>20) + " MiB"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds limit of " + fmt.Sprint(maxFileSize>>20) + " MiB"})
 			return
 		}
 
@@ -94,14 +95,14 @@ func prtHandler(cg *gin.RouterGroup) {
 		// create the temporary folder
 		if _, err := os.Stat(tempFolderPath); os.IsNotExist(err) {
 			if err := os.Mkdir(tempFolderPath, os.ModePerm); err != nil {
-				c.JSON(500, gin.H{"error": "Unable to create temporary folder"})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create temporary folder"})
 				return
 			}
 		}
 
 		// save file to disk into the temp folder
 		if err := c.SaveUploadedFile(header, tempFilePath); err != nil {
-			c.JSON(500, gin.H{"error": "Unable to save file"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save file"})
 			return
 		}
 
@@ -109,19 +110,19 @@ func prtHandler(cg *gin.RouterGroup) {
 		var jsonData = parseExcel(tempFilePath)
 
 		if jsonData == nil {
-			c.JSON(500, gin.H{"error": "Unable to parse excel file"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to parse excel file"})
 		} else {
 			parseJson(jsonData, c)
 
 			// cleanup
 			err = os.Remove(tempFilePath)
 			if err != nil {
-				c.JSON(500, gin.H{"error": "Internal server error"})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 			}
 
 			err = os.Remove(JsonFilePath)
 			if err != nil {
-				c.JSON(500, gin.H{"error": "Internal server error"})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 			}
 		}
 	})
@@ -133,7 +134,7 @@ func prtHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -249,7 +250,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	id := saveTimeTable(TimeTable)
 	fmt.Println(id)
 
-	c.JSON(201, gin.H{"msg": "created"})
+	c.JSON(http.StatusOK, gin.H{"msg": "created"})
 }
 
 func getLastChanged(input string) primitive.DateTime {
