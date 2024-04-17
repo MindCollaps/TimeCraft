@@ -170,11 +170,11 @@ func parseExcel(filepath string) ExcelJson {
 		return nil
 	}
 
-	err = file.Close()
-	if err != nil {
-		// handle the error
-		fmt.Println("Error closing the file:", err)
-	}
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Println("Error closing file:", err)
+		}
+	}()
 
 	// bind the json data to the struct
 	var data ExcelJson
@@ -267,7 +267,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 
 		// delete all old TimeTableDays and TimeSlots
 		timeTableDaysIDs := getAllTimeTableDays(ExistingTimeTableId)
-		fmt.Println(fmt.Sprintf("deleting %d timeTableDays", len(timeTableDaysIDs)))
+		fmt.Println(fmt.Sprintf("deleting %d old timeTableDays", len(timeTableDaysIDs)))
 		for _, dayID := range timeTableDaysIDs {
 			timeSlotIDs := getAllTimeSlots(dayID)
 
