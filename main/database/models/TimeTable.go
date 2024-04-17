@@ -8,15 +8,17 @@ import (
 )
 
 type TimeTable struct {
-	ID   primitive.ObjectID   `json:"id" bson:"_id"`
-	Name string               `json:"name" bson:"name"`
-	Days []primitive.ObjectID `json:"days" bson:"days"`
+	ID          primitive.ObjectID   `json:"id" bson:"_id"`
+	Name        string               `json:"name" bson:"name"`
+	Days        []primitive.ObjectID `json:"days" bson:"days"`
+	LastUpdated primitive.DateTime   `json:"lastUpdated" bson:"lastUpdated"`
 }
 
 type TimeTableStruct struct {
-	ID   string               `json:"id" bson:"_id"`
-	Name string               `json:"name" bson:"name"`
-	Days []TimeTableDayStruct `json:"days" bson:"days"`
+	ID          string               `json:"id" bson:"_id"`
+	Name        string               `json:"name" bson:"name"`
+	Days        []TimeTableDayStruct `json:"days" bson:"days"`
+	LastUpdated string               `json:"lastUpdated" bson:"lastUpdated"`
 }
 
 func TimeTableToStruct(c *gin.Context, timeTable TimeTable) (TimeTableStruct, error) {

@@ -169,7 +169,12 @@ func parseExcel(filepath string) ExcelJson {
 	if err != nil {
 		return nil
 	}
-	defer file.Close()
+
+	err = file.Close()
+	if err != nil {
+		// handle the error
+		fmt.Println("Error closing the file:", err)
+	}
 
 	// bind the json data to the struct
 	var data ExcelJson
@@ -186,71 +191,128 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	var Name string
 	var TimeTableDays []primitive.ObjectID
 	var TimeTable models.TimeTable
+	var updateExistingTimeTable bool
+	var ExistingTimeTableId primitive.ObjectID
 
-	for _, element := range data {
+	// check if the timetable already exists by checking the header
+	var header = data[0]
+	LastChanged = getLastChanged(header.LastChanged)
+	Name = fmt.Sprint(header.StudySubject, " ", header.SemesterGroup, " ", strings.Replace(header.SemesterYear, " ", "", 1))
 
-		if element.StudySubject != "" {
-			fmt.Println("parsing the header")
-			LastChanged = getLastChanged(element.LastChanged)
-			Name = fmt.Sprint(element.StudySubject, " ", element.SemesterGroup, " ", strings.Replace(element.SemesterYear, " ", "", 1))
-		} else {
-			fmt.Println(fmt.Sprintf("parsing calendarweek %d", element.Calendarweek))
+	updateExistingTimeTable, ExistingTimeTableId = timetableExists(Name)
+	if updateExistingTimeTable && ExistingTimeTableId != primitive.NilObjectID {
+		fmt.Println(fmt.Sprintf("found existing timetable '%s' with %s", Name, ExistingTimeTableId))
 
-			// make it iterable
-			DaysToParse := element.Days
-			for _, day := range DaysToParse {
-				dayDate := day.Date
-
-				var TimeTableDay models.TimeTableDay
-				var TimeSlotIds []primitive.ObjectID
-				TimeTableDay.ID = primitive.NewObjectID()
-				TimeTableDay.Date = convertToDateTime("2006-01-02 00:00:00", dayDate)
-				TimeTableDay.LastUpdated = LastChanged
-
-				// iterate over the lessons
-				for _, lesson := range day.Lessons {
-					// skip empty time slots
-					if strings.HasPrefix(lesson.Name, "no lesson") {
-						continue
-					}
-
-					startTime, endTime := getStartAndEndTime(lesson.Time)
-					timeslot := models.TimeSlot{
-						ID:              primitive.NewObjectID(),
-						Name:            lesson.Name,
-						LecturerId:      getLecturer(lesson.Lecturer),
-						LectureId:       getLecture(lesson),
-						TimeStart:       startTime,
-						TimeEnd:         endTime,
-						IsOnline:        lesson.IsOnline,
-						IsReExamination: lesson.IsReExamination,
-						IsExam:          lesson.IsExam,
-						IsCancelled:     lesson.WasCanceled,
-						WasMoved:        lesson.WasMoved,
-						IsEvent:         lesson.IsEvent,
-						IsHoliday:       lesson.IsHoliday,
-						RoomConfigId:    primitive.NilObjectID, // TODO: support rooms
-						LastUpdated:     LastChanged,
-					}
-
-					TimeSlotIds = append(TimeSlotIds, saveTimeSlot(timeslot))
-				}
-
-				TimeTableDay.TimeSlotIds = TimeSlotIds
-				id := saveTimeTableDay(TimeTableDay)
-				TimeTableDays = append(TimeTableDays, id)
-			}
+		if LastChanged <= getTimetableLastUpdated(ExistingTimeTableId) {
+			c.JSON(http.StatusOK, gin.H{"msg": "no changes - timetable is already up2date"})
+			return
 		}
 	}
 
-	TimeTable.ID = primitive.NewObjectID()
+	for index, element := range data {
+		if index == 0 {
+			continue // skip the header
+		}
+
+		fmt.Println(fmt.Sprintf("parsing calendarweek %d", element.Calendarweek))
+
+		// make it iterable
+		DaysToParse := element.Days
+		for _, day := range DaysToParse {
+			dayDate := day.Date
+
+			var TimeTableDay models.TimeTableDay
+			var TimeSlotIds []primitive.ObjectID
+			TimeTableDay.ID = primitive.NewObjectID()
+			TimeTableDay.Date = convertToDateTime("2006-01-02 00:00:00", dayDate)
+			TimeTableDay.LastUpdated = LastChanged
+
+			// iterate over the lessons
+			for _, lesson := range day.Lessons {
+				// skip empty time slots
+				if strings.HasPrefix(lesson.Name, "no lesson") {
+					continue
+				}
+
+				startTime, endTime := getStartAndEndTime(lesson.Time)
+				timeslot := models.TimeSlot{
+					ID:              primitive.NewObjectID(),
+					Name:            lesson.Name,
+					LecturerId:      getLecturer(lesson.Lecturer),
+					LectureId:       getLecture(lesson),
+					TimeStart:       startTime,
+					TimeEnd:         endTime,
+					IsOnline:        lesson.IsOnline,
+					IsReExamination: lesson.IsReExamination,
+					IsExam:          lesson.IsExam,
+					IsCancelled:     lesson.WasCanceled,
+					WasMoved:        lesson.WasMoved,
+					IsEvent:         lesson.IsEvent,
+					IsHoliday:       lesson.IsHoliday,
+					RoomConfigId:    primitive.NilObjectID, // TODO: support rooms
+					LastUpdated:     LastChanged,
+				}
+
+				TimeSlotIds = append(TimeSlotIds, saveTimeSlot(timeslot))
+			}
+
+			TimeTableDay.TimeSlotIds = TimeSlotIds
+			id := saveTimeTableDay(TimeTableDay)
+			TimeTableDays = append(TimeTableDays, id)
+		}
+	}
+	if updateExistingTimeTable {
+		TimeTable.ID = ExistingTimeTableId
+		// currentTime := convertToDateTime(time.DateTime, time.Now().Format("2006-01-02 15:04:05"))
+
+		// delete all old TimeTableDays and TimeSlots
+		timeTableDaysIDs := getAllTimeTableDays(ExistingTimeTableId)
+		fmt.Println(fmt.Sprintf("deleting %d timeTableDays", len(timeTableDaysIDs)))
+		for _, dayID := range timeTableDaysIDs {
+			timeSlotIDs := getAllTimeSlots(dayID)
+
+			for _, timeSlotID := range timeSlotIDs {
+				deleteTimeSlot(timeSlotID)
+			}
+			deleteTimeTableDay(dayID)
+		}
+	} else {
+		TimeTable.ID = primitive.NewObjectID()
+		// TimeTable.LastUpdated = LastChanged
+	}
+
 	TimeTable.Name = Name
 	TimeTable.Days = TimeTableDays
+	TimeTable.LastUpdated = LastChanged
 
-	id := saveTimeTable(TimeTable)
+	var id primitive.ObjectID
+	if updateExistingTimeTable {
+		id = updateTimeTable(TimeTable)
+	} else {
+		id = saveTimeTable(TimeTable)
+	}
+
+	if id == primitive.NilObjectID {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while updating the timetable"})
+		return
+	}
 	fmt.Println(id)
 
-	c.JSON(http.StatusOK, gin.H{"msg": "created"})
+	if updateExistingTimeTable {
+		c.JSON(http.StatusOK, gin.H{"msg": "updated"})
+	} else {
+		c.JSON(http.StatusOK, gin.H{"msg": "created"})
+	}
+}
+
+func convertToDateTime(layout string, input string) primitive.DateTime {
+	//set timezone to local
+	loc, _ := time.LoadLocation("Europe/Berlin")
+	parsedTime, err := time.ParseInLocation(layout, input, loc)
+	if err != nil {
+		fmt.Println("Error parsing time:", err)
+	}
+	return primitive.DateTime(primitive.NewDateTimeFromTime(parsedTime))
 }
 
 func getLastChanged(input string) primitive.DateTime {
@@ -273,17 +335,6 @@ func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTi
 	endTime := convertToDateTime(time.DateTime, endTimeStr)
 
 	return startTime, endTime
-
-}
-
-func convertToDateTime(layout string, input string) primitive.DateTime {
-	//set timezone to local
-	loc, _ := time.LoadLocation("Europe/Berlin")
-	parsedTime, err := time.ParseInLocation(layout, input, loc)
-	if err != nil {
-		fmt.Println("Error parsing time:", err)
-	}
-	return primitive.DateTime(primitive.NewDateTimeFromTime(parsedTime))
 }
 
 func getLecturer(lecturer string) primitive.ObjectID {
@@ -302,21 +353,6 @@ func getLecturer(lecturer string) primitive.ObjectID {
 		} else {
 			return lecturerObj.ID
 		}
-	}
-}
-
-func saveLecturer(lecturer string) primitive.ObjectID {
-	lecturerObj := models.Lecturer{
-		ID:       primitive.NewObjectID(),
-		SureName: lecturer,
-	}
-
-	_, err := database.MongoDB.Collection("Lecturer").InsertOne(context.Background(), lecturerObj)
-	if err != nil {
-		fmt.Println("Error creating new lecturer:", err)
-		return primitive.NilObjectID
-	} else {
-		return lecturerObj.ID
 	}
 }
 
@@ -339,6 +375,45 @@ func getLecture(lecture Lesson) primitive.ObjectID {
 	}
 }
 
+func getAllTimeTableDays(timeTableID primitive.ObjectID) []primitive.ObjectID {
+	var timeTable models.TimeTable
+	err := database.MongoDB.Collection("TimeTable").FindOne(context.Background(), bson.M{
+		"_id": timeTableID,
+	}).Decode(&timeTable)
+
+	if err != nil {
+		return nil
+	} else {
+		return timeTable.Days // list of ObjectIDs
+	}
+}
+
+func getAllTimeSlots(timeTableDayID primitive.ObjectID) []primitive.ObjectID {
+	var timeTableDay models.TimeTableDay
+	err := database.MongoDB.Collection("TimeTableDay").FindOne(context.Background(), bson.M{
+		"_id": timeTableDayID,
+	}).Decode(&timeTableDay)
+
+	if err != nil {
+		return nil
+	} else {
+		return timeTableDay.TimeSlotIds // list of ObjectIDs
+	}
+}
+
+func getTimetableLastUpdated(id primitive.ObjectID) primitive.DateTime {
+	var timeTable models.TimeTable
+	err := database.MongoDB.Collection("TimeTable").FindOne(context.Background(), bson.M{
+		"_id": id,
+	}).Decode(&timeTable)
+
+	if err != nil {
+		return primitive.DateTime(0)
+	} else {
+		return timeTable.LastUpdated
+	}
+}
+
 func saveLecture(lecture string) primitive.ObjectID {
 	lectureObj := models.Lecture{
 		ID:   primitive.NewObjectID(),
@@ -351,6 +426,21 @@ func saveLecture(lecture string) primitive.ObjectID {
 		return primitive.NilObjectID
 	} else {
 		return lectureObj.ID
+	}
+}
+
+func saveLecturer(lecturer string) primitive.ObjectID {
+	lecturerObj := models.Lecturer{
+		ID:       primitive.NewObjectID(),
+		SureName: lecturer,
+	}
+
+	_, err := database.MongoDB.Collection("Lecturer").InsertOne(context.Background(), lecturerObj)
+	if err != nil {
+		fmt.Println("Error creating new lecturer:", err)
+		return primitive.NilObjectID
+	} else {
+		return lecturerObj.ID
 	}
 }
 
@@ -381,5 +471,48 @@ func saveTimeTable(timeTable models.TimeTable) primitive.ObjectID {
 		return primitive.NilObjectID
 	} else {
 		return timeTable.ID
+	}
+}
+
+func timetableExists(name string) (bool, primitive.ObjectID) {
+	var timeTable models.TimeTable
+	err := database.MongoDB.Collection("TimeTable").FindOne(context.Background(), bson.M{
+		"name": name,
+	}).Decode(&timeTable)
+
+	if err != nil {
+		return false, primitive.NilObjectID
+	} else {
+		return true, timeTable.ID
+	}
+}
+
+func updateTimeTable(timeTable models.TimeTable) primitive.ObjectID {
+	_, err := database.MongoDB.Collection("TimeTable").ReplaceOne(context.Background(), bson.M{
+		"_id": timeTable.ID,
+	}, timeTable)
+	if err != nil {
+		fmt.Println("Error updating timetable:", err)
+		return primitive.NilObjectID
+	} else {
+		return timeTable.ID
+	}
+}
+
+func deleteTimeTableDay(id primitive.ObjectID) {
+	_, err := database.MongoDB.Collection("TimeTableDay").DeleteOne(context.Background(), bson.M{
+		"_id": id,
+	})
+	if err != nil {
+		fmt.Println("Error deleting timeTableDay:", err)
+	}
+}
+
+func deleteTimeSlot(id primitive.ObjectID) {
+	_, err := database.MongoDB.Collection("TimeSlot").DeleteOne(context.Background(), bson.M{
+		"_id": id,
+	})
+	if err != nil {
+		fmt.Println("Error deleting timeSlot:", err)
 	}
 }
