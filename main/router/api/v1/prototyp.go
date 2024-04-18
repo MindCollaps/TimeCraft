@@ -194,7 +194,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	var updateExistingTimeTable bool
 	var ExistingTimeTableId primitive.ObjectID
 
-	// check if the timetable already exists by checking the header
+	// check if the timetable already exists by checking the name and the last updated date
 	var header = data[0]
 	LastChanged = getLastChanged(header.LastChanged)
 	Name = fmt.Sprint(header.StudySubject, " ", header.SemesterGroup, " ", strings.Replace(header.SemesterYear, " ", "", 1))
@@ -263,22 +263,18 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	}
 	if updateExistingTimeTable {
 		TimeTable.ID = ExistingTimeTableId
-		// currentTime := convertToDateTime(time.DateTime, time.Now().Format("2006-01-02 15:04:05"))
 
 		// delete all old TimeTableDays and TimeSlots
 		timeTableDaysIDs := getAllTimeTableDays(ExistingTimeTableId)
 		fmt.Println(fmt.Sprintf("deleting %d old timeTableDays", len(timeTableDaysIDs)))
 		for _, dayID := range timeTableDaysIDs {
-			timeSlotIDs := getAllTimeSlots(dayID)
-
-			for _, timeSlotID := range timeSlotIDs {
+			for _, timeSlotID := range getAllTimeSlots(dayID) {
 				deleteTimeSlot(timeSlotID)
 			}
 			deleteTimeTableDay(dayID)
 		}
 	} else {
 		TimeTable.ID = primitive.NewObjectID()
-		// TimeTable.LastUpdated = LastChanged
 	}
 
 	TimeTable.Name = Name
