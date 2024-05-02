@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -170,7 +171,7 @@ func parseExcel(filepath string) ExcelJson {
 
 	cmd := exec.Command(pythonPath, pythonScript, "-f", filepath)
 	if err := cmd.Run(); err != nil {
-		fmt.Println("Error: ", err)
+		log.Println("Error: ", err)
 	}
 
 	if _, err := os.Stat(JsonFilePath); err != nil {
@@ -185,7 +186,7 @@ func parseExcel(filepath string) ExcelJson {
 
 	defer func() {
 		if err := file.Close(); err != nil {
-			fmt.Println("Error closing file:", err)
+			log.Println("Error closing file:", err)
 		}
 	}()
 
@@ -214,7 +215,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 
 	updateExistingTimeTable, ExistingTimeTableId = timetableExists(Name)
 	if updateExistingTimeTable && ExistingTimeTableId != primitive.NilObjectID {
-		fmt.Println(fmt.Sprintf("found existing timetable '%s' with %s", Name, ExistingTimeTableId))
+		log.Println(fmt.Sprintf("found existing timetable '%s' with %s", Name, ExistingTimeTableId))
 
 		if LastChanged <= getTimetableLastUpdated(ExistingTimeTableId) {
 			c.JSON(http.StatusNotModified, gin.H{"msg": "no changes - timetable is already up2date"})
@@ -227,7 +228,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 			continue // skip the header
 		}
 
-		fmt.Println(fmt.Sprintf("parsing calendarweek %d", element.Calendarweek))
+		log.Println(fmt.Sprintf("parsing calendarweek %d", element.Calendarweek))
 
 		// make it iterable
 		DaysToParse := element.Days
@@ -279,7 +280,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 
 		// delete all old TimeTableDays and TimeSlots
 		timeTableDaysIDs := getAllTimeTableDays(ExistingTimeTableId)
-		fmt.Println(fmt.Sprintf("deleting %d old timeTableDays", len(timeTableDaysIDs)))
+		log.Println(fmt.Sprintf("deleting %d old timeTableDays", len(timeTableDaysIDs)))
 		for _, dayID := range timeTableDaysIDs {
 			for _, timeSlotID := range getAllTimeSlots(dayID) {
 				deleteTimeSlot(timeSlotID)
@@ -306,7 +307,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 		fmt.Println("Error: invalid ID")
 		return
 	}
-	fmt.Println(id)
+	log.Println(id)
 
 	if updateExistingTimeTable {
 		c.JSON(http.StatusOK, gin.H{"msg": "successfully updated the timetable"})
@@ -320,7 +321,7 @@ func convertToDateTime(layout string, input string) primitive.DateTime {
 	loc, _ := time.LoadLocation("Europe/Berlin")
 	parsedTime, err := time.ParseInLocation(layout, input, loc)
 	if err != nil {
-		fmt.Println("Error parsing time:", err)
+		log.Println("Error parsing time:", err)
 	}
 	return primitive.DateTime(primitive.NewDateTimeFromTime(parsedTime))
 }
@@ -358,7 +359,7 @@ func getLecturer(lecturer string) primitive.ObjectID {
 		}).Decode(&lecturerObj)
 
 		if err != nil {
-			fmt.Println(fmt.Sprintf("Creating new lecturer '%s'", lecturer))
+			log.Println(fmt.Sprintf("Creating new lecturer '%s'", lecturer))
 			return saveLecturer(lecturer)
 		} else {
 			return lecturerObj.ID
@@ -377,7 +378,7 @@ func getLecture(lecture Lesson) primitive.ObjectID {
 		}).Decode(&lectureObj)
 
 		if err != nil {
-			fmt.Println(fmt.Sprintf("Creating new lecture '%s'", lecture.Name))
+			log.Println(fmt.Sprintf("Creating new lecture '%s'", lecture.Name))
 			return saveLecture(lecture.Name)
 		} else {
 			return lectureObj.ID
@@ -432,7 +433,7 @@ func saveLecture(lecture string) primitive.ObjectID {
 
 	_, err := database.MongoDB.Collection("Lecture").InsertOne(context.Background(), lectureObj)
 	if err != nil {
-		fmt.Println("Error creating new lecture:", err)
+		log.Println("Error creating new lecture:", err)
 		return primitive.NilObjectID
 	} else {
 		return lectureObj.ID
@@ -447,7 +448,7 @@ func saveLecturer(lecturer string) primitive.ObjectID {
 
 	_, err := database.MongoDB.Collection("Lecturer").InsertOne(context.Background(), lecturerObj)
 	if err != nil {
-		fmt.Println("Error creating new lecturer:", err)
+		log.Println("Error creating new lecturer:", err)
 		return primitive.NilObjectID
 	} else {
 		return lecturerObj.ID
@@ -457,7 +458,7 @@ func saveLecturer(lecturer string) primitive.ObjectID {
 func saveTimeSlot(timeSlot models.TimeSlot) primitive.ObjectID {
 	_, err := database.MongoDB.Collection("TimeSlot").InsertOne(context.Background(), timeSlot)
 	if err != nil {
-		fmt.Println("Error creating new timeSlot:", err)
+		log.Println("Error creating new timeSlot:", err)
 		return primitive.NilObjectID
 	} else {
 		return timeSlot.ID
@@ -467,7 +468,7 @@ func saveTimeSlot(timeSlot models.TimeSlot) primitive.ObjectID {
 func saveTimeTableDay(timeTableDay models.TimeTableDay) primitive.ObjectID {
 	_, err := database.MongoDB.Collection("TimeTableDay").InsertOne(context.Background(), timeTableDay)
 	if err != nil {
-		fmt.Println("Error creating new timeTableDay:", err)
+		log.Println("Error creating new timeTableDay:", err)
 		return primitive.NilObjectID
 	} else {
 		return timeTableDay.ID
@@ -477,7 +478,7 @@ func saveTimeTableDay(timeTableDay models.TimeTableDay) primitive.ObjectID {
 func saveTimeTable(timeTable models.TimeTable) primitive.ObjectID {
 	_, err := database.MongoDB.Collection("TimeTable").InsertOne(context.Background(), timeTable)
 	if err != nil {
-		fmt.Println("Error creating new timeTable:", err)
+		log.Println("Error creating new timeTable:", err)
 		return primitive.NilObjectID
 	} else {
 		return timeTable.ID
@@ -502,7 +503,7 @@ func updateTimeTable(timeTable models.TimeTable) primitive.ObjectID {
 		"_id": timeTable.ID,
 	}, timeTable)
 	if err != nil {
-		fmt.Println("Error updating timetable:", err)
+		log.Println("Error updating timetable:", err)
 		return primitive.NilObjectID
 	} else {
 		return timeTable.ID
@@ -514,7 +515,7 @@ func deleteTimeTableDay(id primitive.ObjectID) {
 		"_id": id,
 	})
 	if err != nil {
-		fmt.Println("Error deleting timeTableDay:", err)
+		log.Println("Error deleting timeTableDay:", err)
 	}
 }
 
@@ -523,6 +524,6 @@ func deleteTimeSlot(id primitive.ObjectID) {
 		"_id": id,
 	})
 	if err != nil {
-		fmt.Println("Error deleting timeSlot:", err)
+		log.Println("Error deleting timeSlot:", err)
 	}
 }

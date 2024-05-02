@@ -2,12 +2,12 @@ package v1
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"net/http"
 	joi "src/main/core"
 	"src/main/crypt"
@@ -27,7 +27,7 @@ func userHandler(cg *gin.RouterGroup) {
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -44,7 +44,7 @@ func userHandler(cg *gin.RouterGroup) {
 				token, err := crypt.GenerateLoginToken(user.ID)
 				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Token generation failed"})
-					fmt.Println(err)
+					log.Println(err)
 					return
 				}
 
@@ -58,7 +58,7 @@ func userHandler(cg *gin.RouterGroup) {
 			}
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"msg": "An error occurred", "error": "Database error"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 	})
@@ -72,26 +72,26 @@ func userHandler(cg *gin.RouterGroup) {
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
 		//joi validation
 		if err := joi.UsernameSchema.Validate(requestBody.Username); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Username invalid. Please follow the username rules"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
 		if err := joi.PasswordSchema.Validate(requestBody.Password); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Password invalid. Please follow the password rules"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
 		if err := joi.EmailSchema.Validate(requestBody.Email); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Email invalid. Please follow the email rules"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -106,13 +106,13 @@ func userHandler(cg *gin.RouterGroup) {
 		// when the user exists, there is no error --> only continue with error, because then the user doesn't exist yet
 		if err == nil {
 			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "Username or Email already exists"})
-			fmt.Println("Username or Email already exists")
+			log.Println("Username or Email already exists")
 			return
 		} else if !errors.Is(err, mongo.ErrNoDocuments) {
 			// Handle other database query errors
 			// mongo.ErrNoDocuments is expected when the user does not exist
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -121,13 +121,13 @@ func userHandler(cg *gin.RouterGroup) {
 		// when the email exists, there is no error --> only continue with error, because then the email doesn't exist yet
 		if err == nil {
 			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "Username or Email already exists"})
-			fmt.Println("Username or Email already exists")
+			log.Println("Username or Email already exists")
 			return
 		} else if !errors.Is(err, mongo.ErrNoDocuments) {
 			// Handle other database query errors
 			// mongo.ErrNoDocuments is expected when the user does not exist
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -143,7 +143,7 @@ func userHandler(cg *gin.RouterGroup) {
 		_, err = database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -160,7 +160,7 @@ func userHandler(cg *gin.RouterGroup) {
 		_, err = database.MongoDB.Collection("user").DeleteOne(c, bson.M{"_id": objID})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "Deleted user"})
