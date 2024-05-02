@@ -55,27 +55,31 @@ func prtHandler(cg *gin.RouterGroup) {
 		// get file from body
 		file, header, err := c.Request.FormFile("file")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			fmt.Println(err)
 			return
 		}
 
 		// Check the file extension
 		if !strings.HasSuffix(header.Filename, ".xlsx") {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "File is not an excel file"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid file extension"})
+			fmt.Println("Error: Invalid file extension")
 			return
 		}
 
 		// Check the file size
 		size, err := file.Seek(0, io.SeekEnd)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to determine file size"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to determine file size"})
+			fmt.Println("Error: Unable to determine file size")
 			return
 		}
 		// Reset the read pointer to the start of the file
 		_, _ = file.Seek(0, io.SeekStart)
 
 		if size > int64(maxFileSize) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds limit of " + fmt.Sprint(maxFileSize>>20) + " MiB"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "File size exceeds limit of " + fmt.Sprint(maxFileSize>>20) + " MiB"})
+			fmt.Println("Error: File size exceeds the limit")
 			return
 		}
 
@@ -95,14 +99,16 @@ func prtHandler(cg *gin.RouterGroup) {
 		// create the temporary folder
 		if _, err := os.Stat(tempFolderPath); os.IsNotExist(err) {
 			if err := os.Mkdir(tempFolderPath, os.ModePerm); err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create temporary folder"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to create temp folder"})
+				fmt.Println(err)
 				return
 			}
 		}
 
 		// save file to disk into the temp folder
 		if err := c.SaveUploadedFile(header, tempFilePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save file"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to save file"})
+			fmt.Println(err)
 			return
 		}
 
@@ -110,19 +116,25 @@ func prtHandler(cg *gin.RouterGroup) {
 		var jsonData = parseExcel(tempFilePath)
 
 		if jsonData == nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to parse excel file"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to parse Excel file"})
+			fmt.Println("Error: No data returned from parseExcel")
+			return
 		} else {
 			parseJson(jsonData, c)
 
 			// cleanup
 			err = os.Remove(tempFilePath)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to delete temp file"})
+				fmt.Println(err)
+				return
 			}
 
 			err = os.Remove(JsonFilePath)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to delete temp file"})
+				fmt.Println(err)
+				return
 			}
 		}
 	})
@@ -134,7 +146,8 @@ func prtHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			fmt.Println(err)
 			return
 		}
 
@@ -204,7 +217,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 		fmt.Println(fmt.Sprintf("found existing timetable '%s' with %s", Name, ExistingTimeTableId))
 
 		if LastChanged <= getTimetableLastUpdated(ExistingTimeTableId) {
-			c.JSON(http.StatusOK, gin.H{"msg": "no changes - timetable is already up2date"})
+			c.JSON(http.StatusNotModified, gin.H{"msg": "no changes - timetable is already up2date"})
 			return
 		}
 	}
@@ -289,15 +302,16 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	}
 
 	if id == primitive.NilObjectID {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while updating the timetable"})
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Error while updating the timetable"})
+		fmt.Println("Error: invalid ID")
 		return
 	}
 	fmt.Println(id)
 
 	if updateExistingTimeTable {
-		c.JSON(http.StatusOK, gin.H{"msg": "updated"})
+		c.JSON(http.StatusOK, gin.H{"msg": "successfully updated the timetable"})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"msg": "created"})
+		c.JSON(http.StatusOK, gin.H{"msg": "successfully created the timetable"})
 	}
 }
 
