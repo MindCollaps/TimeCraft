@@ -144,10 +144,14 @@ func userHandler(cg *gin.RouterGroup) {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid ID"})
 			return
 		}
-		_, err = database.MongoDB.Collection("user").DeleteOne(c, bson.M{"_id": objID})
+		result, err := database.MongoDB.Collection("user").DeleteOne(c, bson.M{"_id": objID})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Database error"})
 			fmt.Println(err)
+			return
+		}
+		if result.DeletedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "Deleted user"})

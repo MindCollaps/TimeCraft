@@ -65,23 +65,43 @@ func stygrpHandler(cg *gin.RouterGroup) {
 		c.JSON(http.StatusOK, gin.H{"msg": "Created Semester Group"})
 	})
 
-	cg.GET("/{id}", func(c *gin.Context) {
-		id := c.Query("id")
-		if id == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"msg": "Please give correct ID"})
+	cg.GET("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 			return
-		} else {
-			//DB query
 		}
+		var studentgroup models.StudentGroup
+		err = database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&studentgroup)
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				c.JSON(http.StatusNotFound, gin.H{"error": "StudentGroup not found"})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			}
+			return
+		}
+		c.JSON(http.StatusOK, studentgroup)
 	})
 
-	cg.PATCH("/{id}", func(c *gin.Context) {
-
-		//Update
-	})
-
-	cg.DELETE("/{id}", func(c *gin.Context) {
-
-		//Delete
+	cg.DELETE("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			return
+		}
+		result, err := database.MongoDB.Collection("StudentGroup").DeleteOne(c, bson.M{"_id": objectID})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			fmt.Println(err)
+			return
+		}
+		if result.DeletedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "StudentGroup not found"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"msg": "StudentGroup deleted"})
 	})
 }
