@@ -8,6 +8,7 @@ import (
 	"src/main/core"
 	"src/main/crypt"
 	"src/main/database"
+	"src/main/mail"
 	"src/main/router"
 )
 
@@ -24,6 +25,16 @@ func main() {
 	}
 
 	database.InitDatabase()
+	s := mail.InitMailer()
+	if !s {
+		disabled := os.Getenv("MAIL_DISABLED")
+		if disabled == "true" {
+			log.Println("Mail is disabled - ignoring error")
+		} else {
+			log.Fatal("Failed to setup mailer")
+			return
+		}
+	}
 
 	core.LoadTemplates(r)
 	core.LoadServerAssets(r)
@@ -31,14 +42,14 @@ func main() {
 	router.InitRouter(r)
 
 	//set address
-	address := os.Getenv("ADDRESS")
+	address := os.Getenv("PORT")
 
 	if address == "" {
-		log.Println("No address set in ..env file")
+		log.Println("No address set in .env file")
 		address = ":8080"
 		log.Println("Defaulting to " + address)
 	} else {
-		log.Println("Listening on " + address)
+		log.Println("Listening to " + address)
 	}
 
 	r.Run(address)
