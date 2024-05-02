@@ -21,7 +21,6 @@
 go.work
 
 *.env
-scripts/*.json
 *.log
 *.pem
 *.xlsx
@@ -189,3 +188,5 @@ cython_debug/
 .idea/
 *.old
 .vscode/
+scripts/*.json
+scripts/Stundenplan_parser/*.json
