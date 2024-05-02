@@ -14,6 +14,174 @@ tags:
   - name: Semester Group
   - name: Study Group
 paths:
+  /prt/import/json:
+    summary: Excel Import
+    post:
+      summary: Import API
+      description: Used to import a timetable from an json file
+      tags:
+        - Import
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                json_data:
+                  type: string
+              example:
+                json_data: [
+                              {
+                                  "study_subject": "dIT22",
+                                  "semester_group": "S2",
+                                  "semester": "SoSe 2024",
+                                  "semester_year": "4. Semester",
+                                  "last_changed": "Stand: 19.03.2024"
+                              },
+                              {
+                                "days": [
+                                    {
+                                        "date": "2024-03-25 00:00:00",
+                                        "lessons": [
+                                            {
+                                                "time": "8:00-16:15",
+                                                "isHoliday": false,
+                                                "name": "no lesson --> freetime",
+                                                "isOnline": false,
+                                                "isReExamination": false,
+                                                "isExam": false,
+                                                "wasCanceled": false,
+                                                "wasMoved": false,
+                                                "lecturer": null,
+                                                "isEvent": false
+                                            },
+                                            {
+                                                "time": "16:30-19:45",
+                                                "isHoliday": false,
+                                                "name": "SiS",
+                                                "isOnline": false,
+                                                "isReExamination": false,
+                                                "isExam": false,
+                                                "wasCanceled": false,
+                                                "wasMoved": false,
+                                                "lecturer": null,
+                                                "isEvent": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "date": "2024-03-29 00:00:00",
+                                        "lessons": [
+                                            {
+                                                "time": "8:00-19:45",
+                                                "isHoliday": true,
+                                                "name": "Feiertag: Karfreitag",
+                                                "isOnline": false,
+                                                "isReExamination": false,
+                                                "isExam": false,
+                                                "wasCanceled": false,
+                                                "wasMoved": false,
+                                                "lecturer": null,
+                                                "isEvent": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "date": "2024-03-30 00:00:00",
+                                        "lessons": [
+                                            {
+                                                "time": "8:00-19:45",
+                                                "isHoliday": false,
+                                                "name": "no lesson --> freetime",
+                                                "isOnline": false,
+                                                "isReExamination": false,
+                                                "isExam": false,
+                                                "wasCanceled": false,
+                                                "wasMoved": false,
+                                                "lecturer": null,
+                                                "isEvent": false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "calendarweek": 13,
+                                "start_row": 5,
+                                "end_row": 13
+                            }
+                        ]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /prt/import/excel:
+    summary: Excel Import
+    post:
+      summary: Import API
+      description: Used to import a timetable from an excel file
+      tags:
+        - Import
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              example:
+                file: file.xlsx
+
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
   /usr/login:
     summary: Login
     post:
@@ -214,7 +382,7 @@ paths:
                 $ref: '#/components/schemas/NotAuthorizedRes'
     patch:
       summary: Update timetable by ID
-      description: Update the timetable for a user
+      description: Update the timetable
       tags:
         - Timetable
       security:
