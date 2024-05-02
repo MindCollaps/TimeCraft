@@ -25,7 +25,7 @@ func userHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
 			return
 		}
 
@@ -65,26 +65,26 @@ func userHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
 			fmt.Println(err)
 			return
 		}
 
 		//joi validation
 		if err := joi.UsernameSchema.Validate(requestBody.Username); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "Username invalid", "field": "username"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "Username invalid"})
 			fmt.Println(err)
 			return
 		}
 
 		if err := joi.PasswordSchema.Validate(requestBody.Password); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "Password invalid", "field": "password"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "Password invalid"})
 			fmt.Println(err)
 			return
 		}
 
 		if err := joi.EmailSchema.Validate(requestBody.Email); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "Email invalid", "field": "email"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "Email invalid"})
 			fmt.Println(err)
 			return
 		}
@@ -98,18 +98,16 @@ func userHandler(cg *gin.RouterGroup) {
 		err := database.MongoDB.Collection("user").FindOne(c, bson.M{"username": username}).Decode(&existingUser)
 
 		if err == nil {
-			// User with the same username already exists
-			c.JSON(http.StatusConflict, gin.H{"msg": "Username already exists"})
-			fmt.Println("Username already exists")
+			c.JSON(http.StatusConflict, gin.H{"msg": "Username or Email already exists"})
+			fmt.Println("Username or Email already exists")
 			return
 		}
 
 		err = database.MongoDB.Collection("user").FindOne(c, bson.M{"email": email}).Decode(&existingUser)
 
 		if err == nil {
-			// User with the same email already exists
-			c.JSON(http.StatusConflict, gin.H{"msg": "Email already exists"})
-			fmt.Println("Email already exists")
+			c.JSON(http.StatusConflict, gin.H{"msg": "Username or Email already exists"})
+			fmt.Println("Username or Email already exists")
 			return
 		} else if err != mongo.ErrNoDocuments {
 			// Handle other database query errors
@@ -146,7 +144,7 @@ func userHandler(cg *gin.RouterGroup) {
 		}
 		_, err = database.MongoDB.Collection("user").DeleteOne(c, bson.M{"_id": objID})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
 			fmt.Println(err)
 			return
 		}
