@@ -1,0 +1,1203 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TimeCraft API",
+    "version": "1.0.0",
+    "description": "This is the documentation of the timecraft api, used for the entire system.",
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/license/mit/"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://timecraft.neoin.space/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "User"
+    },
+    {
+      "name": "Timetable"
+    },
+    {
+      "name": "Semester Group"
+    },
+    {
+      "name": "Study Group"
+    }
+  ],
+  "paths": {
+    "/usr/login": {
+      "summary": "Login",
+      "post": {
+        "summary": "Login API",
+        "description": "Used to login the user",
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "username": "John Doe",
+                  "password": "Super Secret"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usr/register": {
+      "summary": "User Registration",
+      "post": {
+        "summary": "Register API",
+        "description": "Used to register a new user",
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "username": "John Doe",
+                  "password": "Super Secret",
+                  "email": "john.doe@example.com"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registration successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tbl": {
+      "post": {
+        "summary": "Create TimeTable",
+        "description": "Create a new TimeTable",
+        "tags": [
+          "Timetable"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimeTable"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "TimeTable created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tbl/{id}": {
+      "get": {
+        "summary": "Get timetable by ID",
+        "description": "Get the timetable for a user",
+        "tags": [
+          "Timetable"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update timetable by ID",
+        "description": "Update the timetable for a user",
+        "tags": [
+          "Timetable"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimeTable"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete timetable by ID",
+        "description": "Delete the timetable for a user",
+        "tags": [
+          "Timetable"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sgrp": {
+      "post": {
+        "summary": "Create Semester Group",
+        "description": "Create a new Semester Group",
+        "tags": [
+          "Semester Group"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SemesterGroup"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SemesterGroup created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sgrp/{id}": {
+      "summary": "Delete Semester Group",
+      "get": {
+        "summary": "Get semester group by ID",
+        "description": "Get the details of a semester group",
+        "tags": [
+          "Semester Group"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update semester group by ID",
+        "description": "Update the name of a semester group (orga permission required)",
+        "tags": [
+          "Semester Group"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "name": "New Semester Group Name"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete semester group by ID",
+        "description": "Delete a semester group (orga permission required)",
+        "tags": [
+          "Semester Group"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stygrp": {
+      "post": {
+        "summary": "Create StudyGroup",
+        "description": "Create a new StudyGroup",
+        "tags": [
+          "Study Group"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentGroup"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "StudyGroup created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stygrp/{id}": {
+      "summary": "Get Study Group",
+      "get": {
+        "summary": "Get study group by ID",
+        "description": "Get the details of a study group",
+        "tags": [
+          "Study Group"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update study group by ID",
+        "description": "Update the name of a study group (orga permission required)",
+        "tags": [
+          "Study Group"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "name": "New Study Group Name"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete study group by ID",
+        "description": "Delete a study group (orga permission required)",
+        "tags": [
+          "Study Group"
+        ],
+        "security": [
+          {
+            "session_key": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request body contains errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestRes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not Authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotAuthorizedRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "session_key": {
+        "type": "apiKey",
+        "name": "auth",
+        "in": "cookie"
+      },
+      "api_key": {
+        "type": "apiKey",
+        "name": "X-Auth",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "SuccessRes": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "Status",
+            "example": 200
+          },
+          "msg": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Successful operation"
+          }
+        }
+      },
+      "BadRequestRes": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "Status",
+            "example": 400
+          },
+          "msg": {
+            "type": "string",
+            "description": "Success message",
+            "example": "The request body was malformed"
+          }
+        }
+      },
+      "NotAuthorizedRes": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "Status",
+            "example": 401
+          },
+          "msg": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Not Authorized!"
+          }
+        }
+      },
+      "TimeTable": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "format": "uuid"
+          }
+        }
+      },
+      "Lecture": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "contactHours": {
+            "type": "integer"
+          }
+        }
+      },
+      "LectureGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "timeTableId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "Lecturer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "canHold": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "format": "uuid"
+          },
+          "contactEmail": {
+            "type": "string"
+          },
+          "contactPhone": {
+            "type": "string"
+          },
+          "maxWeekHours": {
+            "type": "integer"
+          }
+        }
+      },
+      "RoomConfig": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "roomNr": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "integer"
+          },
+          "examCapacity": {
+            "type": "integer"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "format": "uuid"
+          },
+          "specialisation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "format": "uuid"
+          }
+        }
+      },
+      "RoomSpecialisation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "SemesterGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "studentGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "format": "uuid"
+          },
+          "timeTableId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "specialisationsIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "format": "uuid"
+          }
+        }
+      },
+      "StudentGroup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "lectureGroupIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "format": "uuid"
+          },
+          "timeTableId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "TimeSlot": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "lecturerID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lectureID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "timeStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timeEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isOnline": {
+            "type": "boolean"
+          },
+          "isReExamination": {
+            "type": "boolean"
+          },
+          "isExam": {
+            "type": "boolean"
+          },
+          "isCancelled": {
+            "type": "boolean"
+          },
+          "wasMoved": {
+            "type": "boolean"
+          },
+          "isEvent": {
+            "type": "boolean"
+          },
+          "roomConfigID": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "TimeTableDay": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timeSlotIDs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "format": "uuid"
+          }
+        }
+      }
+    }
+  }
+}
