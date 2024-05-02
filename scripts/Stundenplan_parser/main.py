@@ -2,6 +2,7 @@ from openpyxl.utils import range_boundaries
 from openpyxl import load_workbook
 import datetime
 import requests
+import argparse
 import glob
 import json
 import re
@@ -34,7 +35,6 @@ class excel_parser():
             "4. Semester": {
                 "S1": {
                     "Stat II": "Neumann-Brosig",
-                    "Stat2": "Neumann-Brosig",
                     "AZ2": "Neumann-Brosig",
                     "PF": "Ahlers",
                     "GCC": "Werner",
@@ -42,7 +42,6 @@ class excel_parser():
                     "ACC": "Birzer",
                     "Krypto": "Neubauer",
                     "ITS-M": "Peine-Paulsen",
-                    "IST-M": "Peine-Paulsen", # lol
                     "ITIL": "Schaper",
                     "ITAA": "Ibrahim",
                     "SiS": "Stephanus",
@@ -50,7 +49,6 @@ class excel_parser():
                 },
                 "S2": {
                     "Stat II": "Neumann-Brosig",
-                    "Stat2": "Neumann-Brosig",
                     "AZ2": "Neumann-Brosig",
                     "PF": "Ahlers",
                     "GCC": "Werner",
@@ -58,7 +56,6 @@ class excel_parser():
                     "ACC": "Birzer",
                     "Krypto": "Neubauer",
                     "ITS-M": "Peine-Paulsen",
-                    "IST-M": "Peine-Paulsen", # lol
                     "ITIL": "Schaper",
                     "ITAA": "Ibrahim",
                     "SiS": "Stephanus",
@@ -606,6 +603,8 @@ class excel_parser():
             "LingAlg": "LinAlg",
             "Zeitversuch": "Zweitversuch",
             "Satistik": "Statistik",
+            "IST-M": "ITS-M",
+            "Stat2": "Stat II",
         }
 
         # only fix strings and skip integers
@@ -737,9 +736,19 @@ class excel_parser():
 
 
 if __name__ == "__main__":
+    argparser = argparse.ArgumentParser(description="Extract the timetable from the excel file")
+    argparser.add_argument("-f", "--file", help="The excel file to parse")
 
-    # get all *.xlsx files from the current directory
-    for file in glob.glob("*.xlsx"):
+    args = argparser.parse_args()
+    files = []
+    
+    if args.file:
+        files.append(args.file)
+    else:
+        # get all *.xlsx files from the current directory
+        files = [file for file in glob.glob("*.xlsx")]
+        
+    for file in files:
         print(f"Parsing {file}")
         parser = excel_parser(file)
         tables = parser.extract_tables(parser.rows)
@@ -755,10 +764,6 @@ if __name__ == "__main__":
 
 # TODO: correct freetime
 #        --> 8:00-9:00 free and then a lesson from 10.45-12.15
-# TODO: add custom classes for lessons
 # TODO: parse Science Winter outside of a table
-# TODO: extract rooms from the Raumplan
-# TODO: get the timetable from the OneDrive
 # TODO: parse other timetables 
 #       --> S1, A1 etc
-#       --> no lecturer names in the WI time table

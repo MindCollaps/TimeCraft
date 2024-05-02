@@ -24,7 +24,7 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -70,15 +70,13 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())
-		c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "Created Semester Group"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created Semester Group"})
 	})
 
 	cg.GET("/{id}", func(c *gin.Context) {
 		id := c.Query("id")
 		if id == "" {
-			c.JSON(400, gin.H{
-				"msg": "Please give correct ID",
-			})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "Please give correct ID"})
 			return
 		} else {
 			//DB query

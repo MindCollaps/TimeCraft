@@ -12,6 +12,7 @@ import (
 	"src/main/crypt"
 	"src/main/database"
 	"src/main/database/models"
+	"strings"
 )
 
 func userHandler(cg *gin.RouterGroup) {
@@ -24,11 +25,11 @@ func userHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		username := requestBody.Username
+		username := strings.ToLower(requestBody.Username)
 		password := requestBody.Password
 
 		//check if user exists
@@ -40,19 +41,19 @@ func userHandler(cg *gin.RouterGroup) {
 				//generate jwt token
 				token, err := crypt.GenerateLoginToken(user.ID)
 				if err != nil {
-					c.JSON(500, gin.H{"msg": "Internal server error"})
+					c.JSON(http.StatusInternalServerError, gin.H{"msg": "Internal server error"})
 					return
 				}
 
 				//set cookie with age of 2 days, setting maxAge to: 3600 * 24 * 2
 				c.SetCookie("auth", token, 3600*24*2, "/", "", false, false)
 
-				c.JSON(200, gin.H{"status": 200, "msg": "Logged in"})
+				c.JSON(http.StatusOK, gin.H{"msg": "Logged in"})
 			} else {
-				c.JSON(401, gin.H{"msg": "Not Authorized"})
+				c.JSON(http.StatusUnauthorized, gin.H{"msg": "Not Authorized"})
 			}
 		} else {
-			c.JSON(401, gin.H{"msg": "Not Authorized"})
+			c.JSON(http.StatusUnauthorized, gin.H{"msg": "Not Authorized"})
 		}
 	})
 
@@ -64,33 +65,33 @@ func userHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(400, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			fmt.Println(err)
 			return
 		}
 
 		//joi validation
 		if err := joi.UsernameSchema.Validate(requestBody.Username); err != nil {
-			c.JSON(400, gin.H{"error": err.Error(), "message": "Username invalid", "field": "username"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "Username invalid", "field": "username"})
 			fmt.Println(err)
 			return
 		}
 
 		if err := joi.PasswordSchema.Validate(requestBody.Password); err != nil {
-			c.JSON(400, gin.H{"error": err.Error(), "message": "Password invalid", "field": "password"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "Password invalid", "field": "password"})
 			fmt.Println(err)
 			return
 		}
 
 		if err := joi.EmailSchema.Validate(requestBody.Email); err != nil {
-			c.JSON(400, gin.H{"error": err.Error(), "message": "Email invalid", "field": "email"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": "Email invalid", "field": "email"})
 			fmt.Println(err)
 			return
 		}
 
-		username := requestBody.Username
+		username := strings.ToLower(requestBody.Username)
 		password := requestBody.Password
-		email := requestBody.Email
+		email := strings.ToLower(requestBody.Email)
 
 		// Check if the user already exists in the database by querying with the username
 		var existingUser models.User
@@ -98,7 +99,7 @@ func userHandler(cg *gin.RouterGroup) {
 
 		if err == nil {
 			// User with the same username already exists
-			c.JSON(http.StatusConflict, gin.H{"message": "Username already exists"})
+			c.JSON(http.StatusConflict, gin.H{"msg": "Username already exists"})
 			fmt.Println("Username already exists")
 			return
 		}
@@ -107,12 +108,12 @@ func userHandler(cg *gin.RouterGroup) {
 
 		if err == nil {
 			// User with the same email already exists
-			c.JSON(http.StatusConflict, gin.H{"message": "Email already exists"})
+			c.JSON(http.StatusConflict, gin.H{"msg": "Email already exists"})
 			fmt.Println("Email already exists")
 			return
 		} else if err != mongo.ErrNoDocuments {
 			// Handle other database query errors
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
 			fmt.Println(err)
 			return
 		}
@@ -126,8 +127,29 @@ func userHandler(cg *gin.RouterGroup) {
 			Email:    email,
 		}
 
-		database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
+		_, err = database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
+			fmt.Println(err)
+			return
+		}
 
-		c.JSON(http.StatusOK, gin.H{"status": 200, "message": "Created user"})
+		c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "Created user"})
+	})
+
+	cg.DELETE("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid ID"})
+			return
+		}
+		_, err = database.MongoDB.Collection("user").DeleteOne(c, bson.M{"_id": objID})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Database error"})
+			fmt.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"msg": "Deleted user"})
 	})
 }
