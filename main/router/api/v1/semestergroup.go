@@ -1,12 +1,12 @@
 package v1
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"net/http"
 	"src/main/database"
 	"src/main/database/models"
@@ -52,12 +52,12 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		if err == nil {
 			// Semester Group with same name already exists
 			c.JSON(http.StatusConflict, gin.H{"msg": "Semester Group already exists"})
-			fmt.Println("Semester Group already exists")
+			log.Println("Semester Group already exists")
 			return
 		} else if err != mongo.ErrNoDocuments {
 			// other db query errors
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
