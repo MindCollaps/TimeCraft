@@ -78,15 +78,20 @@ func main() {
 
 	router.InitRouter(r)
 
-	address := os.Getenv("PORT")
+	address := os.Getenv("ADDRESS")
 
 	if address == "" {
 		log.Println("No address set in .env file")
-		address = ":8080"
+		address = "127.0.0.1:8080"
 		log.Println("Defaulting to " + address)
 	} else {
 		log.Println("Listening to " + address)
 	}
 
-	r.Run(address)
+	err = r.Run(address)
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 }
