@@ -117,6 +117,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+        '304':
+          description: Nothing changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotModifiedRes'
         '400':
           description: Request body contains errors
           content:
@@ -163,6 +169,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+        '304':
+          description: Nothing changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotModifiedRes'
         '400':
           description: Request body contains errors
           content:
@@ -756,33 +768,57 @@ components:
           type: string
           description: Success message
           example: Successful operation
+    NotModifiedRes:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Partial success message
+          example: Nothing changed - already up to date
     BadRequestRes:
       type: object
       properties:
         msg:
           type: string
-          description: Error message
+          description: Generic error message
+          example: An error occured
+        error:
+          type: string
+          description: Error message in detail
           example: The request body was malformed
+
     StatusConflict:
       type: object
       properties:
         msg:
           type: string
-          description: Error message
+          description: Generic error message
+          example: An error occured
+        error:
+          type: string
+          description: Error message in detail
           example: The username or email already exists
     InternalServerError:
       type: object
       properties:
         msg:
           type: string
-          description: Error message
-          example: A server side error occured
+          description: Generic error message
+          example: An error occured
+        error:
+          type: string
+          description: Error message in detail
+          example: The server failed to process the excel file
     NotAuthorizedRes:
       type: object
       properties:
         msg:
           type: string
-          description: Error message
+          description: Generic error message
+          example: An error occured
+        error:
+          type: string
+          description: Error message in detail
           example: Not Authorized!
     TimeTable:
       type: object
