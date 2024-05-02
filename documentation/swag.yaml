@@ -54,6 +54,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /usr/register:
     summary: User Registration
     post:
@@ -91,6 +97,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /usr/{id}:
+    summary: Delete an user
+    delete:
+      summary: API Endpoint to delete an user
+      description: Used to delete an user
+      tags:
+        - User
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /tbl:
     post:
       summary: Create TimeTable
@@ -531,10 +584,6 @@ components:
     SuccessRes:
       type: object
       properties:
-        status:
-          type: integer
-          description: Status
-          example: 200
         msg:
           type: string
           description: Success message
@@ -542,24 +591,30 @@ components:
     BadRequestRes:
       type: object
       properties:
-        status:
-          type: integer
-          description: Status
-          example: 400
         msg:
           type: string
-          description: Success message
+          description: Error message
           example: The request body was malformed
+    StatusConflict:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Error message
+          example: The username or email already exists
+    InternalServerError:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Error message
+          example: A server side error occured
     NotAuthorizedRes:
       type: object
       properties:
-        status:
-          type: integer
-          description: Status
-          example: 401
         msg:
           type: string
-          description: Success message
+          description: Error message
           example: Not Authorized!
     TimeTable:
       type: object
