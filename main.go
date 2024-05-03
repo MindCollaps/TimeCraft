@@ -27,6 +27,8 @@ func main() {
 		return
 	}
 
+	env.Files = Files
+
 	// command line arguments
 	flag.BoolVar(&env.UNIX, "unix", false, "Run the server in unix mode")
 	flag.BoolVar(&env.DEBUG, "debug", false, "Run the server in debug mode")
