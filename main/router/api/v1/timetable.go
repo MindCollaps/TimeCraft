@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"net/http"
 	"src/main/database"
 	"src/main/database/models"
@@ -137,7 +138,7 @@ func tblHandler(cg *gin.RouterGroup) {
 		result, err := database.MongoDB.Collection("TimeTable").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		if result.DeletedCount == 0 {
