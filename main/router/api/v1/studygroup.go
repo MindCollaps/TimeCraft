@@ -13,8 +13,8 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/stygrp/...
 func stygrpHandler(cg *gin.RouterGroup) {
-	//    /api/v1/stygrp/...
 	cg.POST("/stygrp", func(c *gin.Context) {
 		var requestBody struct {
 			Id              primitive.ObjectID `json:"id" binding:"required"`

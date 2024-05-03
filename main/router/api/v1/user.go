@@ -16,8 +16,8 @@ import (
 	"strings"
 )
 
+// /api/v1/usr/login
 func userHandler(cg *gin.RouterGroup) {
-	//    /api/v1/usr/login
 	cg.POST("/login", func(c *gin.Context) {
 		//check body for username and password
 		var requestBody struct {

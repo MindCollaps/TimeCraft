@@ -15,8 +15,8 @@ import (
 	"time"
 )
 
+// /api/v1/tbl/...
 func tblHandler(cg *gin.RouterGroup) {
-	//    /api/v1/tbl/...
 	cg.POST("/create", func(c *gin.Context) {
 		//check body for username and password
 		var requestBody struct {

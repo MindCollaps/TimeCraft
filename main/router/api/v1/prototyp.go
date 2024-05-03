@@ -50,6 +50,7 @@ type Day struct {
 	Lessons []Lesson `json:"lessons"`
 }
 
+// /api/v1/prt/...
 func prtHandler(cg *gin.RouterGroup) {
 	cg.POST("/import/excel", func(c *gin.Context) {
 		const maxFileSize = 1 << 20 // 1 MiB
@@ -57,7 +58,7 @@ func prtHandler(cg *gin.RouterGroup) {
 		// get file from body
 		file, header, err := c.Request.FormFile("file")
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
 			log.Println(err)
 			return
 		}
@@ -101,7 +102,7 @@ func prtHandler(cg *gin.RouterGroup) {
 		// create the temporary folder
 		if _, err := os.Stat(tempFolderPath); os.IsNotExist(err) {
 			if err := os.Mkdir(tempFolderPath, os.ModePerm); err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to create temp folder"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to save the file"})
 				log.Println(err)
 				return
 			}
@@ -127,16 +128,12 @@ func prtHandler(cg *gin.RouterGroup) {
 			// cleanup
 			err = os.Remove(tempFilePath)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to delete temp file"})
-				log.Println(err)
-				return
+				log.Println("Error: Unable to delete temp file: ", err)
 			}
 
 			err = os.Remove(JsonFilePath)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to delete temp file"})
-				log.Println(err)
-				return
+				log.Println("Error: Unable to delete temp file: ", err)
 			}
 		}
 	})
@@ -285,19 +282,9 @@ func parseJson(data ExcelJson, c *gin.Context) {
 		log.Println(fmt.Sprintf("deleting %d old timeTableDays", len(timeTableDaysIDs)))
 		for _, dayID := range timeTableDaysIDs {
 			for _, timeSlotID := range getAllTimeSlots(dayID) {
-				success := deleteTimeSlot(timeSlotID)
-				if !success {
-					c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred while updating the timetable", "error": "Error while deleting a timeSlot"})
-					log.Println("Error deleting timeSlot")
-					return
-				}
+				deleteTimeSlot(timeSlotID)
 			}
-			success := deleteTimeTableDay(dayID)
-			if !success {
-				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred while updating the timetable", "error": "Error while deleting a timeTableDay"})
-				log.Println("Error deleting timeTableDay")
-				return
-			}
+			deleteTimeTableDay(dayID)
 		}
 	} else {
 		TimeTable.ID = primitive.NewObjectID()
@@ -514,24 +501,20 @@ func updateTimeTable(timeTable models.TimeTable) primitive.ObjectID {
 	}
 }
 
-func deleteTimeTableDay(id primitive.ObjectID) bool {
+func deleteTimeTableDay(id primitive.ObjectID) {
 	_, err := database.MongoDB.Collection("TimeTableDay").DeleteOne(context.Background(), bson.M{
 		"_id": id,
 	})
 	if err != nil {
 		log.Println("Error deleting timeTableDay:", err)
-		return false
 	}
-	return true
 }
 
-func deleteTimeSlot(id primitive.ObjectID) bool {
+func deleteTimeSlot(id primitive.ObjectID) {
 	_, err := database.MongoDB.Collection("TimeSlot").DeleteOne(context.Background(), bson.M{
 		"_id": id,
 	})
 	if err != nil {
 		log.Println("Error deleting timeSlot:", err)
-		return false
 	}
-	return true
 }
