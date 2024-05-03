@@ -15,3 +15,9 @@ func ConvertToDateTime(layout string, input string) primitive.DateTime {
 	}
 	return primitive.DateTime(primitive.NewDateTimeFromTime(parsedTime))
 }
+
+func ConvertToLocalTime(layout string, input primitive.DateTime) string {
+	//set timezone to local
+	loc, _ := time.LoadLocation("Europe/Berlin")
+	return input.Time().In(loc).Format(layout)
+}

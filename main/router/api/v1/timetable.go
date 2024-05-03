@@ -9,8 +9,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
+	"src/main/core"
 	"src/main/database"
 	"src/main/database/models"
+	"time"
 )
 
 func tblHandler(cg *gin.RouterGroup) {
@@ -124,6 +126,10 @@ func tblHandler(cg *gin.RouterGroup) {
 		} else {
 			update["days"] = requestBody.Days
 		}
+
+		lastUpdated := core.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime))
+		update["lastUpdated"] = lastUpdated
+
 		result, err := database.MongoDB.Collection("TimeTable").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
