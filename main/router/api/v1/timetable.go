@@ -56,24 +56,85 @@ func tblHandler(cg *gin.RouterGroup) {
 
 	})
 
-	cg.GET("/{id}", func(c *gin.Context) {
-
-		id := c.Query("id")
-		if id == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"msg": "Please give correct ID"})
+	cg.GET("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 			return
-		} else {
-			//Abfrage aus der DB
 		}
+		var timetable models.TimeTable
+		err = database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"_id": objectID}).Decode(&timetable)
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				c.JSON(http.StatusNotFound, gin.H{"error": "TimeTable not found"})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			}
+			return
+		}
+		c.JSON(http.StatusOK, timetable)
 	})
 
-	cg.PATCH("/{id}", func(c *gin.Context) {
+	cg.PATCH("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			return
+		}
+		var requestBody struct {
+			Name *string               `json:"name"`
+			Days *[]primitive.ObjectID `json:"days"`
+		}
+		if err := c.ShouldBindJSON(&requestBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		update := bson.M{}
+		if requestBody.Name != nil {
+			update["Name"] = *requestBody.Name
+		}
+		if requestBody.Days != nil {
+			update["Days"] = *requestBody.Days
+		}
+		result, err := database.MongoDB.Collection("TimeTable").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			return
+		}
 
-		//Updatefunktion
+		if result.ModifiedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "TimeTable not found"})
+			return
+		}
+		var updatedTimetable models.TimeTable
+		err = database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedTimetable)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			return
+		}
+
+		c.JSON(http.StatusOK, updatedTimetable)
 	})
 
-	cg.DELETE("/{id}", func(c *gin.Context) {
-
-		//Deletefunktion
+	cg.DELETE("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			return
+		}
+		result, err := database.MongoDB.Collection("TimeTable").DeleteOne(c, bson.M{"_id": objectID})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			fmt.Println(err)
+			return
+		}
+		if result.DeletedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "TimeTable not found"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"msg": "TimeTable deleted"})
 	})
 }
