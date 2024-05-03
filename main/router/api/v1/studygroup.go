@@ -95,7 +95,7 @@ func stygrpHandler(cg *gin.RouterGroup) {
 		result, err := database.MongoDB.Collection("StudentGroup").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		if result.DeletedCount == 0 {
