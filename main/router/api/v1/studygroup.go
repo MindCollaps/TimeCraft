@@ -115,4 +115,61 @@ func stygrpHandler(cg *gin.RouterGroup) {
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "StudentGroup deleted"})
 	})
+
+	cg.PATCH("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			return
+		}
+		var existingstygrp models.StudentGroup
+		err = database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&existingstygrp)
+
+		var requestBody struct {
+			Name            string               `json:"name"`
+			LectureGroupIds []primitive.ObjectID `json:"lectureGroupIds"`
+			TimeTableId     *primitive.ObjectID  `json:"timeTableId"`
+		}
+
+		if err := c.ShouldBindJSON(&requestBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		update := bson.M{}
+		if requestBody.Name == "" {
+			update["name"] = existingstygrp.Name
+		} else {
+			update["name"] = requestBody.Name
+		}
+		if requestBody.LectureGroupIds == nil {
+			update["lectureGroupIds"] = existingstygrp.LectureGroupIds
+		} else {
+			update["lectureGroupIds"] = requestBody.LectureGroupIds
+		}
+		if requestBody.TimeTableId == nil {
+			update["timeTableId"] = existingstygrp.TimeTableId
+		} else {
+			update["timeTableId"] = requestBody.TimeTableId
+		}
+		result, err := database.MongoDB.Collection("StudentGroup").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			return
+		}
+
+		if result.ModifiedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "StudentGroup not found"})
+			return
+		}
+		var updatedStudentGroup models.StudentGroup
+		err = database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedStudentGroup)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			return
+		}
+
+		c.JSON(http.StatusOK, updatedStudentGroup)
+	})
 }
