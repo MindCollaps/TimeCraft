@@ -43,13 +43,13 @@ func devHandler(cg *gin.RouterGroup) {
 		for _, day := range tts.Days {
 			for _, slot := range day.TimeSlotIds {
 				if slot.IsExam {
-					resData.SpecialDays = append(resData.SpecialDays, specialDay{Name: slot.Name, Day: day.Date, IsExam: true})
+					resData.SpecialDays = append(resData.SpecialDays, specialDay{SpecialDayName: slot.Name, Day: day.Date, IsExam: true})
 				} else if slot.IsHoliday {
-					resData.SpecialDays = append(resData.SpecialDays, specialDay{Name: slot.Name, Day: day.Date, IsHoliday: true})
+					resData.SpecialDays = append(resData.SpecialDays, specialDay{SpecialDayName: slot.Name, Day: day.Date, IsHoliday: true})
 				} else if slot.IsEvent {
-					resData.SpecialDays = append(resData.SpecialDays, specialDay{Name: slot.Name, Day: day.Date, IsEvent: true})
+					resData.SpecialDays = append(resData.SpecialDays, specialDay{SpecialDayName: slot.Name, Day: day.Date, IsEvent: true})
 				} else if slot.IsReExamination {
-					resData.SpecialDays = append(resData.SpecialDays, specialDay{Name: slot.Name, Day: day.Date, IsReExamination: true})
+					resData.SpecialDays = append(resData.SpecialDays, specialDay{SpecialDayName: slot.Name, Day: day.Date, IsReExamination: true})
 				} else {
 					addToResponse(&resData, slot.LecturerId.FirstName+" "+slot.LecturerId.SureName, slot.LectureId.Name)
 				}
@@ -80,17 +80,17 @@ func devHandler(cg *gin.RouterGroup) {
 }
 
 type lecture struct {
-	Name   string `json:"name"`
-	Amount int    `json:"amount"`
+	LectureName string `json:"lectureName"`
+	Amount      int    `json:"amount"`
 }
 
 type lecturer struct {
-	Name     string    `json:"name"`
-	Lectures []lecture `json:"lectures"`
+	LecturerName string    `json:"lecturerName"`
+	Lectures     []lecture `json:"lectures"`
 }
 
 type specialDay struct {
-	Name            string `json:"name"`
+	SpecialDayName  string `json:"SpecialDayName"`
 	Day             string `json:"day"`
 	IsExam          bool   `json:"isExam"`
 	IsHoliday       bool   `json:"isHoliday"`
@@ -106,16 +106,16 @@ type response struct {
 
 func addToResponse(resData *response, lecturerName string, lectureName string) {
 	for i, lecturer := range resData.Lecturers {
-		if lecturer.Name == lecturerName {
+		if lecturer.LecturerName == lecturerName {
 			for j, lecture := range lecturer.Lectures {
-				if lecture.Name == lectureName {
+				if lecture.LectureName == lectureName {
 					resData.Lecturers[i].Lectures[j].Amount++
 					return
 				}
 			}
-			resData.Lecturers[i].Lectures = append(resData.Lecturers[i].Lectures, lecture{Name: lectureName, Amount: 1})
+			resData.Lecturers[i].Lectures = append(resData.Lecturers[i].Lectures, lecture{LectureName: lectureName, Amount: 1})
 			return
 		}
 	}
-	resData.Lecturers = append(resData.Lecturers, lecturer{Name: lecturerName, Lectures: []lecture{{Name: lectureName, Amount: 1}}})
+	resData.Lecturers = append(resData.Lecturers, lecturer{LecturerName: lecturerName, Lectures: []lecture{{LectureName: lectureName, Amount: 1}}})
 }
