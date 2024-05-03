@@ -188,5 +188,3 @@ cython_debug/
 .idea/
 *.old
 .vscode/
-scripts/*.json
-scripts/Stundenplan_parser/*.json
