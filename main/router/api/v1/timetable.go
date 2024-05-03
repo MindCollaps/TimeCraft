@@ -121,6 +121,7 @@ func tblHandler(cg *gin.RouterGroup) {
 		} else {
 			update["name"] = requestBody.Name
 		}
+
 		if requestBody.Days == nil {
 			update["days"] = existingtbl.Days
 		} else {
