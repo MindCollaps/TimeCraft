@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"src/main/core"
 	"src/main/database"
 	"src/main/database/models"
 	"strconv"
@@ -238,7 +239,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 			var TimeTableDay models.TimeTableDay
 			var TimeSlotIds []primitive.ObjectID
 			TimeTableDay.ID = primitive.NewObjectID()
-			TimeTableDay.Date = convertToDateTime("2006-01-02 00:00:00", dayDate)
+			TimeTableDay.Date = core.ConvertToDateTime(time.DateTime, dayDate)
 			TimeTableDay.LastUpdated = LastChanged
 
 			// iterate over the lessons
@@ -316,22 +317,12 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	}
 }
 
-func convertToDateTime(layout string, input string) primitive.DateTime {
-	//set timezone to local
-	loc, _ := time.LoadLocation("Europe/Berlin")
-	parsedTime, err := time.ParseInLocation(layout, input, loc)
-	if err != nil {
-		log.Println("Error parsing time:", err)
-	}
-	return primitive.DateTime(primitive.NewDateTimeFromTime(parsedTime))
-}
-
 func getLastChanged(input string) primitive.DateTime {
 	if strings.HasPrefix(input, "Stand: ") {
 		input = strings.TrimPrefix(input, "Stand: ")
 	}
 
-	return convertToDateTime("02.01.2006", input)
+	return core.ConvertToDateTime(time.DateOnly, input)
 }
 
 func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTime) {
@@ -342,8 +333,8 @@ func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTi
 	startTimeStr = "2020-01-01 " + startTimeStr + ":00"
 	endTimeStr = "2020-01-01 " + endTimeStr + ":00"
 
-	startTime := convertToDateTime(time.DateTime, startTimeStr)
-	endTime := convertToDateTime(time.DateTime, endTimeStr)
+	startTime := core.ConvertToDateTime(time.DateTime, startTimeStr)
+	endTime := core.ConvertToDateTime(time.DateTime, endTimeStr)
 
 	return startTime, endTime
 }
