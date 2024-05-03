@@ -83,20 +83,29 @@ func tblHandler(cg *gin.RouterGroup) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 			return
 		}
+		var existingtbl models.TimeTable
+		err = database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"_id": objectID}).Decode(&existingtbl)
+
 		var requestBody struct {
-			Name *string               `json:"name"`
-			Days *[]primitive.ObjectID `json:"days"`
+			Name string               `json:"name"`
+			Days []primitive.ObjectID `json:"days"`
 		}
+
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
 		update := bson.M{}
-		if requestBody.Name != nil {
-			update["Name"] = *requestBody.Name
+		if requestBody.Name == "" {
+			update["name"] = existingtbl.Name
+		} else {
+			update["name"] = requestBody.Name
 		}
-		if requestBody.Days != nil {
-			update["Days"] = *requestBody.Days
+		if requestBody.Days == nil {
+			update["days"] = existingtbl.Days
+		} else {
+			update["days"] = requestBody.Days
 		}
 		result, err := database.MongoDB.Collection("TimeTable").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
