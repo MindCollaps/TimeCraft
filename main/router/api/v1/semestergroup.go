@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,8 +13,8 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/sgrp/...
 func sgrpHandler(cg *gin.RouterGroup) {
-	//    /api/v1/sgrp/...
 	cg.POST("/sgrp", func(c *gin.Context) {
 		var requestBody struct {
 			Id                 primitive.ObjectID `json:"id" binding:"required"`
@@ -24,7 +25,8 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			log.Println(err)
 			return
 		}
 
@@ -51,12 +53,12 @@ func sgrpHandler(cg *gin.RouterGroup) {
 
 		if err == nil {
 			// Semester Group with same name already exists
-			c.JSON(http.StatusConflict, gin.H{"msg": "Semester Group already exists"})
+			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "Semester Group already exists"})
 			log.Println("Semester Group already exists")
 			return
-		} else if err != mongo.ErrNoDocuments {
+		} else if !errors.Is(err, mongo.ErrNoDocuments) {
 			// other db query errors
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
@@ -69,7 +71,12 @@ func sgrpHandler(cg *gin.RouterGroup) {
 			SpecialisationsIds: specialisationsIdsPrimitive,
 		}
 
-		database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())
+		_, err = database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{"msg": "Created Semester Group"})
 	})
 
@@ -77,17 +84,19 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
 		var semestergroup models.SemesterGroup
 		err = database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&semestergroup)
 		if err != nil {
-			if err == mongo.ErrNoDocuments {
-				c.JSON(http.StatusNotFound, gin.H{"error": "SemesterGroup not found"})
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "SemesterGroup not found"})
 			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			}
+			log.Println(err)
 			return
 		}
 		c.JSON(http.StatusOK, semestergroup)
@@ -97,17 +106,19 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
 		result, err := database.MongoDB.Collection("SemesterGroup").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
 		if result.DeletedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "SemesterGroup not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "SemesterGroup not found"})
+			log.Println("Error: SemesterGroup not found")
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "SemesterGroup deleted"})
@@ -117,11 +128,18 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
+
 		var existingsgrp models.SemesterGroup
 		err = database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&existingsgrp)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "SemesterGroup not found"})
+			log.Println(err)
+			return
+		}
 
 		var requestBody struct {
 			Name               string               `json:"name"`
@@ -131,7 +149,8 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid body"})
+			log.Println(err)
 			return
 		}
 
@@ -141,35 +160,42 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		} else {
 			update["name"] = requestBody.Name
 		}
+
 		if requestBody.StudentGroupIds == nil {
 			update["studentGroupIds"] = existingsgrp.StudentGroupIds
 		} else {
 			update["studentGroupIds"] = requestBody.StudentGroupIds
 		}
+
 		if requestBody.TimeTableId == nil {
 			update["timeTableId"] = existingsgrp.TimeTableId
 		} else {
 			update["timeTableId"] = requestBody.TimeTableId
 		}
+
 		if requestBody.SpecialisationsIds == nil {
 			update["specialisationsIds"] = existingsgrp.SpecialisationsIds
 		} else {
 			update["specialisationsIds"] = requestBody.SpecialisationsIds
 		}
+
 		result, err := database.MongoDB.Collection("SemesterGroup").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
 		if result.ModifiedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "SemesterGroup not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "SemesterGroup not found"})
+			log.Println(err)
 			return
 		}
 		var updatedSemesterGroup models.SemesterGroup
 		err = database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedSemesterGroup)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 

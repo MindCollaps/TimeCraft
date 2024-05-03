@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,8 +13,8 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/stygrp/...
 func stygrpHandler(cg *gin.RouterGroup) {
-	//    /api/v1/stygrp/...
 	cg.POST("/stygrp", func(c *gin.Context) {
 		var requestBody struct {
 			Id              primitive.ObjectID `json:"id" binding:"required"`
@@ -23,7 +24,8 @@ func stygrpHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid body"})
+			log.Println(err)
 			return
 		}
 
@@ -44,12 +46,12 @@ func stygrpHandler(cg *gin.RouterGroup) {
 
 		if err == nil {
 			// Study Group with same name already exists
-			c.JSON(http.StatusConflict, gin.H{"msg": "Study Group already exists"})
+			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "Study Group already exists"})
 			log.Println("Study Group already exists")
 			return
-		} else if err != mongo.ErrNoDocuments {
+		} else if !errors.Is(err, mongo.ErrNoDocuments) {
 			// other db query errors
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
@@ -61,7 +63,12 @@ func stygrpHandler(cg *gin.RouterGroup) {
 			TimeTableId:     primitive.NewObjectID(),
 		}
 
-		database.MongoDB.Collection("StudyGroup").InsertOne(c, newStudyGroup, options.InsertOne())
+		_, err = database.MongoDB.Collection("StudyGroup").InsertOne(c, newStudyGroup, options.InsertOne())
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{"msg": "Created Semester Group"})
 	})
 
@@ -69,17 +76,19 @@ func stygrpHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
 		var studentgroup models.StudentGroup
 		err = database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&studentgroup)
 		if err != nil {
-			if err == mongo.ErrNoDocuments {
-				c.JSON(http.StatusNotFound, gin.H{"error": "StudentGroup not found"})
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "StudentGroup not found"})
 			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			}
+			log.Println(err)
 			return
 		}
 		c.JSON(http.StatusOK, studentgroup)
@@ -89,17 +98,19 @@ func stygrpHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
 		result, err := database.MongoDB.Collection("StudentGroup").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
 		if result.DeletedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "StudentGroup not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "StudentGroup not found"})
+			log.Println("Error: StudentGroup not found")
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "StudentGroup deleted"})
@@ -109,11 +120,18 @@ func stygrpHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
+
 		var existingstygrp models.StudentGroup
 		err = database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&existingstygrp)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "StudentGroup not found"})
+			log.Println(err)
+			return
+		}
 
 		var requestBody struct {
 			Name            string               `json:"name"`
@@ -122,7 +140,8 @@ func stygrpHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid body"})
+			log.Println(err)
 			return
 		}
 
@@ -132,30 +151,37 @@ func stygrpHandler(cg *gin.RouterGroup) {
 		} else {
 			update["name"] = requestBody.Name
 		}
+
 		if requestBody.LectureGroupIds == nil {
 			update["lectureGroupIds"] = existingstygrp.LectureGroupIds
 		} else {
 			update["lectureGroupIds"] = requestBody.LectureGroupIds
 		}
+
 		if requestBody.TimeTableId == nil {
 			update["timeTableId"] = existingstygrp.TimeTableId
 		} else {
 			update["timeTableId"] = requestBody.TimeTableId
 		}
+
 		result, err := database.MongoDB.Collection("StudentGroup").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
 		if result.ModifiedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "StudentGroup not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "StudentGroup not found"})
+			log.Println(err)
 			return
 		}
+
 		var updatedStudentGroup models.StudentGroup
 		err = database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedStudentGroup)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
