@@ -164,7 +164,7 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 		if result.DeletedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "Deleted user"})

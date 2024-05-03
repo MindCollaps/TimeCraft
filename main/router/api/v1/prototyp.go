@@ -58,14 +58,14 @@ func prtHandler(cg *gin.RouterGroup) {
 		file, header, err := c.Request.FormFile("file")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
 		// Check the file extension
 		if !strings.HasSuffix(header.Filename, ".xlsx") {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid file extension"})
-			fmt.Println("Error: Invalid file extension")
+			log.Println("Error: Invalid file extension")
 			return
 		}
 
@@ -73,7 +73,7 @@ func prtHandler(cg *gin.RouterGroup) {
 		size, err := file.Seek(0, io.SeekEnd)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to determine file size"})
-			fmt.Println("Error: Unable to determine file size")
+			log.Println("Error: Unable to determine file size")
 			return
 		}
 		// Reset the read pointer to the start of the file
@@ -81,7 +81,7 @@ func prtHandler(cg *gin.RouterGroup) {
 
 		if size > int64(maxFileSize) {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "File size exceeds limit of " + fmt.Sprint(maxFileSize>>20) + " MiB"})
-			fmt.Println("Error: File size exceeds the limit")
+			log.Println("Error: File size exceeds the limit")
 			return
 		}
 
@@ -102,7 +102,7 @@ func prtHandler(cg *gin.RouterGroup) {
 		if _, err := os.Stat(tempFolderPath); os.IsNotExist(err) {
 			if err := os.Mkdir(tempFolderPath, os.ModePerm); err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to create temp folder"})
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 		}
@@ -110,7 +110,7 @@ func prtHandler(cg *gin.RouterGroup) {
 		// save file to disk into the temp folder
 		if err := c.SaveUploadedFile(header, tempFilePath); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to save file"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -119,7 +119,7 @@ func prtHandler(cg *gin.RouterGroup) {
 
 		if jsonData == nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to parse Excel file"})
-			fmt.Println("Error: No data returned from parseExcel")
+			log.Println("Error: No data returned from parseExcel")
 			return
 		} else {
 			parseJson(jsonData, c)
@@ -128,14 +128,14 @@ func prtHandler(cg *gin.RouterGroup) {
 			err = os.Remove(tempFilePath)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to delete temp file"})
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 
 			err = os.Remove(JsonFilePath)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to delete temp file"})
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 		}
@@ -149,7 +149,7 @@ func prtHandler(cg *gin.RouterGroup) {
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
@@ -182,6 +182,7 @@ func parseExcel(filepath string) ExcelJson {
 	// read the json file
 	file, err := os.Open(JsonFilePath)
 	if err != nil {
+		log.Println("Error opening the json file:", err)
 		return nil
 	}
 
@@ -284,9 +285,19 @@ func parseJson(data ExcelJson, c *gin.Context) {
 		log.Println(fmt.Sprintf("deleting %d old timeTableDays", len(timeTableDaysIDs)))
 		for _, dayID := range timeTableDaysIDs {
 			for _, timeSlotID := range getAllTimeSlots(dayID) {
-				deleteTimeSlot(timeSlotID)
+				success := deleteTimeSlot(timeSlotID)
+				if !success {
+					c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred while updating the timetable", "error": "Error while deleting a timeSlot"})
+					log.Println("Error deleting timeSlot")
+					return
+				}
 			}
-			deleteTimeTableDay(dayID)
+			success := deleteTimeTableDay(dayID)
+			if !success {
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred while updating the timetable", "error": "Error while deleting a timeTableDay"})
+				log.Println("Error deleting timeTableDay")
+				return
+			}
 		}
 	} else {
 		TimeTable.ID = primitive.NewObjectID()
@@ -305,7 +316,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 
 	if id == primitive.NilObjectID {
 		c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Error while updating the timetable"})
-		fmt.Println("Error: invalid ID")
+		log.Println("Error: invalid ID")
 		return
 	}
 	log.Println(id)
@@ -384,6 +395,7 @@ func getAllTimeTableDays(timeTableID primitive.ObjectID) []primitive.ObjectID {
 	}).Decode(&timeTable)
 
 	if err != nil {
+		log.Println("Error getting all timeTableDays:", err)
 		return nil
 	} else {
 		return timeTable.Days // list of ObjectIDs
@@ -397,6 +409,7 @@ func getAllTimeSlots(timeTableDayID primitive.ObjectID) []primitive.ObjectID {
 	}).Decode(&timeTableDay)
 
 	if err != nil {
+		log.Println("Error getting all timeSlots:", err)
 		return nil
 	} else {
 		return timeTableDay.TimeSlotIds // list of ObjectIDs
@@ -501,20 +514,24 @@ func updateTimeTable(timeTable models.TimeTable) primitive.ObjectID {
 	}
 }
 
-func deleteTimeTableDay(id primitive.ObjectID) {
+func deleteTimeTableDay(id primitive.ObjectID) bool {
 	_, err := database.MongoDB.Collection("TimeTableDay").DeleteOne(context.Background(), bson.M{
 		"_id": id,
 	})
 	if err != nil {
 		log.Println("Error deleting timeTableDay:", err)
+		return false
 	}
+	return true
 }
 
-func deleteTimeSlot(id primitive.ObjectID) {
+func deleteTimeSlot(id primitive.ObjectID) bool {
 	_, err := database.MongoDB.Collection("TimeSlot").DeleteOne(context.Background(), bson.M{
 		"_id": id,
 	})
 	if err != nil {
 		log.Println("Error deleting timeSlot:", err)
+		return false
 	}
+	return true
 }
