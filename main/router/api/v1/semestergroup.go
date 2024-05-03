@@ -112,4 +112,67 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "SemesterGroup deleted"})
 	})
+
+	cg.PATCH("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			return
+		}
+		var existingsgrp models.SemesterGroup
+		err = database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&existingsgrp)
+
+		var requestBody struct {
+			Name               string               `json:"name"`
+			StudentGroupIds    []primitive.ObjectID `json:"studentGroupIds"`
+			TimeTableId        *primitive.ObjectID  `json:"timeTableId"`
+			SpecialisationsIds []primitive.ObjectID `json:"specialisationsIds"`
+		}
+
+		if err := c.ShouldBindJSON(&requestBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		update := bson.M{}
+		if requestBody.Name == "" {
+			update["name"] = existingsgrp.Name
+		} else {
+			update["name"] = requestBody.Name
+		}
+		if requestBody.StudentGroupIds == nil {
+			update["studentGroupIds"] = existingsgrp.StudentGroupIds
+		} else {
+			update["studentGroupIds"] = requestBody.StudentGroupIds
+		}
+		if requestBody.TimeTableId == nil {
+			update["timeTableId"] = existingsgrp.TimeTableId
+		} else {
+			update["timeTableId"] = requestBody.TimeTableId
+		}
+		if requestBody.SpecialisationsIds == nil {
+			update["specialisationsIds"] = existingsgrp.SpecialisationsIds
+		} else {
+			update["specialisationsIds"] = requestBody.SpecialisationsIds
+		}
+		result, err := database.MongoDB.Collection("SemesterGroup").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			return
+		}
+
+		if result.ModifiedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "SemesterGroup not found"})
+			return
+		}
+		var updatedSemesterGroup models.SemesterGroup
+		err = database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedSemesterGroup)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			return
+		}
+
+		c.JSON(http.StatusOK, updatedSemesterGroup)
+	})
 }
