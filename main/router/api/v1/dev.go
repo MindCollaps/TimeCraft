@@ -19,7 +19,8 @@ func devHandler(cg *gin.RouterGroup) {
 
 		var req requestBody
 		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Bad request"})
+			log.Println(err)
 			return
 		}
 
@@ -27,14 +28,16 @@ func devHandler(cg *gin.RouterGroup) {
 		var timetable models.TimeTable
 		res := database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"name": req.Name})
 		if res.Err() != nil {
-			c.JSON(http.StatusNotFound, gin.H{"message": "Timetable not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "Timetable not found"})
+			log.Println(res.Err())
 			return
 		}
 		res.Decode(&timetable)
 
 		tts, err := models.TimeTableToStruct(c, timetable)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
@@ -63,7 +66,7 @@ func devHandler(cg *gin.RouterGroup) {
 		//get all timetable names
 		col, err := database.MongoDB.Collection("TimeTable").Find(c, bson.M{})
 		if err != nil {
-			c.JSON(500, gin.H{"message": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
@@ -75,7 +78,7 @@ func devHandler(cg *gin.RouterGroup) {
 			timetables = append(timetables, timetable.Name)
 		}
 
-		c.JSON(http.StatusOK, gin.H{"timetables": timetables})
+		c.JSON(http.StatusOK, gin.H{"msg": "Fetched timetables", "timetables": timetables})
 	})
 }
 
