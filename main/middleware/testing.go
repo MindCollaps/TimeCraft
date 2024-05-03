@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 	"src/main/env"
 )
 
@@ -12,7 +13,7 @@ func TestingPurpose() gin.HandlerFunc {
 			log.Println("!!! A testing function has been used because TESTING is enabled either in the .env file or in the command line arguments. This is insecure and should be disabled in production!")
 			c.Next()
 		} else {
-			c.JSON(401, gin.H{
+			c.JSON(http.StatusUnauthorized, gin.H{
 				"message": "Unauthorized",
 			})
 			c.Abort()
