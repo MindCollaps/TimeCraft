@@ -26,10 +26,14 @@ func LogChop() {
 
 	// Set Gin's debug mode and writer
 	if env.DEBUG {
-		log.Println("Server is running in debug mode!")
+		log.Println("!!! Server is running in debug mode!")
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
+	}
+
+	if env.TESTING {
+		log.Println("!!! Server is running in testing mode - please disable this in production because insecure functions are exposed!")
 	}
 
 	gin.DefaultWriter = mw
