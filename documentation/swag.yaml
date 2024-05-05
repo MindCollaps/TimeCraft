@@ -12,7 +12,7 @@ tags:
   - name: User
   - name: Timetable
   - name: Semester Group
-  - name: Study Group
+  - name: Student Group
 paths:
   /prt/import/json:
     summary: Excel Import
@@ -604,12 +604,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
-  /stygrp:
+  /stgrp:
     post:
-      summary: Create StudyGroup
-      description: Create a new StudyGroup
+      summary: Create StudentGroup
+      description: Create a new StudentGroup
       tags:
-        - Study Group
+        - Student Group
       security:
         - session_key: []
         - api_key: []
@@ -621,7 +621,7 @@ paths:
               $ref: '#/components/schemas/StudentGroup'
       responses:
         '200':
-          description: StudyGroup created successfully
+          description: StudentGroup created successfully
           content:
             application/json:
               schema:
@@ -638,13 +638,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
-  /stygrp/{id}:
-    summary: Get Study Group
+  /stgrp/{id}:
+    summary: Get Student Group
     get:
-      summary: Get study group by ID
-      description: Get the details of a study group
+      summary: Get student group by ID
+      description: Get the details of a student group
       tags:
-        - Study Group
+        - Student Group
       security:
         - session_key: []
         - api_key: []
@@ -674,10 +674,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
     patch:
-      summary: Update study group by ID
-      description: Update the name of a study group (orga permission required)
+      summary: Update student group by ID
+      description: Update the name of a student group (orga permission required)
       tags:
-        - Study Group
+        - Student Group
       security:
         - session_key: []
         - api_key: []
@@ -697,7 +697,7 @@ paths:
                 name:
                   type: string
               example:
-                name: New Study Group Name
+                name: New Student Group Name
       responses:
         '200':
           description: Updated successfully
@@ -718,10 +718,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
     delete:
-      summary: Delete study group by ID
-      description: Delete a study group (orga permission required)
+      summary: Delete student group by ID
+      description: Delete a student group (orga permission required)
       tags:
-        - Study Group
+        - Student Group
       security:
         - session_key: []
         - api_key: []
