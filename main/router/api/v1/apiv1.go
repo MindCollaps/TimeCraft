@@ -13,10 +13,10 @@ func Handler(rg *gin.RouterGroup) {
 	tblHandler(timetable)
 
 	semestergroup := rg.Group("/sgrp")
-	stygrpHandler(semestergroup)
+	sgrpHandler(semestergroup)
 
-	studygroup := rg.Group("/stygrp")
-	sgrpHandler(studygroup)
+	studentgroup := rg.Group("/stgrp")
+	stgrpHandler(studentgroup)
 
 	devhandler := rg.Group("/dev")
 	devHandler(devhandler)
