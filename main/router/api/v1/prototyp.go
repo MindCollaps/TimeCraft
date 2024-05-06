@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"src/main/core"
 	"src/main/database"
 	"src/main/database/models"
 	"strconv"
@@ -49,6 +50,7 @@ type Day struct {
 	Lessons []Lesson `json:"lessons"`
 }
 
+// /api/v1/prt/...
 func prtHandler(cg *gin.RouterGroup) {
 	cg.POST("/import/excel", func(c *gin.Context) {
 		const maxFileSize = 1 << 20 // 1 MiB
@@ -56,27 +58,31 @@ func prtHandler(cg *gin.RouterGroup) {
 		// get file from body
 		file, header, err := c.Request.FormFile("file")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			log.Println(err)
 			return
 		}
 
 		// Check the file extension
 		if !strings.HasSuffix(header.Filename, ".xlsx") {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "File is not an excel file"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid file extension"})
+			log.Println("Error: Invalid file extension")
 			return
 		}
 
 		// Check the file size
 		size, err := file.Seek(0, io.SeekEnd)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to determine file size"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to determine file size"})
+			log.Println("Error: Unable to determine file size")
 			return
 		}
 		// Reset the read pointer to the start of the file
 		_, _ = file.Seek(0, io.SeekStart)
 
 		if size > int64(maxFileSize) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds limit of " + fmt.Sprint(maxFileSize>>20) + " MiB"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "File size exceeds limit of " + fmt.Sprint(maxFileSize>>20) + " MiB"})
+			log.Println("Error: File size exceeds the limit")
 			return
 		}
 
@@ -96,14 +102,16 @@ func prtHandler(cg *gin.RouterGroup) {
 		// create the temporary folder
 		if _, err := os.Stat(tempFolderPath); os.IsNotExist(err) {
 			if err := os.Mkdir(tempFolderPath, os.ModePerm); err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create temporary folder"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to save the file"})
+				log.Println(err)
 				return
 			}
 		}
 
 		// save file to disk into the temp folder
 		if err := c.SaveUploadedFile(header, tempFilePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save file"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to save file"})
+			log.Println(err)
 			return
 		}
 
@@ -111,19 +119,21 @@ func prtHandler(cg *gin.RouterGroup) {
 		var jsonData = parseExcel(tempFilePath)
 
 		if jsonData == nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to parse excel file"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Unable to parse Excel file"})
+			log.Println("Error: No data returned from parseExcel")
+			return
 		} else {
 			parseJson(jsonData, c)
 
 			// cleanup
 			err = os.Remove(tempFilePath)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+				log.Println("Error: Unable to delete temp file: ", err)
 			}
 
 			err = os.Remove(JsonFilePath)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+				log.Println("Error: Unable to delete temp file: ", err)
 			}
 		}
 	})
@@ -135,7 +145,8 @@ func prtHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			log.Println(err)
 			return
 		}
 
@@ -168,6 +179,7 @@ func parseExcel(filepath string) ExcelJson {
 	// read the json file
 	file, err := os.Open(JsonFilePath)
 	if err != nil {
+		log.Println("Error opening the json file:", err)
 		return nil
 	}
 
@@ -205,7 +217,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 		log.Println(fmt.Sprintf("found existing timetable '%s' with %s", Name, ExistingTimeTableId))
 
 		if LastChanged <= getTimetableLastUpdated(ExistingTimeTableId) {
-			c.JSON(http.StatusOK, gin.H{"msg": "no changes - timetable is already up2date"})
+			c.JSON(http.StatusNotModified, gin.H{"msg": "no changes - timetable is already up2date"})
 			return
 		}
 	}
@@ -225,7 +237,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 			var TimeTableDay models.TimeTableDay
 			var TimeSlotIds []primitive.ObjectID
 			TimeTableDay.ID = primitive.NewObjectID()
-			TimeTableDay.Date = convertToDateTime("2006-01-02 00:00:00", dayDate)
+			TimeTableDay.Date = core.ConvertToDateTime(time.DateTime, dayDate)
 			TimeTableDay.LastUpdated = LastChanged
 
 			// iterate over the lessons
@@ -290,26 +302,17 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	}
 
 	if id == primitive.NilObjectID {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while updating the timetable"})
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Error while updating the timetable"})
+		log.Println("Error: invalid ID")
 		return
 	}
 	log.Println(id)
 
 	if updateExistingTimeTable {
-		c.JSON(http.StatusOK, gin.H{"msg": "updated"})
+		c.JSON(http.StatusOK, gin.H{"msg": "successfully updated the timetable"})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"msg": "created"})
+		c.JSON(http.StatusOK, gin.H{"msg": "successfully created the timetable"})
 	}
-}
-
-func convertToDateTime(layout string, input string) primitive.DateTime {
-	//set timezone to local
-	loc, _ := time.LoadLocation("Europe/Berlin")
-	parsedTime, err := time.ParseInLocation(layout, input, loc)
-	if err != nil {
-		log.Println("Error parsing time:", err)
-	}
-	return primitive.DateTime(primitive.NewDateTimeFromTime(parsedTime))
 }
 
 func getLastChanged(input string) primitive.DateTime {
@@ -317,7 +320,7 @@ func getLastChanged(input string) primitive.DateTime {
 		input = strings.TrimPrefix(input, "Stand: ")
 	}
 
-	return convertToDateTime("02.01.2006", input)
+	return core.ConvertToDateTime(time.DateOnly, input)
 }
 
 func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTime) {
@@ -328,8 +331,8 @@ func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTi
 	startTimeStr = "2020-01-01 " + startTimeStr + ":00"
 	endTimeStr = "2020-01-01 " + endTimeStr + ":00"
 
-	startTime := convertToDateTime(time.DateTime, startTimeStr)
-	endTime := convertToDateTime(time.DateTime, endTimeStr)
+	startTime := core.ConvertToDateTime(time.DateTime, startTimeStr)
+	endTime := core.ConvertToDateTime(time.DateTime, endTimeStr)
 
 	return startTime, endTime
 }
@@ -379,6 +382,7 @@ func getAllTimeTableDays(timeTableID primitive.ObjectID) []primitive.ObjectID {
 	}).Decode(&timeTable)
 
 	if err != nil {
+		log.Println("Error getting all timeTableDays:", err)
 		return nil
 	} else {
 		return timeTable.Days // list of ObjectIDs
@@ -392,6 +396,7 @@ func getAllTimeSlots(timeTableDayID primitive.ObjectID) []primitive.ObjectID {
 	}).Decode(&timeTableDay)
 
 	if err != nil {
+		log.Println("Error getting all timeSlots:", err)
 		return nil
 	} else {
 		return timeTableDay.TimeSlotIds // list of ObjectIDs

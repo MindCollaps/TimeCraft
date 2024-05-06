@@ -1,0 +1,996 @@
+openapi: 3.0.3
+info:
+  title: TimeCraft API
+  version: 1.0.0
+  description: This is the documentation of the timecraft api, used for the entire system.
+  license:
+    name: MIT License
+    url: https://opensource.org/license/mit/
+servers:
+  - url: https://timecraft.neoin.space/api/v1
+tags:
+  - name: User
+  - name: Timetable
+  - name: Semester Group
+  - name: Student Group
+paths:
+  /prt/import/json:
+    summary: Excel Import
+    post:
+      summary: Import API
+      description: Used to import a timetable from an json file
+      tags:
+        - Import
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                json_data:
+                  type: string
+              example:
+                json_data: [
+                              {
+                                  "study_subject": "dIT22",
+                                  "semester_group": "S2",
+                                  "semester": "SoSe 2024",
+                                  "semester_year": "4. Semester",
+                                  "last_changed": "Stand: 19.03.2024"
+                              },
+                              {
+                                "days": [
+                                    {
+                                        "date": "2024-03-25 00:00:00",
+                                        "lessons": [
+                                            {
+                                                "time": "8:00-16:15",
+                                                "isHoliday": false,
+                                                "name": "no lesson --> freetime",
+                                                "isOnline": false,
+                                                "isReExamination": false,
+                                                "isExam": false,
+                                                "wasCanceled": false,
+                                                "wasMoved": false,
+                                                "lecturer": null,
+                                                "isEvent": false
+                                            },
+                                            {
+                                                "time": "16:30-19:45",
+                                                "isHoliday": false,
+                                                "name": "SiS",
+                                                "isOnline": false,
+                                                "isReExamination": false,
+                                                "isExam": false,
+                                                "wasCanceled": false,
+                                                "wasMoved": false,
+                                                "lecturer": null,
+                                                "isEvent": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "date": "2024-03-29 00:00:00",
+                                        "lessons": [
+                                            {
+                                                "time": "8:00-19:45",
+                                                "isHoliday": true,
+                                                "name": "Feiertag: Karfreitag",
+                                                "isOnline": false,
+                                                "isReExamination": false,
+                                                "isExam": false,
+                                                "wasCanceled": false,
+                                                "wasMoved": false,
+                                                "lecturer": null,
+                                                "isEvent": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "date": "2024-03-30 00:00:00",
+                                        "lessons": [
+                                            {
+                                                "time": "8:00-19:45",
+                                                "isHoliday": false,
+                                                "name": "no lesson --> freetime",
+                                                "isOnline": false,
+                                                "isReExamination": false,
+                                                "isExam": false,
+                                                "wasCanceled": false,
+                                                "wasMoved": false,
+                                                "lecturer": null,
+                                                "isEvent": false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "calendarweek": 13,
+                                "start_row": 5,
+                                "end_row": 13
+                            }
+                        ]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '304':
+          description: Nothing changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotModifiedRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /prt/import/excel:
+    summary: Excel Import
+    post:
+      summary: Import API
+      description: Used to import a timetable from an excel file
+      tags:
+        - Import
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              example:
+                file: file.xlsx
+
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '304':
+          description: Nothing changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotModifiedRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /usr/login:
+    summary: Login
+    post:
+      summary: Login API
+      description: Used to login the user
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              example:
+                username: John Doe
+                password: Super Secret
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /usr/register:
+    summary: User Registration
+    post:
+      summary: Register API
+      description: Used to register a new user
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+              example:
+                username: John Doe
+                password: Super Secret
+                email: john.doe@example.com
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /usr/{id}:
+    summary: Delete an user
+    delete:
+      summary: API Endpoint to delete an user
+      description: Used to delete an user
+      tags:
+        - User
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /tbl:
+    post:
+      summary: Create TimeTable
+      description: Create a new TimeTable
+      tags:
+        - Timetable
+      security:
+        - session_key: []
+        - api_key: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeTable'
+      responses:
+        '200':
+          description: TimeTable created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+  /tbl/{id}:
+    get:
+      summary: Get timetable by ID
+      description: Get the timetable for a user
+      tags:
+        - Timetable
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+    patch:
+      summary: Update timetable by ID
+      description: Update the timetable
+      tags:
+        - Timetable
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeTable'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+    delete:
+      summary: Delete timetable by ID
+      description: Delete the timetable for a user
+      tags:
+        - Timetable
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+  /sgrp:
+    post:
+      summary: Create Semester Group
+      description: Create a new Semester Group
+      tags:
+        - Semester Group
+      security:
+        - session_key: []
+        - api_key: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SemesterGroup'
+      responses:
+        '200':
+          description: SemesterGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+  /sgrp/{id}:
+    summary: Delete Semester Group
+    get:
+      summary: Get semester group by ID
+      description: Get the details of a semester group
+      tags:
+        - Semester Group
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+    patch:
+      summary: Update semester group by ID
+      description: Update the name of a semester group (orga permission required)
+      tags:
+        - Semester Group
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              example:
+                name: New Semester Group Name
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+    delete:
+      summary: Delete semester group by ID
+      description: Delete a semester group (orga permission required)
+      tags:
+        - Semester Group
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+  /stgrp:
+    post:
+      summary: Create StudentGroup
+      description: Create a new StudentGroup
+      tags:
+        - Student Group
+      security:
+        - session_key: []
+        - api_key: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentGroup'
+      responses:
+        '200':
+          description: StudentGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+  /stgrp/{id}:
+    summary: Get Student Group
+    get:
+      summary: Get student group by ID
+      description: Get the details of a student group
+      tags:
+        - Student Group
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+    patch:
+      summary: Update student group by ID
+      description: Update the name of a student group (orga permission required)
+      tags:
+        - Student Group
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              example:
+                name: New Student Group Name
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+    delete:
+      summary: Delete student group by ID
+      description: Delete a student group (orga permission required)
+      tags:
+        - Student Group
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+components:
+  securitySchemes:
+    session_key:
+      type: apiKey
+      name: auth
+      in: cookie
+    api_key:
+      type: apiKey
+      name: X-Auth
+      in: header
+  schemas:
+    SuccessRes:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Success message
+          example: Successful operation
+    NotModifiedRes:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Partial success message
+          example: Nothing changed - already up to date
+    BadRequestRes:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Generic error message
+          example: An error occured
+        error:
+          type: string
+          description: Error message in detail
+          example: The request body was malformed
+
+    StatusConflict:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Generic error message
+          example: An error occured
+        error:
+          type: string
+          description: Error message in detail
+          example: The username or email already exists
+    InternalServerError:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Generic error message
+          example: An error occured
+        error:
+          type: string
+          description: Error message in detail
+          example: The server failed to process the excel file
+    NotAuthorizedRes:
+      type: object
+      properties:
+        msg:
+          type: string
+          description: Generic error message
+          example: An error occured
+        error:
+          type: string
+          description: Error message in detail
+          example: Not Authorized!
+    TimeTable:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        days:
+          type: array
+          items:
+            type: string
+          format: uuid
+    Lecture:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        contactHours:
+          type: integer
+    LectureGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        timeTableId:
+          type: string
+          format: uuid
+    Lecturer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        title:
+          type: string
+        canHold:
+          type: array
+          items:
+            type: string
+          format: uuid
+        contactEmail:
+          type: string
+        contactPhone:
+          type: string
+        maxWeekHours:
+          type: integer
+    RoomConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        roomNr:
+          type: string
+        capacity:
+          type: integer
+        examCapacity:
+          type: integer
+        blocks:
+          type: array
+          items:
+            type: string
+          format: uuid
+        specialisation:
+          type: array
+          items:
+            type: string
+          format: uuid
+    RoomSpecialisation:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    SemesterGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        studentGroupIds:
+          type: array
+          items:
+            type: string
+          format: uuid
+        timeTableId:
+          type: string
+          format: uuid
+        specialisationsIds:
+          type: array
+          items:
+            type: string
+          format: uuid
+    StudentGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        lectureGroupIds:
+          type: array
+          items:
+            type: string
+          format: uuid
+        timeTableId:
+          type: string
+          format: uuid
+    TimeSlot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        lecturerID:
+          type: string
+          format: uuid
+        lectureID:
+          type: string
+          format: uuid
+        timeStart:
+          type: string
+          format: date-time
+        timeEnd:
+          type: string
+          format: date-time
+        isOnline:
+          type: boolean
+        isReExamination:
+          type: boolean
+        isExam:
+          type: boolean
+        isCancelled:
+          type: boolean
+        wasMoved:
+          type: boolean
+        isEvent:
+          type: boolean
+        roomConfigID:
+          type: string
+          format: uuid
+    TimeTableDay:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date-time
+        timeSlotIDs:
+          type: array
+          items:
+            type: string
+          format: uuid

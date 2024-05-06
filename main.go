@@ -30,26 +30,16 @@ func main() {
 	env.Files = Files
 
 	// command line arguments
-	flag.BoolVar(&env.UNIX, "unix", false, "Run the server in unix mode")
-	flag.BoolVar(&env.DEBUG, "debug", false, "Run the server in debug mode")
-	flag.Parse()
+	flags()
 
+	//Environment setup
+	environmentSetup()
+	
 	//Logger
 	logChopper.LogChop()
 
 	//Banner
 	log.Println("\n" + env.BANNER + "\nTimeCraft" + "\nVersion: " + env.VERSION)
-
-	//Environment setup
-	envLocation := ".env"
-	if env.UNIX {
-		envLocation = "/etc/aso/.env"
-	}
-
-	if err := godotenv.Load(envLocation); err != nil {
-		log.Println("No .env file found")
-		return
-	}
 
 	//Crypt setup
 	err = crypt.KeySetup()
@@ -96,4 +86,41 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+}
+
+func flags() {
+	flag.BoolVar(&env.UNIX, "unix", false, "Run the server in unix mode")
+	flag.BoolVar(&env.DEBUG, "debug", false, "Run the server in debug mode")
+	flag.BoolVar(&env.TESTING, "test", false, "Run the server in test mode")
+	flag.Parse()
+}
+
+func environmentSetup() {
+	envLocation := ".env"
+	if env.UNIX {
+		envLocation = "/etc/aso/.env"
+	}
+
+	if err := godotenv.Load(envLocation); err != nil {
+		log.Println("No .env file found")
+		return
+	}
+
+	if os.Getenv("DEBUG") == "true" && !isFlagPassed("debug") {
+		env.DEBUG = true
+	}
+
+	if os.Getenv("TESTING") == "true" && !isFlagPassed("test") {
+		env.TESTING = true
+	}
+}
+
+func isFlagPassed(name string) bool {
+	found := false
+	flag.Visit(func(f *flag.Flag) {
+		if f.Name == name {
+			found = true
+		}
+	})
+	return found
 }

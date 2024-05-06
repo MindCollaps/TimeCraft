@@ -4,6 +4,7 @@ import "embed"
 
 var UNIX = false
 var DEBUG = false
+var TESTING = false
 
 var Files embed.FS
 
