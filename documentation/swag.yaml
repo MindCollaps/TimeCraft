@@ -358,6 +358,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /tbl/{id}:
     get:
       summary: Get timetable by ID
@@ -392,6 +398,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     patch:
       summary: Update timetable by ID
       description: Update the timetable
@@ -431,6 +443,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     delete:
       summary: Delete timetable by ID
       description: Delete the timetable for a user
@@ -458,6 +476,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /sgrp:
     post:
       summary: Create Semester Group
@@ -492,6 +516,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /sgrp/{id}:
     summary: Delete Semester Group
     get:
@@ -527,6 +557,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     patch:
       summary: Update semester group by ID
       description: Update the name of a semester group (orga permission required)
@@ -571,6 +607,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     delete:
       summary: Delete semester group by ID
       description: Delete a semester group (orga permission required)
@@ -604,6 +646,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /stgrp:
     post:
       summary: Create StudentGroup
@@ -638,6 +686,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /stgrp/{id}:
     summary: Get Student Group
     get:
@@ -673,6 +727,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     patch:
       summary: Update student group by ID
       description: Update the name of a student group (orga permission required)
@@ -717,6 +777,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     delete:
       summary: Delete student group by ID
       description: Delete a student group (orga permission required)
@@ -750,6 +816,142 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /dev/opt/model:
+      summary: Develeopment endpoint
+      get:
+        summary: Get test data
+        description: Get a list of all available timetables
+        tags:
+          - Development
+        security:
+          - session_key: []
+          - api_key: []
+        responses:
+          '200':
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SuccessRes'
+                examples:
+                  example1:
+                    value: {
+                      "msg": "Fetched timetables",
+                      "timetables": [
+                        "dIT22 S2 4.Semester",
+                        "test_"
+                      ]
+                    }
+          '400':
+            description: Request body contains errors
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BadRequestRes'
+          '401':
+            description: Not Authorized
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotAuthorizedRes'
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+      post:
+        summary: Get a specific timetable
+        description: Get a timetable by its name
+        tags:
+          - Development
+        security:
+          - session_key: []
+          - api_key: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  password:
+                    type: string
+                example:
+              example:
+                name: dIT22 S2 4.Semester
+        responses:
+          '200':
+            description: TimeTable created successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SuccessRes'
+                examples:
+                  example1:
+                    value: {
+                      "name": "dIT22 S2 4.Semester",
+                      "lecturers": [
+                        {
+                          "lecturerName": " Stephanus",
+                          "lectures": [
+                            {
+                              "lectureName": "SiS",
+                              "amount": 7
+                            }
+                          ]
+                        },
+                        {
+                          "lecturerName": " Lobachev",
+                          "lectures": [
+                            {
+                              "lectureName": "Projekt",
+                              "amount": 15
+                            }
+                          ]
+                        },
+                        {
+                          "lecturerName": " Neumann-Brosig",
+                          "lectures": [
+                            {
+                              "lectureName": "Stat II",
+                              "amount": 5
+                            },
+                            {
+                              "lectureName": "AZ2",
+                              "amount": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+          '400':
+            description: Request body contains errors
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BadRequestRes'
+          '401':
+            description: Not Authorized
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotAuthorizedRes'
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+
 components:
   securitySchemes:
     session_key:
