@@ -32,7 +32,7 @@ func stgrpHandler(cg *gin.RouterGroup) {
 		lectureGroupIds := requestBody.LectureGroupIds
 
 		var existingStgrp models.StudentGroup
-		err := database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"Name": name}).Decode(&existingStgrp)
+		err := database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"name": name}).Decode(&existingStgrp)
 
 		if err == nil {
 			// Study Group with same name already exists

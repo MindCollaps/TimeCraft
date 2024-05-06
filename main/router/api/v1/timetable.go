@@ -34,7 +34,7 @@ func tblHandler(cg *gin.RouterGroup) {
 		days := requestBody.Days
 
 		var existingTbl models.TimeTable
-		err := database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"Name": name}).Decode(&existingTbl)
+		err := database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"name": name}).Decode(&existingTbl)
 
 		if err == nil {
 			// Table with the same name already exists
@@ -61,7 +61,6 @@ func tblHandler(cg *gin.RouterGroup) {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable"})
-
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {

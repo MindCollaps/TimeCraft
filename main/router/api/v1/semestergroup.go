@@ -34,7 +34,7 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		specialisationsIds := requestBody.SpecialisationsIds
 
 		var existingSgrp models.SemesterGroup
-		err := database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{"Name": name}).Decode(&existingSgrp)
+		err := database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{"name": name}).Decode(&existingSgrp)
 
 		if err == nil {
 			// Semester Group with same name already exists
