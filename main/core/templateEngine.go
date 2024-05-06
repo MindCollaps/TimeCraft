@@ -3,6 +3,7 @@ package core
 import (
 	"embed"
 	"github.com/gin-gonic/gin"
+	"io/fs"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -20,11 +21,22 @@ func LoadTemplates(r *gin.Engine) {
 	// Load templates files
 	templateFiles := []string{}
 
+	// Check if base template exists
+	_, err := fs.ReadFile(env.Files, "main/web/templates/base.gohtml")
+	if err != nil {
+		panic("Base template not found, ensure it exists in main/web/templates/base.gohtml")
+	}
+
+	templateFiles = append(templateFiles, "main/web/templates/base.gohtml")
+
 	log.Println("Loading templates...")
 	// Walk through the "templates" folder and all its subdirectories
 	nerr := WalkFS(env.Files, "main/web/templates", func(path string, name string, isDir bool) error {
 		// Check if the file is an HTML templates
 		if !isDir && strings.HasSuffix(name, ".gohtml") {
+			if strings.HasSuffix(path, "base.gohtml") {
+				return nil
+			}
 			// Replace backslashes with forward slashes (for Windows compatibility)
 			templateName := strings.Replace(path, "\\", "/", -1)
 
@@ -44,7 +56,7 @@ func LoadTemplates(r *gin.Engine) {
 	log.Println("\n\nLoading sites...")
 
 	// Walk through the "public" folder and all its subdirectories
-	err := WalkFS(env.Files, "main/web/public", func(path string, name string, isDir bool) error {
+	err = WalkFS(env.Files, "main/web/public", func(path string, name string, isDir bool) error {
 		// Check if the file is an HTML template
 		if !isDir && strings.HasSuffix(name, ".gohtml") {
 			// Get the directory path (relative to the "public" folder)
@@ -71,8 +83,8 @@ func LoadTemplates(r *gin.Engine) {
 
 			// Parse the file and add it to the "tmpl" map
 			parsing := []string{}
-			parsing = append(parsing, path)
 			parsing = append(parsing, templateFiles...)
+			parsing = append(parsing, path)
 
 			if templateName == "" {
 				templateName = "."
