@@ -15,12 +15,11 @@ import (
 
 // /api/v1/stgrp/...
 func stgrpHandler(cg *gin.RouterGroup) {
-	cg.POST("/stgrp", func(c *gin.Context) {
+	cg.POST("/", func(c *gin.Context) {
 		var requestBody struct {
-			Id              primitive.ObjectID `json:"id" binding:"required"`
-			Name            string             `json:"name" binding:"required"`
-			LectureGroupIds []string           `json:"lectureGroupIds" binding:"required"`
-			TimeTableId     primitive.ObjectID `json:"timeTableId" binding:"required"`
+			Name            string               `json:"name" binding:"required"`
+			LectureGroupIds []primitive.ObjectID `json:"lectureGroupIds" binding:"required"`
+			TimeTableId     primitive.ObjectID   `json:"timeTableId" binding:"required"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -31,14 +30,6 @@ func stgrpHandler(cg *gin.RouterGroup) {
 
 		name := requestBody.Name
 		lectureGroupIds := requestBody.LectureGroupIds
-
-		//to primitive.objectid
-		lectureGroupIdsPrimitive := make([]primitive.ObjectID, len(lectureGroupIds))
-
-		//put lectureGroupIds to lectureGroupIdsPrimitive
-		for i := 0; i < len(lectureGroupIds); i++ {
-			lectureGroupIdsPrimitive[i], _ = primitive.ObjectIDFromHex(lectureGroupIds[i])
-		}
 
 		var existingStgrp models.StudentGroup
 		err := database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"Name": name}).Decode(&existingStgrp)
@@ -58,7 +49,7 @@ func stgrpHandler(cg *gin.RouterGroup) {
 		newStudentGroup := models.StudentGroup{
 			ID:              primitive.NewObjectID(),
 			Name:            name,
-			LectureGroupIds: lectureGroupIdsPrimitive,
+			LectureGroupIds: lectureGroupIds,
 			TimeTableId:     primitive.NewObjectID(),
 		}
 

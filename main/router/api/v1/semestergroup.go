@@ -15,13 +15,12 @@ import (
 
 // /api/v1/sgrp/...
 func sgrpHandler(cg *gin.RouterGroup) {
-	cg.POST("/sgrp", func(c *gin.Context) {
+	cg.POST("/", func(c *gin.Context) {
 		var requestBody struct {
-			Id                 primitive.ObjectID `json:"id" binding:"required"`
-			Name               string             `json:"name" binding:"required"`
-			StudentGroupIds    []string           `json:"studentGroupIds" binding:"required"`
-			TimeTableId        primitive.ObjectID `json:"timeTableId" binding:"required"`
-			SpecialisationsIds []string           `json:"specialisationsIds" binding:"required"`
+			Name               string               `json:"name" binding:"required"`
+			StudentGroupIds    []primitive.ObjectID `json:"studentGroupIds" binding:"required"`
+			TimeTableId        primitive.ObjectID   `json:"timeTableId" binding:"required"`
+			SpecialisationsIds []primitive.ObjectID `json:"specialisationsIds" binding:"required"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -33,20 +32,6 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		name := requestBody.Name
 		studentGroupIds := requestBody.StudentGroupIds
 		specialisationsIds := requestBody.SpecialisationsIds
-
-		//to primitive.objectid
-		studentGroupIdsPrimitive := make([]primitive.ObjectID, len(studentGroupIds))
-		specialisationsIdsPrimitive := make([]primitive.ObjectID, len(specialisationsIds))
-
-		//put studentGroupIds to studentGroupIdsPrimitive
-		for i := 0; i < len(studentGroupIds); i++ {
-			studentGroupIdsPrimitive[i], _ = primitive.ObjectIDFromHex(studentGroupIds[i])
-		}
-
-		//put specialisationsIds to specialisationsIdsPrimitive
-		for i := 0; i < len(specialisationsIds); i++ {
-			specialisationsIdsPrimitive[i], _ = primitive.ObjectIDFromHex(specialisationsIds[i])
-		}
 
 		var existingSgrp models.SemesterGroup
 		err := database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{"Name": name}).Decode(&existingSgrp)
@@ -66,9 +51,9 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		newSemesterGroup := models.SemesterGroup{
 			ID:                 primitive.NewObjectID(),
 			Name:               name,
-			StudentGroupIds:    studentGroupIdsPrimitive,
+			StudentGroupIds:    studentGroupIds,
 			TimeTableId:        primitive.NewObjectID(),
-			SpecialisationsIds: specialisationsIdsPrimitive,
+			SpecialisationsIds: specialisationsIds,
 		}
 
 		_, err = database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())

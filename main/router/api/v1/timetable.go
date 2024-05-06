@@ -17,10 +17,9 @@ import (
 
 // /api/v1/tbl/...
 func tblHandler(cg *gin.RouterGroup) {
-	cg.POST("/create", func(c *gin.Context) {
+	cg.POST("/", func(c *gin.Context) {
 		//check body for username and password
 		var requestBody struct {
-			Id   primitive.ObjectID   `json:"id" binding:"required"`
 			Name string               `json:"name" binding:"required"`
 			Days []primitive.ObjectID `json:"days" binding:"required"`
 		}
