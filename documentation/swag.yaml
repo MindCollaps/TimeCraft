@@ -1064,9 +1064,6 @@ components:
     TimeTable:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         days:
@@ -1077,9 +1074,6 @@ components:
     Lecture:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         contactHours:
@@ -1087,9 +1081,6 @@ components:
     LectureGroup:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         timeTableId:
@@ -1098,9 +1089,6 @@ components:
     Lecturer:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         firstName:
           type: string
         lastName:
@@ -1121,9 +1109,6 @@ components:
     RoomConfig:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         roomNr:
@@ -1145,16 +1130,11 @@ components:
     RoomSpecialisation:
       type: object
       properties:
-        id:
-          type: integer
         name:
           type: string
     SemesterGroup:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         studentGroupIds:
@@ -1173,9 +1153,6 @@ components:
     StudentGroup:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         lectureGroupIds:
@@ -1236,9 +1213,6 @@ components:
     TimeTableDay:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         date:
           type: string
           format: date-time
