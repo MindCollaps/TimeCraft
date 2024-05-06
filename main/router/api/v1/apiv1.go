@@ -18,6 +18,9 @@ func Handler(rg *gin.RouterGroup) {
 	studentgroup := rg.Group("/stgrp")
 	stgrpHandler(studentgroup)
 
+	splitgroup := rg.Group("/splitgrp")
+	splitgrpHandler(splitgroup)
+
 	devhandler := rg.Group("/dev")
 	devHandler(devhandler)
 }

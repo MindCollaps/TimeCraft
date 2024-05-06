@@ -951,7 +951,46 @@ paths:
               application/json:
                 schema:
                   $ref: '#/components/schemas/InternalServerError'
-
+  /splitgrp:
+    post:
+      summary: Create SplitGroup
+      description: Create a new SplitGroup
+      tags:
+        - Split Group
+      security:
+        - session_key: []
+        - api_key: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SplitGroup'
+      responses:
+        '200':
+          description: SplitGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
 components:
   securitySchemes:
     session_key:
@@ -1147,12 +1186,24 @@ components:
         timeTableId:
           type: string
           format: uuid
+    SplitGroup:
+      type: object
+      properties:
+        name:
+          type: string
+        timeTableId:
+          type: string
+          format: uuid
+        splitsStudent:
+          type: array
+          items:
+            type: string
+          format: uuid
+        size:
+          type: integer
     TimeSlot:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         lecturerID:
