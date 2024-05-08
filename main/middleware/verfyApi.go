@@ -119,7 +119,7 @@ func LoginToken() gin.HandlerFunc {
 
 func VerifyAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if c.GetBool("loggedIn") {
+		/*if c.GetBool("loggedIn") {
 			user, ok := c.Get("user")
 			if ok {
 				dUser := user.(models.User)
@@ -130,6 +130,8 @@ func VerifyAdmin() gin.HandlerFunc {
 			}
 		}
 
+		c.AbortWithStatus(401)
+		*/
 		c.AbortWithStatus(401)
 	}
 }
