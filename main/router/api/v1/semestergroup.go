@@ -87,28 +87,6 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		c.JSON(http.StatusOK, semestergroup)
 	})
 
-	cg.DELETE("/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		objectID, err := primitive.ObjectIDFromHex(id)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
-			log.Println(err)
-			return
-		}
-		result, err := database.MongoDB.Collection("SemesterGroup").DeleteOne(c, bson.M{"_id": objectID})
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
-			log.Println(err)
-			return
-		}
-		if result.DeletedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "SemesterGroup not found"})
-			log.Println("Error: SemesterGroup not found")
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"msg": "SemesterGroup deleted"})
-	})
-
 	cg.PATCH("/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
@@ -185,5 +163,27 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		c.JSON(http.StatusOK, updatedSemesterGroup)
+	})
+
+	cg.DELETE("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
+			return
+		}
+		result, err := database.MongoDB.Collection("SemesterGroup").DeleteOne(c, bson.M{"_id": objectID})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		if result.DeletedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "SemesterGroup not found"})
+			log.Println("Error: SemesterGroup not found")
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"msg": "SemesterGroup deleted"})
 	})
 }
