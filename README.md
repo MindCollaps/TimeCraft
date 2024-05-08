@@ -1,5 +1,4 @@
-# TimeCraft
-
+# TimeCraft ![msminutes 1.png](https://github.com/MindCollaps/TimeCraft/blob/c349a6a551323bcfe54f5425d2b05c8af6e8da86/main/web/assets/static/msminutes.png?raw=true)
 Wir sind ein ProjektTeam der Leibniz Fachhochschule.
 TimeCraft ist eine Stundenplansoftware, die mithilfe eines Algorithmus den idealen Stundenplan erstellt, als auch eine
 Raumplanung mit einbezieht.
@@ -14,14 +13,34 @@ Deutschland anzubieten.
 * **Roomplanning:** Our software can also provide you with the perfect room planning if you enter your room properties
 
 # Developer
+* Requirements Engeneering: Johannes Kepp, Lennart Meyer, Timm Siebert
+* Frontend: Nina Glock, Leon Winands, Helen Desta, Louis Trenkner
+* Backend: Tim Niess, Nichelle Yemchui, Noah Till, Frederick Tappert
+* Optimization: David Heine, Cem Sahin, Paul Schenkel, Jarno Schulze
 
-* Emilia Ziegler: Design and Frontend
-* Nina Glock: Design and Frontend
-* Tim Niess: Backend
-* Noah Till: Teamleader, Backend and Frontend
-* Lennart Meyer: Backend and Documentation
-* Louis Trenkner: Backend
-* Leon Winands: Backend and Communication
+# Milestones
+
+## Prototype
+* Consultation with stakeholders, after presentation of the prototype
+* Test phase
+* Build website
+
+
+## Main system
+* Frontend development
+* Backend development
+* Test phase
+* Evaluation of the test results
+* Marketing
+
+
+# Installation Instruction - Windows/MacOS/Linux
+* Install GO
+* GO Dependencies
+* Compile binary
+* Mark file as executable under Linux
+* Copy default.env rename to .env and customize
+
 
 # License
 
