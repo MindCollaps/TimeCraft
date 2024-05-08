@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
+	"src/main/core"
 	"src/main/database"
 	"src/main/database/models"
 )
@@ -114,21 +115,15 @@ func stgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		update := bson.M{}
-		if requestBody.Name == "" {
-			update["name"] = existingStgrp.Name
-		} else {
+		if requestBody.Name != "" {
 			update["name"] = requestBody.Name
 		}
 
-		if requestBody.LectureGroupIds == nil {
-			update["lectureGroupIds"] = existingStgrp.LectureGroupIds
-		} else {
+		if requestBody.LectureGroupIds != nil && !core.ContainsNilObjectID(requestBody.LectureGroupIds) && len(requestBody.LectureGroupIds) != 0 {
 			update["lectureGroupIds"] = requestBody.LectureGroupIds
 		}
 
-		if requestBody.TimeTableId == nil {
-			update["timeTableId"] = existingStgrp.TimeTableId
-		} else {
+		if requestBody.TimeTableId != nil && *requestBody.TimeTableId != primitive.NilObjectID {
 			update["timeTableId"] = requestBody.TimeTableId
 		}
 
@@ -140,8 +135,8 @@ func stgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		if result.ModifiedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "StudentGroup not found"})
-			log.Println(err)
+			c.JSON(http.StatusNotModified, gin.H{"msg": "Nothing was updated", "error": "No data provided to update"})
+			log.Println("Warning: No data provided to update the StudentGroup")
 			return
 		}
 

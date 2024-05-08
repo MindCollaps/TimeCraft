@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
+	"src/main/core"
 	"src/main/database"
 	"src/main/database/models"
 )
@@ -118,27 +119,19 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		update := bson.M{}
-		if requestBody.Name == "" {
-			update["name"] = existingsgrp.Name
-		} else {
+		if requestBody.Name != "" {
 			update["name"] = requestBody.Name
 		}
 
-		if requestBody.StudentGroupIds == nil {
-			update["studentGroupIds"] = existingsgrp.StudentGroupIds
-		} else {
+		if requestBody.StudentGroupIds != nil && !core.ContainsNilObjectID(requestBody.StudentGroupIds) && len(requestBody.StudentGroupIds) != 0 {
 			update["studentGroupIds"] = requestBody.StudentGroupIds
 		}
 
-		if requestBody.TimeTableId == nil {
-			update["timeTableId"] = existingsgrp.TimeTableId
-		} else {
+		if requestBody.TimeTableId != nil && *requestBody.TimeTableId != primitive.NilObjectID {
 			update["timeTableId"] = requestBody.TimeTableId
 		}
 
-		if requestBody.SpecialisationsIds == nil {
-			update["specialisationsIds"] = existingsgrp.SpecialisationsIds
-		} else {
+		if requestBody.SpecialisationsIds != nil && !core.ContainsNilObjectID(requestBody.SpecialisationsIds) && len(requestBody.SpecialisationsIds) != 0 {
 			update["specialisationsIds"] = requestBody.SpecialisationsIds
 		}
 
@@ -150,8 +143,8 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		if result.ModifiedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "SemesterGroup not found"})
-			log.Println(err)
+			c.JSON(http.StatusNotModified, gin.H{"msg": "Nothing was updated", "error": "No data provided to update"})
+			log.Println("Warning: No data provided to update the SemesterGroup")
 			return
 		}
 		var updatedSemesterGroup models.SemesterGroup

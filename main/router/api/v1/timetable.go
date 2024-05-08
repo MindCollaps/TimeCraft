@@ -114,20 +114,18 @@ func tblHandler(cg *gin.RouterGroup) {
 		}
 
 		update := bson.M{}
-		if requestBody.Name == "" {
-			update["name"] = existingtbl.Name
-		} else {
+		if requestBody.Name != "" {
 			update["name"] = requestBody.Name
 		}
 
-		if requestBody.Days == nil {
-			update["days"] = existingtbl.Days
-		} else {
+		if requestBody.Days != nil && !core.ContainsNilObjectID(requestBody.Days) && len(requestBody.Days) != 0 {
 			update["days"] = requestBody.Days
 		}
 
-		lastUpdated := core.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime))
-		update["lastUpdated"] = lastUpdated
+		if len(update) > 0 {
+			lastUpdated := core.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime))
+			update["lastUpdated"] = lastUpdated
+		}
 
 		result, err := database.MongoDB.Collection("TimeTable").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
@@ -137,10 +135,11 @@ func tblHandler(cg *gin.RouterGroup) {
 		}
 
 		if result.ModifiedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "TimeTable not found"})
-			log.Println("Error: TimeTable not found")
+			c.JSON(http.StatusNotModified, gin.H{"msg": "Nothing was updated", "error": "No data provided to update"})
+			log.Println("Warning: No data provided to update the TimeTable")
 			return
 		}
+
 		var updatedTimetable models.TimeTable
 		err = database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedTimetable)
 		if err != nil {
