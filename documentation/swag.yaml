@@ -991,6 +991,305 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+  /splitgrp/{id}:
+      get:
+        summary: Get split group by ID
+        description: Get the details of a student group
+        tags:
+          - Split Group
+        security:
+          - session_key: []
+          - api_key: []
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SuccessRes'
+          '400':
+            description: Request body contains errors
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BadRequestRes'
+          '401':
+            description: Not Authorized
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotAuthorizedRes'
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+      patch:
+        summary: Update split group by ID
+        description: Update the name of a student group (orga permission required)
+        tags:
+          - Split Group
+        security:
+          - session_key: []
+          - api_key: []
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                example:
+                  name: New Split Group Name
+        responses:
+          '200':
+            description: Updated successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SuccessRes'
+          '400':
+            description: Request body contains errors
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BadRequestRes'
+          '401':
+            description: Not Authorized
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotAuthorizedRes'
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+      delete:
+        summary: Delete split group by ID
+        description: Delete a Split Group (orga permission required)
+        tags:
+          - Split Group
+        security:
+          - session_key: []
+          - api_key: []
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Deleted successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SuccessRes'
+          '400':
+            description: Request body contains errors
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BadRequestRes'
+          '401':
+            description: Not Authorized
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotAuthorizedRes'
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+  /lgrp:
+    post:
+      summary: Create LectureGroup
+      description: Create a new SplitGroup
+      tags:
+        - Lecture Group
+      security:
+        - session_key: []
+        - api_key: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SplitGroup'
+      responses:
+        '200':
+          description: Lecture Group created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /lgrp/{id}:
+      get:
+        summary: Get Lecture Group by ID
+        description: Get the details of a student group
+        tags:
+          - Lecture Group
+        security:
+          - session_key: []
+          - api_key: []
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SuccessRes'
+          '400':
+            description: Request body contains errors
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BadRequestRes'
+          '401':
+            description: Not Authorized
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotAuthorizedRes'
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+      patch:
+        summary: Update Lecture Group by ID
+        description: Update the name of a student group (orga permission required)
+        tags:
+          - Lecture Group
+        security:
+          - session_key: []
+          - api_key: []
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                example:
+                  name: New Lecture Group Name
+        responses:
+          '200':
+            description: Updated successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SuccessRes'
+          '400':
+            description: Request body contains errors
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BadRequestRes'
+          '401':
+            description: Not Authorized
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotAuthorizedRes'
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+      delete:
+        summary: Delete Lecture Group by ID
+        description: Delete a Lecture Group (orga permission required)
+        tags:
+          - Lecture Group
+        security:
+          - session_key: []
+          - api_key: []
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Deleted successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/SuccessRes'
+          '400':
+            description: Request body contains errors
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BadRequestRes'
+          '401':
+            description: Not Authorized
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotAuthorizedRes'
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+  
 components:
   securitySchemes:
     session_key:
