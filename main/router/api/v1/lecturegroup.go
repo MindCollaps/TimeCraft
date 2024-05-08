@@ -12,7 +12,6 @@ import (
 	"src/main/core"
 	"src/main/database"
 	"src/main/database/models"
-	"time"
 )
 
 // /api/v1/lgrp/...
@@ -73,6 +72,7 @@ func lgrpHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
+
 		var lecturegroup models.LectureGroup
 		err = database.MongoDB.Collection("LectureGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&lecturegroup)
 		if err != nil {
@@ -116,19 +116,12 @@ func lgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		update := bson.M{}
-		if requestBody.Name == "" {
-			update["name"] = existinglgrp.Name
-		} else {
+		if requestBody.Name != "" {
 			update["name"] = requestBody.Name
 		}
-		if requestBody.TimeTableId == nil {
-			update["timeTableId"] = existinglgrp.TimeTableId
-		} else {
+		if requestBody.TimeTableId != nil && len(requestBody.TimeTableId) > 0 && !core.ContainsNilObjectID(requestBody.TimeTableId) {
 			update["timeTableId"] = requestBody.TimeTableId
 		}
-
-		lastUpdated := core.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime))
-		update["lastUpdated"] = lastUpdated
 
 		result, err := database.MongoDB.Collection("LectureGroup").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
@@ -138,10 +131,11 @@ func lgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		if result.ModifiedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "LectureGroup not found"})
-			log.Println("Error: LectureGroup not found")
+			c.JSON(http.StatusNotModified, gin.H{"msg": "Nothing was updated", "error": "No data provided to update"})
+			log.Println("Warning: No data provided to update the LectureGroup")
 			return
 		}
+
 		var updatedLectureGroup models.LectureGroup
 		err = database.MongoDB.Collection("LectureGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedLectureGroup)
 		if err != nil {
