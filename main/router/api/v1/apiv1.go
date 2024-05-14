@@ -18,4 +18,12 @@ func Handler(rg *gin.RouterGroup) {
 	studygroup := rg.Group("/stygrp")
 	sgrpHandler(studygroup)
 
+	timeslot := rg.Group("/tsl")
+	tslHandler(timeslot)
+
+	roomconfig := rg.Group("/rmc")
+	rmcHandler(roomconfig)
+
+	roomspecialisation := rg.Group("rms")
+	rmsHandler(roomspecialisation)
 }
