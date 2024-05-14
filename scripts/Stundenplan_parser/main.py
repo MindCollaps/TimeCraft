@@ -138,10 +138,10 @@ class excel_parser():
         tables = []
 
         # header values
-        study_subject = None            # dIT2022
-        self.semester_group = None           # S1, S2, A1, A2
+        self.semester_group = None      # dIT2022
+        self.student_group = None       # S1, S2, A1, A2
         semester = None                 # WS2023/2024
-        self.semester_year = None            # 3. Semester
+        self.semester_year = None       # 3. Semester
         last_changed = None             # Stand: 06.11.2023
 
         # start values
@@ -178,8 +178,8 @@ class excel_parser():
 
                                 # save the header at the first position
                                 tables.append({
-                                    "study_subject": study_subject,
                                     "semester_group": self.semester_group,
+                                    "student_group": self.student_group,
                                     "semester": semester,
                                     "semester_year": self.semester_year,
                                     "last_changed": last_changed,
@@ -190,7 +190,7 @@ class excel_parser():
                         if cell.value != None:
 
                             if self.containsYear(cell.value) and not self.containsSemesterSeason(cell.value) and not self.containsLastChanged(cell.value):
-                                study_subject, self.semester_group = self.extractSemesterGroup(cell.value)
+                                self.semester_group, self.student_group = self.extractSemesterAndStudentGroup(cell.value)
 
                             elif self.containsSemesterSeason(cell.value):
                                 semester = cell.value
@@ -366,15 +366,6 @@ class excel_parser():
                                         table["days"][current_day]["lessons"][index_counter]["isEvent"] = True
                                     else:
                                         table["days"][current_day]["lessons"][index_counter]["isEvent"] = False
-
-                                    # table["days"][current_day]["lessons"][index_counter]["room"] = self.getRoom(
-                                    #     table["days"][current_day]["lessons"][index_counter]["name"],
-                                    #     cell,
-                                    #     table["days"][current_day]["date"],
-                                    #     study_subject,
-                                    #     self.semester_group,
-                                    #     lecturer
-                                    # )
 
                             self.updateDayCounter()
 
@@ -594,7 +585,7 @@ class excel_parser():
         if match:
             lecturer = match.group(1)
         else:
-            lecturer = self.KnownLecturer.get(self.semester_year, {}).get(self.semester_group, {}).get(value, None)
+            lecturer = self.KnownLecturer.get(self.semester_year, {}).get(self.student_group, {}).get(value, None)
 
         return lecturer
 
@@ -692,7 +683,7 @@ class excel_parser():
             self.current_day_counter += 1
 
     # extract methods
-    def extractSemesterGroup(self, value):
+    def extractSemesterAndStudentGroup(self, value):
         # https://regex101.com/r/nLR5HB/1
         match = re.search(r'([a-zA-z]{3,5}\d{2,4})\s?([a-zA-Z]\d)?', value)
         return match.group(1), match.group(2)
