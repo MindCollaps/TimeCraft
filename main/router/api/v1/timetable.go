@@ -159,6 +159,16 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
+
+		// Delete all TimeTableDays and TimeSlots associated with the TimeTable
+		timeTableDaysIDs := getAllTimeTableDays(objectID)
+		for _, dayID := range timeTableDaysIDs {
+			for _, timeSlotID := range getAllTimeSlots(dayID) {
+				deleteTimeSlot(timeSlotID)
+			}
+			deleteTimeTableDay(dayID)
+		}
+
 		result, err := database.MongoDB.Collection("TimeTable").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
