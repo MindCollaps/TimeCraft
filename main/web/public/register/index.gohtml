@@ -53,57 +53,57 @@ l{{define "title"}}WeebsKingdom{{end}}
         </div>
     </div>
 
-            <script>
-                var app = Vue.createApp({
-                    delimiters: ['${', '}'],
-                    data: () => ({
-                        username: "",
-                        email: "",
-                        password1: "",
-                        password2: "",
-                    }),
-                    methods: {
-                        invalidPasswords: function () {
-                            document.getElementById('password1').setAttribute('is-invalid', '');
-                            document.getElementById('password2').setAttribute('is-invalid', '');
-                        },
-                        register: async function () {
-                            if (this.password2 !== this.password1) {
-                                alert('Passwords do not match');
+    <script>
+        var app = Vue.createApp({
+            delimiters: ['${', '}'],
+            data: () => ({
+                username: "",
+                email: "",
+                password1: "",
+                password2: "",
+            }),
+            methods: {
+                invalidPasswords: function () {
+                    document.getElementById('password1').setAttribute('is-invalid', '');
+                    document.getElementById('password2').setAttribute('is-invalid', '');
+                },
+                register: async function () {
+                    if (this.password2 !== this.password1) {
+                        alert('Passwords do not match');
 
-                                this.invalidPasswords();
-                                return;
-                            }
-
-                            let res = await fetch('/api/v1/usr/register', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    password: this.password1,
-                                    email: this.email,
-                                    username: this.username
-                                })
-                            }).then((res) => {
-                                return res;
-                            });
-
-                            if (res.status !== 200) {
-                                var data = await res.json();
-                                alert(data.message);
-                                document.getElementById('password1').setAttribute('value', '');
-                                document.getElementById('password2').setAttribute('value', '');
-                                return;
-                            } else {
-                                window.location.href="/login";
-                            }
-
-                            document.getElementById('password1').removeAttribute('is-invalid');
-                            document.getElementById('password2').removeAttribute('is-invalid');
-                        }
+                        this.invalidPasswords();
+                        return;
                     }
-                }).mount("#app")
-            </script>
-            {{template "botdoc"}}
+
+                    let res = await fetch('/api/v1/usr/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            password: this.password1,
+                            email: this.email,
+                            username: this.username
+                        })
+                    }).then((res) => {
+                        return res;
+                    });
+
+                    if (res.status !== 200) {
+                        var data = await res.json();
+                        alert(data.message);
+                        document.getElementById('password1').setAttribute('value', '');
+                        document.getElementById('password2').setAttribute('value', '');
+                        return;
+                    } else {
+                        window.location.href = "/login";
+                    }
+
+                    document.getElementById('password1').removeAttribute('is-invalid');
+                    document.getElementById('password2').removeAttribute('is-invalid');
+                }
+            }
+        }).mount("#app")
+    </script>
+    {{template "botdoc"}}
 {{end}}

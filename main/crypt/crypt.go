@@ -13,14 +13,24 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"src/main/env"
 	"time"
 )
 
-const rsaKeyPath = "rsa_private_key.pem"
+const rsaKeyName = "rsa_private_key.pem"
 
 var rsaKey *rsa.PrivateKey = nil
 
+func getRsaKeyPath() string {
+	rsaKeyPath := rsaKeyName
+	if env.UNIX {
+		rsaKeyPath = "/etc/timecraft/" + rsaKeyName
+	}
+	return rsaKeyPath
+}
+
 func KeySetup() error {
+	rsaKeyPath := getRsaKeyPath()
 	// Check if the RSA private key already exists on the file system.
 	if _, err := os.Stat(rsaKeyPath); !os.IsNotExist(err) {
 		// If it exists, load and return the existing key.
@@ -29,7 +39,7 @@ func KeySetup() error {
 			return err
 		}
 
-		fmt.Println("RSA key loaded successfully")
+		log.Println("RSA key loaded successfully")
 		rsaKey = rsky
 		return nil
 	}
@@ -54,11 +64,12 @@ func KeySetup() error {
 
 	rsaKey = privateKey
 
-	fmt.Println("RSA key generated successfully")
+	log.Println("RSA key generated successfully")
 	return nil
 }
 
 func loadRS256Key() (*rsa.PrivateKey, error) {
+	rsaKeyPath := getRsaKeyPath()
 	// Read the private key from the file system.
 	keyBytes, err := ioutil.ReadFile(rsaKeyPath)
 	if err != nil {

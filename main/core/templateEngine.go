@@ -1,8 +1,8 @@
 package core
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -20,7 +20,7 @@ func LoadTemplates(r *gin.Engine) {
 	// Load templates files
 	templateFiles := []string{}
 
-	fmt.Println("Loading templates...")
+	log.Println("Loading templates...")
 	// Walk through the "templates" folder and all its subdirectories
 	nerr := filepath.Walk("main/web/templates", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -35,8 +35,8 @@ func LoadTemplates(r *gin.Engine) {
 			// Parse the file and add it to the "tmpl" map
 			templateFiles = append(templateFiles, path)
 
-			//console log
-			fmt.Print(templateName + " ")
+			//console logChopper
+			log.Println(templateName + " ")
 		}
 		return nil
 	})
@@ -45,7 +45,7 @@ func LoadTemplates(r *gin.Engine) {
 		panic(nerr)
 	}
 
-	fmt.Println("\n\nLoading sites...")
+	log.Println("\n\nLoading sites...")
 	adminGroup := r.Group("/admin")
 	adminGroup.Use(middleware.LoginToken())
 	adminGroup.Use(middleware.VerifyAdmin())
@@ -80,15 +80,15 @@ func LoadTemplates(r *gin.Engine) {
 			tmpl[templateName] = template.Must(template.ParseFiles(parsing...))
 
 			if strings.HasPrefix(templateName, "admin") {
-				fmt.Println("Serving " + relPath + " as admin at /" + templateName)
+				log.Println("Serving " + relPath + " as admin at /" + templateName)
 				themPath := strings.Replace(templateName, "admin", "", 1)
 				adminGroup.GET("/"+themPath, handler)
 			} else if strings.HasPrefix(templateName, "dev") {
-				fmt.Println("Serving " + relPath + " as dev at /" + templateName)
+				log.Println("Serving " + relPath + " as dev at /" + templateName)
 				themPath := strings.Replace(templateName, "dev", "", 1)
 				devGroup.GET("/"+themPath, handler)
 			} else {
-				fmt.Println("Serving " + relPath + " at /" + templateName)
+				log.Println("Serving " + relPath + " at /" + templateName)
 				r.GET("/"+templateName, handler)
 			}
 		}
@@ -126,13 +126,13 @@ func handler(c *gin.Context) {
 	if err != nil {
 		// If there's an error executing the templates, return a 500 error
 		c.String(http.StatusInternalServerError, "Internal Server Error")
-		fmt.Println("Error executing template:", err)
+		log.Println("Error executing template:", err)
 		return
 	}
 }
 
 func LoadServerAssets(r *gin.Engine) {
-	fmt.Println("Loading assets...")
+	log.Println("Loading assets...")
 	// Walk through the "assets" folder and all its subdirectories
 	err := filepath.Walk("main/web/assets", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -149,7 +149,7 @@ func LoadServerAssets(r *gin.Engine) {
 
 			assetPath := strings.Replace(relPath, "\\", "/", -1)
 			// Add the asset to a route
-			fmt.Println("Serving " + path + " at /assets/" + assetPath)
+			log.Println("Serving " + path + " at /assets/" + assetPath)
 			r.StaticFile("/assets/"+assetPath, path)
 
 			if err != nil {
