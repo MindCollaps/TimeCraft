@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"fmt"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
+	"src/main/core"
 	"src/main/database"
 	"src/main/database/models"
 )
@@ -28,7 +29,8 @@ func rmcHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			log.Println(err)
 			return
 		}
 
@@ -43,13 +45,13 @@ func rmcHandler(cg *gin.RouterGroup) {
 		err := database.MongoDB.Collection("RoomConfig").FindOne(c, bson.M{"Name": name}).Decode(&existingRmc)
 
 		if err == nil {
-			c.JSON(http.StatusConflict, gin.H{"msg": "RoomConfig already exists"})
-			fmt.Println("RoomConfig already exists")
+			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "RoomConfig already exists"})
+			log.Println("RoomConfig already exists")
 			return
-		} else if err != mongo.ErrNoDocuments {
+		} else if !errors.Is(err, mongo.ErrNoDocuments) {
 			// Handle other database query errors
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
-			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
@@ -72,17 +74,20 @@ func rmcHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
+
 		var roomconfig models.RoomConfig
 		err = database.MongoDB.Collection("RoomConfig").FindOne(c, bson.M{"_id": objectID}).Decode(&roomconfig)
 		if err != nil {
-			if err == mongo.ErrNoDocuments {
-				c.JSON(http.StatusNotFound, gin.H{"error": "RoomConfig not found"})
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "RoomConfig not found"})
 			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			}
+			log.Println(err)
 			return
 		}
 		c.JSON(http.StatusOK, roomconfig)
@@ -92,7 +97,8 @@ func rmcHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
 		var existingrmc models.RoomConfig
@@ -109,7 +115,8 @@ func rmcHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			log.Println(err)
 			return
 		}
 
@@ -123,30 +130,34 @@ func rmcHandler(cg *gin.RouterGroup) {
 		if requestBody.Capacity != 0 {
 			update["capacity"] = requestBody.Capacity
 		}
-		if requestBody.ExamCapacity == 0 {
+		if requestBody.ExamCapacity != 0 {
 			update["examCapacity"] = requestBody.ExamCapacity
 		}
-		if requestBody.Blocks != nil {
+		if requestBody.Blocks != nil && !core.ContainsNilObjectID(requestBody.Blocks) && len(requestBody.Blocks) != 0 {
 			update["blocks"] = requestBody.Blocks
 		}
-		if requestBody.Specialisation != nil {
+		if requestBody.Specialisation != nil && !core.ContainsNilObjectID(requestBody.Specialisation) && len(requestBody.Specialisation) != 0 {
 			update["specialisation"] = requestBody.Specialisation
 		}
 
 		result, err := database.MongoDB.Collection("RoomConfig").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
 		if result.ModifiedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "RoomConfig not found"})
+			c.JSON(http.StatusNotModified, gin.H{"msg": "Nothing was updated", "error": "No data provided to update"})
+			log.Println("Error: RoomConfig not found")
 			return
 		}
+
 		var updatedRoomConfig models.RoomConfig
 		err = database.MongoDB.Collection("RoomConfig").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedRoomConfig)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
@@ -157,17 +168,20 @@ func rmcHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
+
 		result, err := database.MongoDB.Collection("RoomConfig").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
 		if result.DeletedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "RoomConfig not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "RoomConfig not found"})
+			log.Println("Error: RoomConfig not found")
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "RoomConfig deleted"})
