@@ -29,4 +29,13 @@ func Handler(rg *gin.RouterGroup) {
 
 	ical := rg.Group("/ical")
 	icalHandler(ical)
+
+	timeslot := rg.Group("/tsl")
+	tslHandler(timeslot)
+
+	roomconfig := rg.Group("/rmc")
+	rmcHandler(roomconfig)
+
+	roomspecialisation := rg.Group("rms")
+	rmsHandler(roomspecialisation)
 }

@@ -23,7 +23,7 @@ import (
 )
 
 type ExcelJson []struct {
-	StudySubject  string `json:"study_subject"`
+	StudentGroup  string `json:"student_group"`
 	SemesterGroup string `json:"semester_group"`
 	Semester      string `json:"semester"`
 	SemesterYear  string `json:"semester_year"`
@@ -204,13 +204,15 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	var Name string
 	var TimeTableDays []primitive.ObjectID
 	var TimeTable models.TimeTable
+	var SemsterGroup models.SemesterGroup
+	var StudentGroup models.StudentGroup
 	var updateExistingTimeTable bool
 	var ExistingTimeTableId primitive.ObjectID
 
 	// check if the timetable already exists by checking the name and the last updated date
 	var header = data[0]
 	LastChanged = getLastChanged(header.LastChanged)
-	Name = fmt.Sprint(header.StudySubject, " ", header.SemesterGroup, " ", strings.Replace(header.SemesterYear, " ", "", 1))
+	Name = fmt.Sprint(header.StudentGroup, " ", header.SemesterGroup, " ", strings.Replace(header.SemesterYear, " ", "", 1))
 
 	updateExistingTimeTable, ExistingTimeTableId = timetableExists(Name)
 	if updateExistingTimeTable && ExistingTimeTableId != primitive.NilObjectID {
@@ -221,6 +223,9 @@ func parseJson(data ExcelJson, c *gin.Context) {
 			return
 		}
 	}
+
+	SemsterGroup.Name = header.SemesterGroup
+	StudentGroup.Name = header.StudentGroup
 
 	for index, element := range data {
 		if index == 0 {
@@ -285,6 +290,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 				deleteTimeSlot(timeSlotID)
 			}
 			deleteTimeTableDay(dayID)
+			StudentGroup.TimeTableId = TimeTable.ID
 		}
 	} else {
 		TimeTable.ID = primitive.NewObjectID()
@@ -293,6 +299,9 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	TimeTable.Name = Name
 	TimeTable.Days = TimeTableDays
 	TimeTable.LastUpdated = LastChanged
+
+	var studentGroupIDs = []primitive.ObjectID{saveStudentGroup(StudentGroup.Name, TimeTable.ID)}
+	saveSemsterGroup(SemsterGroup.Name, TimeTable.ID, studentGroupIDs)
 
 	var id primitive.ObjectID
 	if updateExistingTimeTable {
@@ -415,6 +424,39 @@ func getTimetableLastUpdated(id primitive.ObjectID) primitive.DateTime {
 		return primitive.DateTime(0)
 	} else {
 		return timeTable.LastUpdated
+	}
+}
+
+func saveSemsterGroup(semsterGroup string, timeTableID primitive.ObjectID, studentGroupID []primitive.ObjectID) primitive.ObjectID {
+	semsterGroupObj := models.SemesterGroup{
+		ID:              primitive.NewObjectID(),
+		Name:            semsterGroup,
+		TimeTableId:     timeTableID,
+		StudentGroupIds: studentGroupID,
+	}
+
+	_, err := database.MongoDB.Collection("SemsterGroup").InsertOne(context.Background(), semsterGroupObj)
+	if err != nil {
+		log.Println("Error creating new SemsterGroup:", err)
+		return primitive.NilObjectID
+	} else {
+		return semsterGroupObj.ID
+	}
+}
+
+func saveStudentGroup(studentGroup string, timeTableID primitive.ObjectID) primitive.ObjectID {
+	studentGroupObj := models.StudentGroup{
+		ID:          primitive.NewObjectID(),
+		Name:        studentGroup,
+		TimeTableId: timeTableID,
+	}
+
+	_, err := database.MongoDB.Collection("StudentGroup").InsertOne(context.Background(), studentGroupObj)
+	if err != nil {
+		log.Println("Error creating new StudentGroup:", err)
+		return primitive.NilObjectID
+	} else {
+		return studentGroupObj.ID
 	}
 }
 
