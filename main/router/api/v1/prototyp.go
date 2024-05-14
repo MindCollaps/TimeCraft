@@ -247,7 +247,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 					continue
 				}
 
-				startTime, endTime := getStartAndEndTime(lesson.Time)
+				startTime, endTime := getStartAndEndTime(day.Date, lesson.Time)
 				timeslot := models.TimeSlot{
 					ID:              primitive.NewObjectID(),
 					Name:            lesson.Name,
@@ -323,13 +323,15 @@ func getLastChanged(input string) primitive.DateTime {
 	return core.ConvertToDateTime("02.01.2006", input)
 }
 
-func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTime) {
+func getStartAndEndTime(date string, lessonTime string) (primitive.DateTime, primitive.DateTime) {
 	timeRange := strings.Split(lessonTime, "-")
 	startTimeStr := timeRange[0]
 	endTimeStr := timeRange[1]
 
-	startTimeStr = "2020-01-01 " + startTimeStr + ":00"
-	endTimeStr = "2020-01-01 " + endTimeStr + ":00"
+	baseDate := strings.Split(date, "00:00:00")[0]
+
+	startTimeStr = baseDate + startTimeStr + ":00"
+	endTimeStr = baseDate + endTimeStr + ":00"
 
 	startTime := core.ConvertToDateTime(time.DateTime, startTimeStr)
 	endTime := core.ConvertToDateTime(time.DateTime, endTimeStr)
