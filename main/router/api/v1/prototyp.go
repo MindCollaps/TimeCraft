@@ -319,8 +319,8 @@ func getLastChanged(input string) primitive.DateTime {
 	if strings.HasPrefix(input, "Stand: ") {
 		input = strings.TrimPrefix(input, "Stand: ")
 	}
-
-	return core.ConvertToDateTime(time.DateOnly, input)
+	// the date format with the dots is important
+	return core.ConvertToDateTime("02.01.2006", input)
 }
 
 func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTime) {
@@ -434,7 +434,7 @@ func saveLecture(lecture string) primitive.ObjectID {
 func saveLecturer(lecturer string) primitive.ObjectID {
 	lecturerObj := models.Lecturer{
 		ID:       primitive.NewObjectID(),
-		SureName: lecturer,
+		SureName: lecturer, // TODO: check for the first name
 	}
 
 	_, err := database.MongoDB.Collection("Lecturer").InsertOne(context.Background(), lecturerObj)

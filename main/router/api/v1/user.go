@@ -147,7 +147,7 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"status": 200, "msg": "Created user"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created user"})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {
