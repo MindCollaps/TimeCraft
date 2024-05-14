@@ -26,4 +26,7 @@ func Handler(rg *gin.RouterGroup) {
 
 	devhandler := rg.Group("/dev")
 	devHandler(devhandler)
+
+	ical := rg.Group("/ical")
+	icalHandler(ical)
 }
