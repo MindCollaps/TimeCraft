@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"fmt"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -36,7 +36,8 @@ func tslHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			log.Println(err)
 			return
 		}
 
@@ -58,13 +59,13 @@ func tslHandler(cg *gin.RouterGroup) {
 		err := database.MongoDB.Collection("TimeSlot").FindOne(c, bson.M{"Name": name}).Decode(&existingTsl)
 
 		if err == nil {
-			c.JSON(http.StatusConflict, gin.H{"msg": "TimeSlot already exists"})
-			fmt.Println("TimeSlot already exists")
+			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "TimeSlot already exists"})
+			log.Println("TimeSlot already exists")
 			return
-		} else if err != mongo.ErrNoDocuments {
+		} else if !errors.Is(err, mongo.ErrNoDocuments) {
 			// Handle other database query errors
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
-			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
@@ -85,9 +86,13 @@ func tslHandler(cg *gin.RouterGroup) {
 			RoomConfigId:    roomConfigId,
 		}
 
-		database.MongoDB.Collection("TimeSlot").InsertOne(c, newTimeSlot, options.InsertOne())
+		_, err = database.MongoDB.Collection("TimeSlot").InsertOne(c, newTimeSlot, options.InsertOne())
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{"msg": "Created TimeSlot"})
-
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {
@@ -97,14 +102,16 @@ func tslHandler(cg *gin.RouterGroup) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 			return
 		}
+
 		var timeslot models.TimeSlot
 		err = database.MongoDB.Collection("TimeSlot").FindOne(c, bson.M{"_id": objectID}).Decode(&timeslot)
 		if err != nil {
-			if err == mongo.ErrNoDocuments {
-				c.JSON(http.StatusNotFound, gin.H{"error": "TimeSlot not found"})
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "TimeSlot not found"})
 			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			}
+			log.Println(err)
 			return
 		}
 		c.JSON(http.StatusOK, timeslot)
@@ -114,11 +121,9 @@ func tslHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
 			return
 		}
-		var existingtsl models.TimeSlot
-		err = database.MongoDB.Collection("TimeSlot").FindOne(c, bson.M{"_id": objectID}).Decode(&existingtsl)
 
 		var requestBody struct {
 			ID              primitive.ObjectID  `json:"id"`
@@ -138,8 +143,12 @@ func tslHandler(cg *gin.RouterGroup) {
 			LastUpdated     primitive.DateTime  `json:"lastUpdated"`
 		}
 
+		var existingtsl models.TimeSlot
+		err = database.MongoDB.Collection("TimeSlot").FindOne(c, bson.M{"_id": objectID}).Decode(&existingtsl)
+
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid body"})
+			log.Println(err)
 			return
 		}
 
@@ -186,18 +195,22 @@ func tslHandler(cg *gin.RouterGroup) {
 
 		result, err := database.MongoDB.Collection("TimeSlot").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
 		if result.ModifiedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "TimeSlot not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "TimeSlot not found"})
+			log.Println("TimeSlot not found")
 			return
 		}
+
 		var updatedTimeslot models.TimeSlot
 		err = database.MongoDB.Collection("TimeSlot").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedTimeslot)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
@@ -208,17 +221,20 @@ func tslHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
+
 		result, err := database.MongoDB.Collection("TimeSlot").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
 		if result.DeletedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "TimeSlot not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "TimeSlot not found"})
+			log.Println("Error: TimeSlot not found")
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "TimeSlot deleted"})

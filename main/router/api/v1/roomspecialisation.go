@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"fmt"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,7 +23,8 @@ func rmsHandler(cg *gin.RouterGroup) {
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			log.Println(err)
 			return
 		}
 
@@ -34,12 +35,12 @@ func rmsHandler(cg *gin.RouterGroup) {
 
 		if err == nil {
 			c.JSON(http.StatusConflict, gin.H{"msg": "RoomSpecialisation already exists"})
-			fmt.Println("RoomSpecialisation already exists")
+			log.Println("RoomSpecialisation already exists")
 			return
-		} else if err != mongo.ErrNoDocuments {
+		} else if !errors.Is(err, mongo.ErrNoDocuments) {
 			// Handle other database query errors
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "Database error"})
-			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
@@ -48,7 +49,12 @@ func rmsHandler(cg *gin.RouterGroup) {
 			Name: name,
 		}
 
-		database.MongoDB.Collection("RoomSpecialisation").InsertOne(c, newRoomSpecialisation, options.InsertOne())
+		_, err = database.MongoDB.Collection("RoomSpecialisation").InsertOne(c, newRoomSpecialisation, options.InsertOne())
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{"msg": "Created RoomSpecialisation"})
 
 	})
@@ -57,17 +63,19 @@ func rmsHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
 			return
 		}
+
 		var roomspecialisation models.RoomSpecialisation
 		err = database.MongoDB.Collection("RoomSpecialisation").FindOne(c, bson.M{"_id": objectID}).Decode(&roomspecialisation)
 		if err != nil {
-			if err == mongo.ErrNoDocuments {
-				c.JSON(http.StatusNotFound, gin.H{"error": "RoomSpecialisation not found"})
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "RoomSpecialisation not found"})
 			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			}
+			log.Println(err)
 			return
 		}
 		c.JSON(http.StatusOK, roomspecialisation)
@@ -77,9 +85,11 @@ func rmsHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
+
 		var existingrms models.RoomSpecialisation
 		err = database.MongoDB.Collection("RoomSpecialisation").FindOne(c, bson.M{"_id": objectID}).Decode(&existingrms)
 
@@ -107,7 +117,8 @@ func rmsHandler(cg *gin.RouterGroup) {
 
 		result, err := database.MongoDB.Collection("RoomSpecialisation").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
 			return
 		}
 
@@ -116,6 +127,7 @@ func rmsHandler(cg *gin.RouterGroup) {
 			log.Println("Warning: No data provided to update the RoomSpecialisation")
 			return
 		}
+
 		var updatedRoomSpecialisation models.RoomSpecialisation
 		err = database.MongoDB.Collection("RoomSpecialisation").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedRoomSpecialisation)
 		if err != nil {
@@ -131,17 +143,18 @@ func rmsHandler(cg *gin.RouterGroup) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			log.Println(err)
 			return
 		}
 		result, err := database.MongoDB.Collection("RoomSpecialisation").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
 		if result.DeletedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"error": "RoomSpecialisation not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "RoomSpecialisation not found"})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"msg": "RoomSpecialisation deleted"})
