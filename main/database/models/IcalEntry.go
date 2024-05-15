@@ -11,6 +11,7 @@ type IcalEntry struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id"`
 	Name        string             `json:"name" bson:"name"`
 	Text        string             `json:"text" bson:"text"`
+	TimeTableId primitive.ObjectID `json:"timeTableID" bson:"timeTableID"`
 	LastUpdated primitive.DateTime `json:"lastUpdated" bson:"lastUpdated"`
 }
 
@@ -18,6 +19,7 @@ type IcalEntryStruct struct {
 	ID          string `json:"id" bson:"_id"`
 	Name        string `json:"name" bson:"name"`
 	Text        string `json:"text" bson:"text"`
+	TimeTableId string `json:"timeTableId" bson:"timeTableId"`
 	LastUpdated string `json:"lastUpdated" bson:"lastUpdated"`
 }
 
@@ -27,6 +29,7 @@ func IcalEntryToStruct(icalEntry IcalEntry) IcalEntryStruct {
 		ID:          icalEntry.ID.Hex(),
 		Name:        icalEntry.Name,
 		Text:        icalEntry.Text,
+		TimeTableId: icalEntry.TimeTableId.Hex(),
 		LastUpdated: icalEntry.LastUpdated.Time().String(),
 	}
 	return icalEntryStruct

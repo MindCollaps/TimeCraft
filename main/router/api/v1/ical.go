@@ -17,7 +17,7 @@ import (
 
 func icalHandler(cg *gin.RouterGroup) {
 	// /api/v1/ical/...
-	cg.POST("/:id", func(c *gin.Context) {
+	cg.POST("/tbl/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
@@ -94,6 +94,7 @@ func icalHandler(cg *gin.RouterGroup) {
 			ID:          primitive.NewObjectID(),
 			Name:        timetable.Name,
 			Text:        icalString,
+			TimeTableId: objectID,
 			LastUpdated: core.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime)),
 		}
 		err = SaveIcalEntry(c, icalEntry)
@@ -106,6 +107,40 @@ func icalHandler(cg *gin.RouterGroup) {
 		c.JSON(http.StatusOK, gin.H{"msg": "iCal generated and saved successfully", "data": icalEntry.ID.Hex()})
 	})
 
+	cg.GET("/", func(c *gin.Context) {
+		type ListItem struct {
+			ID          string `json:"id"`
+			Name        string `json:"name"`
+			TimeTableId string `json:"timeTableId"`
+		}
+
+		cursor, err := database.MongoDB.Collection("IcalEntry").Find(c, bson.M{})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Failed to load iCals"})
+			log.Println(err)
+			return
+		}
+		defer cursor.Close(c)
+
+		var icalEntries []models.IcalEntry
+		if err = cursor.All(c, &icalEntries); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Failed to load iCals"})
+			log.Println(err)
+			return
+		}
+
+		var listItems []ListItem
+		for _, icalEntry := range icalEntries {
+			listItems = append(listItems, ListItem{
+				ID:          icalEntry.ID.Hex(),
+				Name:        icalEntry.Name,
+				TimeTableId: icalEntry.TimeTableId.Hex(),
+			})
+		}
+
+		c.JSON(http.StatusOK, gin.H{"data": listItems})
+	})
+
 	cg.GET("/:id", func(c *gin.Context) {
 		id, err := primitive.ObjectIDFromHex(c.Param("id"))
 		if err != nil {
@@ -116,6 +151,25 @@ func icalHandler(cg *gin.RouterGroup) {
 
 		var icalEntry models.IcalEntry
 		err = database.MongoDB.Collection("IcalEntry").FindOne(c, bson.M{"_id": id}).Decode(&icalEntry)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "iCal not found"})
+			log.Println(err)
+			return
+		}
+
+		c.Data(http.StatusOK, "text/calendar", []byte(icalEntry.Text))
+	})
+
+	cg.GET("/tbl/:id", func(c *gin.Context) {
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid TimeTable ID"})
+			log.Println(err)
+			return
+		}
+
+		var icalEntry models.IcalEntry
+		err = database.MongoDB.Collection("IcalEntry").FindOne(c, bson.M{"timeTableID": id}).Decode(&icalEntry)
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "iCal not found"})
 			log.Println(err)
