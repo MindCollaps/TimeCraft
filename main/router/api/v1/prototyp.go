@@ -296,18 +296,34 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	TimeTable.Days = TimeTableDays
 	TimeTable.LastUpdated = LastChanged
 
-	StudentGroup.ID = primitive.NewObjectID()
-	StudentGroup.Name = header.StudentGroup
-	StudentGroup.TimeTableId = TimeTable.ID
-	// TODO: StudentGroup.LectureGroupIds
+	var StudentGroupID primitive.ObjectID
+	err, ExistingStudentGroupID := getStudentGroup(header.StudentGroup)
+	if err != nil {
+		// create new StudentGroup
+		StudentGroup.ID = primitive.NewObjectID()
+		StudentGroup.Name = header.StudentGroup
+		StudentGroup.TimeTableId = TimeTable.ID
+		// TODO: StudentGroup.LectureGroupIds
 
-	SemesterGroup.ID = primitive.NewObjectID()
-	SemesterGroup.Name = header.SemesterGroup
-	SemesterGroup.TimeTableId = TimeTable.ID
-	SemesterGroup.StudentGroupIds = []primitive.ObjectID{saveStudentGroup(StudentGroup)}
-	// TODO: SemesterGroup.SpecialisationsIds
+		StudentGroupID = saveStudentGroup(StudentGroup)
+	} else {
+		// Use the existing StudentGroup
+		StudentGroupID = ExistingStudentGroupID
+	}
 
-	saveSemesterGroup(SemesterGroup)
+	err, existingSemesterGroup := getSemesterGroup(header.SemesterGroup)
+	if err != nil {
+		SemesterGroup.ID = primitive.NewObjectID()
+		SemesterGroup.Name = header.SemesterGroup
+		SemesterGroup.TimeTableId = TimeTable.ID
+		SemesterGroup.StudentGroupIds = []primitive.ObjectID{StudentGroupID}
+		// TODO: SemesterGroup.SpecialisationsIds
+
+		saveSemesterGroup(SemesterGroup)
+	} else {
+		existingSemesterGroup.StudentGroupIds = append(existingSemesterGroup.StudentGroupIds, ExistingStudentGroupID)
+		updateSemesterGroup(existingSemesterGroup)
+	}
 
 	var id primitive.ObjectID
 	if updateExistingTimeTable {
@@ -433,6 +449,30 @@ func getTimetableLastUpdated(id primitive.ObjectID) primitive.DateTime {
 	}
 }
 
+func getSemesterGroup(name string) (error, models.SemesterGroup) {
+	var semesterGroup models.SemesterGroup
+	err := database.MongoDB.Collection("SemesterGroup").FindOne(context.Background(), bson.M{"name": name}).Decode(&semesterGroup)
+
+	if err != nil {
+		// log.Println("Error getting semesterGroup:", err)
+		return err, models.SemesterGroup{}
+	} else {
+		return nil, semesterGroup
+	}
+}
+
+func getStudentGroup(name string) (error, primitive.ObjectID) {
+	var studentGroup models.StudentGroup
+	err := database.MongoDB.Collection("StudentGroup").FindOne(context.Background(), bson.M{"name": name}).Decode(&studentGroup)
+
+	if err != nil {
+		// log.Println("Error getting studentGroup:", err)
+		return err, primitive.NilObjectID
+	} else {
+		return nil, studentGroup.ID
+	}
+}
+
 func saveSemesterGroup(semesterGroup models.SemesterGroup) primitive.ObjectID {
 	_, err := database.MongoDB.Collection("SemesterGroup").InsertOne(context.Background(), semesterGroup)
 	if err != nil {
@@ -536,6 +576,17 @@ func updateTimeTable(timeTable models.TimeTable) primitive.ObjectID {
 	} else {
 		return timeTable.ID
 	}
+}
+
+func updateSemesterGroup(semesterGroup models.SemesterGroup) primitive.ObjectID {
+	_, err := database.MongoDB.Collection("SemesterGroup").ReplaceOne(context.Background(), bson.M{"_id": semesterGroup.ID}, semesterGroup)
+	if err != nil {
+		log.Println("Error updating semesterGroup:", err)
+		return primitive.NilObjectID
+	} else {
+		return semesterGroup.ID
+	}
+
 }
 
 func deleteTimeTableDay(id primitive.ObjectID) {
