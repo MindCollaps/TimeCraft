@@ -18,7 +18,6 @@ func tslHandler(cg *gin.RouterGroup) {
 	cg.POST("/", func(c *gin.Context) {
 
 		var requestBody struct {
-			ID              primitive.ObjectID `json:"id" binding:"required"`
 			Name            string             `json:"name" binding:"required"`
 			LecturerId      primitive.ObjectID `json:"lecturerId" binding:"required"`
 			LectureId       primitive.ObjectID `json:"lectureId" binding:"required"`
@@ -126,7 +125,6 @@ func tslHandler(cg *gin.RouterGroup) {
 		}
 
 		var requestBody struct {
-			ID              primitive.ObjectID  `json:"id"`
 			Name            string              `json:"name"`
 			LecturerId      *primitive.ObjectID `json:"lecturerId"`
 			LectureId       *primitive.ObjectID `json:"lectureId"`

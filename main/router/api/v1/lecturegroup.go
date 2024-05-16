@@ -19,7 +19,6 @@ func lgrpHandler(cg *gin.RouterGroup) {
 	cg.POST("/", func(c *gin.Context) {
 		//check body for name and timeTableId
 		var requestBody struct {
-			Id          primitive.ObjectID `json:"id" binding:"required"`
 			Name        string             `json:"name" binding:"required"`
 			TimeTableId primitive.ObjectID `json:"timeTableId" binding:"required"`
 		}
