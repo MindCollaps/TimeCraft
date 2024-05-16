@@ -218,6 +218,10 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	if updateExistingTimeTable && ExistingTimeTableId != primitive.NilObjectID {
 		log.Println(fmt.Sprintf("found existing timetable '%s' with %s", Name, ExistingTimeTableId))
 
+		lastChangedTest := core.ConvertToLocalTimeObject(LastChanged)
+		lastModified := core.ConvertToLocalTimeObject(getTimetableLastUpdated(ExistingTimeTableId))
+		log.Println(fmt.Sprintf("lastChangedTest: %s, lastModified: %s", lastChangedTest, lastModified))
+
 		if LastChanged <= getTimetableLastUpdated(ExistingTimeTableId) {
 			c.JSON(http.StatusNotModified, gin.H{"msg": "no changes - timetable is already up2date"})
 			return
