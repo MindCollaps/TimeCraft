@@ -321,8 +321,12 @@ func parseJson(data ExcelJson, c *gin.Context) {
 
 		saveSemesterGroup(SemesterGroup)
 	} else {
-		existingSemesterGroup.StudentGroupIds = append(existingSemesterGroup.StudentGroupIds, StudentGroupID)
-		updateSemesterGroup(existingSemesterGroup)
+		err := checkStudentGroupIDsInSemesterGroup(StudentGroupID)
+
+		if err != nil {
+			existingSemesterGroup.StudentGroupIds = append(existingSemesterGroup.StudentGroupIds, StudentGroupID)
+			updateSemesterGroup(existingSemesterGroup)
+		}
 	}
 
 	var id primitive.ObjectID
@@ -344,6 +348,12 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"msg": "successfully created the timetable"})
 	}
+}
+
+func checkStudentGroupIDsInSemesterGroup(studentGroupID primitive.ObjectID) error {
+	var semesterGroup models.SemesterGroup
+	err := database.MongoDB.Collection("SemesterGroup").FindOne(context.Background(), bson.M{"studentGroupIds": studentGroupID}).Decode(&semesterGroup)
+	return err
 }
 
 func getLastChanged(input string) primitive.DateTime {
