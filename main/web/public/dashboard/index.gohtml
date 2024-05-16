@@ -2,379 +2,148 @@
 {{define "metaDescription"}}Welcome to TimeCraft{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-    <div id="app" class="vh-100 vw-100">
-        <div class="h-100 w-100 d-flex flex-row">
-            <div class=" d-flex h-100 flex-column flex-shrink-0 text-white bg-body-tertiary rounded-end"
-                 style="width: 12%;">
-                <!--SIDEBAR-->
-                <div class="p-2 d-flex justify-content-center align-items-center">
-                    <img class="w-50" src="/assets/static/msminutes.png" alt="Ms Minutes">
-                </div>
-                <hr>
-                <ul class="nav nav-pills flex-column mb-auto align-items-center gap-2">
-                    <li class="nav-item">
-                        <button type="button" data-bs-toggle="tab" id="dashboard-tab"
-                                data-bs-target="#dashboard-tab-pane" role="tab"
-                                aria-controls="dashboard-tab-pane" aria-selected="true"
-                                class="nav-link d-flex justify-content-between align-items-center p-3 w-100 gap-2"
-                                aria-current="page">
-                            <span class="nav-link material-symbols-outlined p-0">speed</span>
-                            <span class="w-100">Dashboard</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button type="button" data-bs-toggle="tab" id="timetable-tab"
-                                data-bs-target="#timetable-tab-pane" role="tab"
-                                aria-controls="timetable-tab-pane" aria-selected="true"
-                                class="nav-link d-flex justify-content-between align-items-center p-3 w-100 gap-2"
-                                aria-current="page">
-                            <span class="nav-link material-symbols-outlined p-0">table_chart</span>
-                            <span class="w-100">Timetables</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button type="button" data-bs-toggle="tab" id="favorites-tab"
-                                data-bs-target="#favorites-tab-pane" role="tab"
-                                aria-controls="favorites-tab-pane" aria-selected="true"
-                                class="nav-link d-flex justify-content-between align-items-center p-3 w-100 gap-2"
-                                aria-current="page">
-                            <span class="nav-link p-0 material-symbols-outlined">star</span>
-                            <span class="w-100">Favorites</span>
-                        </button>
-                    </li>
-                </ul>
-                <hr>
-            </div>
-            <div class="h-100 w-100 d-flex flex-column">
-                <div class="col h-100 pane-animation">
-                    <div class="tab-content h-100 " id="v-pills-tabContent">
-                        <div class="tab-pane fade w-100 h-100" id="dashboard-tab-pane" role="tabpanel"
-                             aria-labelledby="dashboard-tab"
-                             tabindex="0">
-                            <div class="w-100 h-100 d-flex flex-column">
-                                <div class="row w-100 bg-body-tertiary shadow-sm">
-                                    <div class="d-flex p-4 justify-content-center gap-3 align-items-center">
-                                        <button class="btn btn-secondary" @click="previousWeek()"><span
-                                                    class="material-icons">arrow_back</span></button>
-                                        <div class="text-white">
-                                            ${weekString}
-                                        </div>
-                                        <button class="btn btn-secondary" @click="nextWeek()"><span
-                                                    class="material-icons">arrow_forward</span></button>
-                                        <button class="btn btn-primary" @click="selectClosestWeek()"><span
-                                                    class="material-icons">today</span></button>
-                                    </div>
-                                </div>
-                                <div class="h-100 w-100 d-flex flex-column align-items-stretch p-3 mt-3">
-                                    <div class="h-100 w-100 d-flex flex-row align-items-stretch gap-2 position-relative">
-                                        <div class="d-flex flex-column position-absolute h-100 w-100">
-                                            <h3 class="m-0 mb-3">Times</h3>
-                                            <div class="d-flex flex-column h-100">
-                                                <div class="position-relative" :style="timeLineStyle()">
-                                                </div>
-                                                <div class="h-100 d-flex flex-row justify-content-between position-relative">
-                                                    <div class="d-flex flex-column" style="width: 5%">
-                                                        <div v-for="(time, index) in times"
-                                                             class="h-100 d-flex justify-content-center"
-                                                             :class="Math.floor(index) % 2 != 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
-                                                            <p class="m-0">${time}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex flex-column w-100">
-                                                        <div v-for="(time, index) in times" class="h-100"
-                                                             :class="Math.floor(index) % 2 != 0 ? 'bg-secondary-tertiary' : 'bg-secondary'">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1" style="flex: 1"></div> <!--For the times-->
-                                        <div v-for="day in selectedWeek.days" style="flex: 1"
-                                             class="h-100 d-flex flex-column flex-grow-1">
-                                            <div class="text-center">
-                                                <h3 class="m-0 mb-3">${day.weekDay}</h3>
-                                            </div>
-                                            <div class="h-100 d-flex flex-column">
-                                                <div :style="{height: currentTimeThickness}"></div>
-                                                <div class="h-100">
-                                                    <div v-for="slot in day.timeSlotIds"
-                                                         class="position-relative"
-                                                         :class="slotColor(slot)"
-                                                         :style="slotStyle(slot)">
-                                                        <div class="d-flex flex-column p-2 align-items-center h-100">
-                                                            <h4 class="text-white m-0 text-wrap" v-if="slot.name != ''">
-                                                                ${slot.name}</h4>
-                                                            <h4 class="text-white m-0 text-wrap"
-                                                                v-else-if="slot.lectureId != ''">
-                                                                ${slot.lectureId.name}</h4>
-                                                            <h4 class="text-white m-0 text-wrap" v-else>Undefined
-                                                                name</h4>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Timecraft</title>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
 
-                                                            <div class="h-100 d-flex flex-column align-items-center justify-content-center">
-                                                                <p class="text-white" v-if="slot.lecturerId.id != ''">
-                                                                    Lesson by ${slot.lecturerId.sureName}
-                                                                </p>
-                                                                <p class="text-white" v-if="slot.isCancelled">
-                                                                    Cancelled!
-                                                                </p>
-                                                                <p class="text-white" v-if="slot.wasMoved">
-                                                                    Moved!
-                                                                </p>
-                                                                <p class="text-white" v-if="slot.isExam">
-                                                                    Exam!
-                                                                </p>
-                                                                <p class="text-white" v-if="slot.isReExamination">
-                                                                    Re-Exam!
-                                                                </p>
-                                                                <p class="text-white" v-if="slot.isEvent">
-                                                                    Event!
-                                                                </p>
-                                                                <p class="text-white" v-if="slot.isHoliday">
-                                                                    Holiday!
-                                                                </p>
-                                                                <p class="text-white" v-if="slot.isOnline">
-                                                                    Online!
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade w-100 h-100" id="timetable-tab-pane" role="tabpanel"
-                             aria-labelledby="timetable-tab"
-                             tabindex="0">
-                            <div class="h-100 w-100 d-flex flex-column align-items-stretch p-3">
-                                <div class="d-flex w-100 align-items-center flex-column overflow-auto">
-                                    <div class="accordion w-100" id="studentGroups">
-                                        <div class="accordion-item">
-                                            <h4 class="accordion-header">
-                                                <button class="accordion-button bg-dark box-shadow-secondary text-white"
-                                                        type="button" data-bs-toggle="collapse"
-                                                        data-bs-target="#collapseOne" aria-expanded="false"
-                                                        aria-controls="collapseOne">
-                                                    IT-Security
-                                                </button>
-                                            </h4>
-                                            <div id="collapseOne" class="accordion-collapse collapse"
-                                                 data-bs-parent="#studentGroups" style="">
-                                                <div class="accordion-body">
+        div#banner {
+            background-color: #0288D1;
+            height: 100px;
+            box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+        }
 
-                                                    <div class="accordion" id="semesterGroupDITJHG2022">
-                                                        <div class="accordion-item">
-                                                            <h4 class="accordion-header">
-                                                                <button class="accordion-button bg-dark box-shadow-secondary text-white"
-                                                                        style="color: dimgrey" type="button"
-                                                                        data-bs-toggle="collapse"
-                                                                        data-bs-target="#collapseOneDITJHG2022"
-                                                                        aria-expanded="false"
-                                                                        aria-controls="collapseOneDITJHG2022">
-                                                                    Jahrgang 2022
-                                                                </button>
-                                                            </h4>
-                                                            <div id="collapseOneDITJHG2022"
-                                                                 class="accordion-collapse collapse"
-                                                                 data-bs-parent="#semesterGroupDITJHG2022" style="">
-                                                                <div class="accordion-body">
-                                                                </div>
-                                                                <div class="accordion" id="semesterGroupDIT2022-S1">
-                                                                    <div class="accordion-item">
-                                                                        <h4 class="accordion-header">
-                                                                            <button class="accordion-button bg-dark text-white"
-                                                                                    type="button"
-                                                                                    data-bs-toggle="collapse"
-                                                                                    data-bs-target="#collapseOneDIT2022-S1"
-                                                                                    aria-expanded="false"
-                                                                                    aria-controls="collapseOneDIT2022-S1">
-                                                                                S1
-                                                                            </button>
-                                                                        </h4>
-                                                                        <div id="collapseOneDIT2022-S1"
-                                                                             class="accordion-collapse collapse"
-                                                                             data-bs-parent="#semesterGroupDIT2022-S1"
-                                                                             style="">
-                                                                            <div class="accordion-body">
-                                                                                <div class="d-flex flex-column">
-                                                                                    <ul class="list-group">
-                                                                                        <li class="list-group-item d-flex flex-row justify-content-between text-white">
-                                                                                            S1-1
-                                                                                            <button><span
-                                                                                                        class="material-symbols-outlined">star</span>
-                                                                                            </button>
-                                                                                        </li>
-                                                                                        <li class="list-group-item d-flex flex-row justify-content-between text-white">
-                                                                                            S1-2
-                                                                                            <button><span
-                                                                                                        class="material-symbols-outlined">star</span>
-                                                                                            </button>
-                                                                                        </li>
-                                                                                    </ul>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="accordion" id="semesterGroupDIT2022-S2">
-                                                                    <div class="accordion-item">
-                                                                        <h4 class="accordion-header">
-                                                                            <button class="accordion-button bg-dark text-white"
-                                                                                    style="color: dimgrey" type="button"
-                                                                                    data-bs-toggle="collapse"
-                                                                                    data-bs-target="#collapseOneDIT2022-S2"
-                                                                                    aria-expanded="false"
-                                                                                    aria-controls="collapseOneDIT2022-S2">
-                                                                                S2
-                                                                            </button>
-                                                                        </h4>
-                                                                        <div id="collapseOneDIT2022-S2"
-                                                                             class="accordion-collapse collapse"
-                                                                             data-bs-parent="#semesterGroupDIT2022-S2"
-                                                                             style="">
-                                                                            <div class="accordion-body">
-                                                                                <div class="d-flex flex-column">
-                                                                                    <ul class="list-group">
-                                                                                        <li class="list-group-item d-flex flex-row justify-content-between text-white">
-                                                                                            S2-1
-                                                                                            <button><span
-                                                                                                        class="material-symbols-outlined">star</span>
-                                                                                            </button>
-                                                                                        </li>
-                                                                                        <li class="list-group-item d-flex flex-row justify-content-between text-white">
-                                                                                            S2-2
-                                                                                            <button><span
-                                                                                                        class="material-symbols-outlined">star</span>
-                                                                                            </button>
-                                                                                        </li>
-                                                                                    </ul>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <br>
-                                                        <div class="accordion" id="semesterGroupDITJHG2023">
-                                                            <div class="accordion-item">
-                                                                <h4 class="accordion-header">
-                                                                    <button class="accordion-button bg-dark text-white"
-                                                                            style="color: dimgrey" type="button"
-                                                                            data-bs-toggle="collapse"
-                                                                            data-bs-target="#collapseOneDITJHG2023"
-                                                                            aria-expanded="false"
-                                                                            aria-controls="collapseOneDITJHG2023">
-                                                                        Jahrgang 2023
-                                                                    </button>
-                                                                </h4>
-                                                                <div id="collapseOneDITJHG2023"
-                                                                     class="accordion-collapse collapse"
-                                                                     data-bs-parent="#semesterGroupDITJHG2023" style="">
-                                                                    <div class="accordion-body">
-                                                                    </div>
-                                                                    <div class="accordion" id="semesterGroupDIT2023-S1">
-                                                                        <div class="accordion-item">
-                                                                            <h4 class="accordion-header">
-                                                                                <button class="accordion-button bg-dark text-white"
-                                                                                        style="color: dimgrey"
-                                                                                        type="button"
-                                                                                        data-bs-toggle="collapse"
-                                                                                        data-bs-target="#collapseOneDIT2023-S1"
-                                                                                        aria-expanded="false"
-                                                                                        aria-controls="collapseOneDIT2023-S1">
-                                                                                    S1
-                                                                                </button>
-                                                                            </h4>
-                                                                            <div id="collapseOneDIT2023-S1"
-                                                                                 class="accordion-collapse collapse"
-                                                                                 data-bs-parent="#semesterGroupDIT2023-S1"
-                                                                                 style="">
-                                                                                <div class="accordion-body">
-                                                                                    <div class="d-flex flex-column">
-                                                                                        <ul class="list-group">
-                                                                                            <li class="list-group-item d-flex flex-row justify-content-between text-white">
-                                                                                                S1-1
-                                                                                                <button><span
-                                                                                                            class="material-symbols-outlined">star</span>
-                                                                                                </button>
-                                                                                            </li>
-                                                                                            <li class="list-group-item d-flex flex-row justify-content-between text-white">
-                                                                                                S1-2
-                                                                                                <button><span
-                                                                                                            class="material-symbols-outlined">star</span>
-                                                                                                </button>
-                                                                                            </li>
-                                                                                        </ul>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="accordion" id="semesterGroupDIT2023-S2">
-                                                                        <div class="accordion-item">
-                                                                            <h4 class="accordion-header">
-                                                                                <button class="accordion-button bg-dark text-white"
-                                                                                        style="color: dimgrey"
-                                                                                        type="button"
-                                                                                        data-bs-toggle="collapse"
-                                                                                        data-bs-target="#collapseOneDIT2023-S2"
-                                                                                        aria-expanded="false"
-                                                                                        aria-controls="collapseOneDIT2023-S2">
-                                                                                    S2
-                                                                                </button>
-                                                                            </h4>
-                                                                            <div id="collapseOneDIT2023-S2"
-                                                                                 class="accordion-collapse collapse"
-                                                                                 data-bs-parent="#semesterGroupDIT2023-S2"
-                                                                                 style="">
-                                                                                <div class="accordion-body">
-                                                                                    <div class="d-flex flex-column">
-                                                                                        <ul class="list-group">
-                                                                                            <li class="list-group-item d-flex flex-row justify-content-between text-white">
-                                                                                                S2-1
-                                                                                                <button><span
-                                                                                                            class="material-symbols-outlined">star</span>
-                                                                                                </button>
-                                                                                            </li>
-                                                                                            <li class="list-group-item d-flex flex-row justify-content-between text-white">
-                                                                                                S2-2
-                                                                                                <button><span
-                                                                                                            class="material-symbols-outlined">star</span>
-                                                                                                </button>
-                                                                                            </li>
-                                                                                        </ul>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade h-100 p-3" id="favorites-tab-pane" role="tabpanel"
-                             aria-labelledby="favorites-tab"
-                             tabindex="0">
-                            <div class="h-100 d-flex flex-column align-items-stretch">
-                                Favorites Tab
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        #banner-content img {
+            height: 45px;
+            width: 50px;
+        }
 
+        .dropdown-menu a:hover {
+            color: #0288D1;
+        }
+        .timetable {
+            width: 90%;
+            height: auto;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: white;
+            margin: 0 auto;
+            margin-top: 20px;
+            border-radius: 25px;
+        }
+        .datetime{
+            margin: 0 auto;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .datetimeview{
+            border-width: 10px;
+            background-color:#DFEBF2 ;
+            border-radius: 25px;
+            width: 200px;
+            height: 30px;
+            text-align: center;
+
+        }
+        .dateselectleft, .dateselectright {
+            border-width: 0 ;
+            box-shadow: #1a1d20;
+            background-size: 100%;
+            height: 21px;
+            width: 21px;
+            margin-top: 0; /* Remove the top margin */
+            background-color: transparent; /* Transparent background */
+            align-self: center; /* Vertically center the buttons */
+        }
+        .dateselectleft {
+            background: url("assets/static/dateleft.png") no-repeat;
+            margin-right: 10px;
+        }
+        .dateselectright {
+            background: url("assets/static/dateright.png") no-repeat;
+            margin-left: 10px;
+        }
+        .table{
+            background-color: #DFEBF2; /* Change the background color to blue */
+            color: white; /* Change text color to white for better visibility */
+            height: 1000px;
+        }
+        .calendar{
+            background-color: #DFEBF2;
+            width: 300px;
+            align-self: center;
+        }
+    </style>
+</head>
+
+<body style="background-color:#DFEBF2;">
+<div id="banner" class="d-flex align-items-center justify-content-between">
+    <div id="banner-content" class="d-flex align-items-center text-white fs-1 ms-3">
+        <img src="New Logo White.png" alt="Bild konnte nicht angezeigt werden.">
+        <span id="heading" class="ms-3"><b>Timecraft</b></span>
     </div>
+    <div id="banner-right" class="d-flex align-items-center me-3">
+        <a href="#" class="me-3 text-white text-decoration-none" style="font-weight: normal;">Time Table</a>
+        <a href="#" class="me-3 text-white text-decoration-none" style="font-weight: normal;">Favorite List</a>
+        <a href="#" class="me-3 text-white text-decoration-none" style="font-weight: bold;">Pick List</a>
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="https://via.placeholder.com/30" alt="user icon" class="rounded-circle me-2">
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="dropdownUser">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Sign out</a></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<div class="timetable">
+    <div class="datetime">
+        <button class="dateselectleft"></button>
+        <div class="datetimeview">29.04.2024 - 04.05.2024</div>
+        <button class="dateselectright"></button>
+    </div>
+    <div class="calendar" >
+        <table class="table">
+
+            <thead>
+
+            <tr>
+                <th bgcolor="#DFEBF2" scope="col">Time</th>
+                <th bgcolor="#DFEBF2" scope="col">Monday</th>
+                <th bgcolor="#DFEBF2" scope="col">Tuesday</th>
+                <th bgcolor="#DFEBF2" scope="col">Wednesday</th>
+                <th bgcolor="#DFEBF2" scope="col">Thursday</th>
+                <th bgcolor="#DFEBF2" scope="col">Friday</th>
+                <th bgcolor="#DFEBF2" scope="col">Saturday</th>
+
+
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="assets/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
+
 
     <script>
         var app = Vue.createApp({
