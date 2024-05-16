@@ -1289,7 +1289,487 @@ paths:
               application/json:
                 schema:
                   $ref: '#/components/schemas/InternalServerError'
-  
+
+  /tsl:
+    post:
+      summary: Create TimeSlot
+      description: Create a new TimeSlot
+      tags:
+        - Timeslot
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSlot'
+      responses:
+        '200':
+          description: TimeSlot created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /tsl/{id}:
+    get:
+      summary: Get TimeSlot by ID
+      description: Get a TimeSlot
+      tags:
+        - TimeSlot
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update TimeSlot by ID
+      description: Update the TimeSlot
+      tags:
+        - TimeSlot
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSlot'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete TimeSlot by ID
+      description: Delete a TimeSlot
+      tags:
+        - TimeSlot
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /rmc:
+    post:
+      summary: Create RoomConfig
+      description: Create a new RoomConfig
+      tags:
+        - RoomConfig
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomConfig'
+      responses:
+        '200':
+          description: RoomConfig successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /rmc/{id}:
+    get:
+      summary: Get RoomConfig by ID
+      description: Get a RoomConfig
+      tags:
+        - RoomConfig
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update RoomConfig by ID
+      description: Update a RoomConfig
+      tags:
+        - RoomConfig
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomConfig'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete RoomConfig by ID
+      description: Delete a RoomConfig
+      tags:
+        - RoomConfig
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /rms:
+    post:
+      summary: Create RoomSpecialisation
+      description: Create a new RoomSpecialisation
+      tags:
+        - RoomSpecialisation
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomSpecialisation'
+      responses:
+        '200':
+          description: RoomSpecialisation successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /rms/{id}:
+    get:
+      summary: Get RoomSpecialisation by ID
+      description: Get a RoomSpecialisation
+      tags:
+        - RoomSpecialisation
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update RoomSpecialisation by ID
+      description: Update a RoomSpecialisation
+      tags:
+        - RoomSpecialisation
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomSpecialisation'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete RoomSpecialisation by ID
+      description: Delete a RoomSpecialisation
+      tags:
+        - RoomSpecialisation
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
 components:
   securitySchemes:
     session_key:
