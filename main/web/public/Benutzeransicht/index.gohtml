@@ -1,0 +1,35 @@
+{{define "title"}}Time Craft{{end}}
+{{define "metaDescription"}}Time Craft, your way of creating smart timetables{{end}}
+{{define "content"}}
+    {{template "topdoc"}}
+
+    <div class="h-100 w-100 d-flex flex-column justify-content-center bg-light">
+    <div class="d-flex justify-content-center align-items-center h-100 w-100">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Role</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">email</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr>
+                <th>Role</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+                <td>
+                    <button type="button" class="btn btn-outline-danger">delete</button>
+                    <button type="button" class="btn btn-outline-success">edit</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    {{template "botdoc"}}
+{{end}}
