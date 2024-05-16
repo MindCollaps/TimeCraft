@@ -1295,7 +1295,7 @@ paths:
       summary: Create TimeSlot
       description: Create a new TimeSlot
       tags:
-        - Timeslot
+        - TimeSlot
       security:
         - session_key: [ ]
         - api_key: [ ]
