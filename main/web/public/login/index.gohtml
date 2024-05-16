@@ -2,165 +2,73 @@
 {{define "metaDescription"}}Time Craft, your way of creating smart timetables{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-    <!DOCTYPE html>
-<html>
-<head>
-<title>Timecraft Login</title>
-<style>
-body {
-    background-color: #DFEBF2;
-    font-family: Arial, Helvetica, sans-serif;;
-}
-
-h1 {
-    background-color: #0288D1;
-    color: white;
-}
-
-a {
-    text-decoration: none;
-}
-
-div#banner {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          position: absolute;
-          top: 0;
-          left: 0;
-          background-color: #0288D1;
-          width: 100%;
-          height: 100px;
-          box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
-      }
-      div#banner-content {
-          display: flex;
-          align-items: center;
-          color: white;
-          font-family: Arial, Helvetica, sans-serif;
-          font-size: 40px;
-          margin-left: 50px;
-      }
-      span#heading {
-          margin-left: 20px;
-      }
-
-
-.flex-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 500px;
-    background-color: #DFEBF2;
-    flex-direction: column;
-}
-
-.input container-input{
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    padding: 5px 10px;
-    box-sizing: border-box;
-}
-
-.button {
-    display: inline-block;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    outline: none;
-    color: white;
-    background-color: #0288D1;
-    border: none;
-    border-radius: 12px;
-    width: 30%;
-    font-size: 14px;
-}
-
-.container {
-    border-radius: 15px;
-    padding: 20px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.container input[type="text"],
-.container input[type="password"] {
-    margin-bottom: 15px;
-}
-
-.container input[type="checkbox"] {
-    margin-top: 5px;
-}
-
-.flex-container .remember-forgot {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 5px;
-}
-
-.flex-container .remember-forgot label {
-    margin-right: 10px;
-}
-
-.flex-container .remember-forgot a {
-    color: black;
-}
-
-.flex-container {
-    box-shadow: none;
-}
-
-.container input[type="checkbox"],
-.flex-container .remember-forgot a {
-    margin-top: 0;
-}
-
-.container input[type="checkbox"] + span,
-.flex-container .remember-forgot a + span {
-    margin-left: 0;
-}
-</style>
-</head>
-<body>
-
-<body style="background-color:#DFEBF2;">
-<div id="banner">
-<div id="banner-content">
-<img src="New Logo White.png" height="45" width="50" alt="Bild konnte nicht angezeigt werden.">
-<span id="heading"><b>Timecraft</b></span>
-</div>
-</div>
-
-<div class="flex-container" style="margin-top: 75px">
-
-        <div class="container" style="box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);">
-            <h2 style="text-align: center;">Login</h2>
-            <div class="container">
-                <div><label for="uname"></label></div>
-                <div><input type="text" placeholder="Email" name="uname" size="50" required style="border-radius: 8px; border: 1px solid #ccc; padding: 5px 10px; box-sizing: border-box;"></div>
-
-                <div><label for="psw"></label></div>
-                <div><input type="password" placeholder="Password" size="50" name="psw" required style="margin-bottom: 15px; border-radius: 8px; border: 1px solid #ccc; padding: 5px 10px; box-sizing: border-box;"></div>
-
-                <div class="remember-forgot">
-                    <label>
-                        <input type="checkbox" checked="checked" name="remember"><span><font size="-1">Remember me</font></span>
-                    </label>
-                    <span class="psw"><a href="#"><span><font size="-1">Forgot password</font></span></a></span>
-                </div>
-
+    <div id="app" class="d-flex justify-content-center align-items-center w-100 vh-100">
+        <div class="w-50 vh-50">
+            <div class="mb-3">
+                <label for="username" class="form-label">Email address or Username</label>
+                <input v-model="username" @keyup.enter="submit()" type="text" class="form-control" id="username"
+                       aria-describedby="emailHelp"
+                       placeholder="Email/Username" name="username">
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                    else.</small>
             </div>
-            <button class="button" type="submit" style="font-size: 16px">Login</button>
+            <div class="mb-3">
+                <label for="password">Password</label>
+                <input v-model="password" @keyup.enter="submit()" type="password" name="password" class="form-control"
+                       id="password"
+                       placeholder="Password">
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="Check1">
+                <label class="form-check-label" for="Check1">Remember me</label>
+            </div>
+            <div>
+                <button @click="submit()" class="btn btn-primary">Login</button>
+            </div>
+            <div>
+                <a href="/reset" type="button" class="btn btn-outline-primary">Reset Password</a>
+            </div>
+            <div>
+                <a href="/register" type="button" class="btn btn-outline-primary">Register</a>
+            </div>
         </div>
+    </div>
 
-    </form>
-</div>
+    <script>
+        var app = Vue.createApp({
+            delimiters: ['${', '}'],
+            data: () => ({
+                username: "",
+                password: "",
+            }),
+            methods: {
+                async submit() {
+                    if (this.username == '' || this.password == '') {
+                        alert('Please fill in all fields')
+                        return
+                    }
 
-</body>
-</html>
+                    let response = await fetch('/api/v1/usr/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: this.username,
+                            password: this.password
+                        })
+                    }).then((res) => {
+                        return res;
+                    });
+
+                    if (response.status == 200) {
+                        window.location.href = '/dashboard'
+                    } else {
+                        alert('Invalid username or password')
+                    }
+                }
+            }
+        }).mount("#app")
+    </script>
     {{template "botdoc"}}
 {{end}}
