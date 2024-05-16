@@ -321,7 +321,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 
 		saveSemesterGroup(SemesterGroup)
 	} else {
-		existingSemesterGroup.StudentGroupIds = append(existingSemesterGroup.StudentGroupIds, ExistingStudentGroupID)
+		existingSemesterGroup.StudentGroupIds = append(existingSemesterGroup.StudentGroupIds, StudentGroupID)
 		updateSemesterGroup(existingSemesterGroup)
 	}
 
