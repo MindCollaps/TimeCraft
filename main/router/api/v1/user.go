@@ -65,9 +65,10 @@ func userHandler(cg *gin.RouterGroup) {
 
 	cg.POST("/register", func(c *gin.Context) {
 		var requestBody struct {
-			Username string `json:"username"`
-			Password string `json:"password"`
-			Email    string `json:"email"`
+			Username           string `json:"username"`
+			Password           string `json:"password"`
+			Email              string `json:"email"`
+			StaredTimeTableIds []primitive.ObjectID
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -134,10 +135,11 @@ func userHandler(cg *gin.RouterGroup) {
 		hashedPassword, err := crypt.HashPassword(password)
 
 		newUser := models.User{
-			ID:       primitive.NewObjectID(),
-			Username: username,
-			Password: hashedPassword,
-			Email:    email,
+			ID:                 primitive.NewObjectID(),
+			Username:           username,
+			Password:           hashedPassword,
+			Email:              email,
+			StaredTimeTableIds: []primitive.ObjectID{},
 		}
 
 		_, err = database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
@@ -179,7 +181,7 @@ func userHandler(cg *gin.RouterGroup) {
 			bson.M{"_id": userID, "staredTimeTableIds": timeTableID},
 		).Decode(&user)
 		if err == nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Favor already exists"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Favorite already exists"})
 			return
 		}
 
@@ -198,7 +200,67 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"msg": "Favor added successfully"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Favorite added successfully"})
+	})
+
+	cg.DELETE("/favor", func(c *gin.Context) {
+		var requestBody struct {
+			UserID      string `json:"userId" binding:"required"`
+			TimeTableID string `json:"timeTableId" binding:"required"`
+		}
+
+		if err := c.ShouldBindJSON(&requestBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			return
+		}
+
+		userID, err := primitive.ObjectIDFromHex(requestBody.UserID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid userID"})
+			return
+		}
+
+		timeTableID, err := primitive.ObjectIDFromHex(requestBody.TimeTableID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid timeTableID"})
+			return
+		}
+
+		var user bson.M
+		err = database.MongoDB.Collection("user").FindOne(
+			c,
+			bson.M{"_id": userID},
+		).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
+			return
+		}
+
+		err = database.MongoDB.Collection("user").FindOne(
+			c,
+			bson.M{"_id": userID, "staredTimeTableIds": timeTableID},
+		).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Favorite not found"})
+			return
+		}
+
+		result, err := database.MongoDB.Collection("user").UpdateOne(
+			c,
+			bson.M{"_id": userID},
+			bson.M{"$pull": bson.M{"staredTimeTableIds": timeTableID}},
+		)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			return
+		}
+
+		if result.ModifiedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"msg": "Favorite removed successfully"})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {
