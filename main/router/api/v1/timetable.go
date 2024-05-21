@@ -64,8 +64,14 @@ func tblHandler(cg *gin.RouterGroup) {
 	})
 
 	cg.GET("/", func(c *gin.Context) {
-		var timetables []models.TimeTable
-		cursor, err := database.MongoDB.Collection("TimeTable").Find(c, bson.M{})
+		type TimeTableResponse struct {
+			ID   primitive.ObjectID `json:"id" bson:"_id"`
+			Name string             `json:"name" bson:"name"`
+		}
+
+		var timetables []TimeTableResponse
+		opts := options.Find().SetProjection(bson.M{"name": 1, "_id": 1})
+		cursor, err := database.MongoDB.Collection("TimeTable").Find(c, bson.M{}, opts)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
@@ -76,6 +82,7 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
+		
 		c.JSON(http.StatusOK, timetables)
 	})
 
