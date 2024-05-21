@@ -263,6 +263,31 @@ func userHandler(cg *gin.RouterGroup) {
 		c.JSON(http.StatusOK, gin.H{"msg": "Favorite removed successfully"})
 	})
 
+	cg.GET("/favor/:userId", func(c *gin.Context) {
+		userID := c.Param("userId")
+
+		userIDObj, err := primitive.ObjectIDFromHex(userID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid userID"})
+			return
+		}
+
+		var user struct {
+			StaredTimeTableIds []primitive.ObjectID `bson:"staredTimeTableIds"`
+		}
+
+		err = database.MongoDB.Collection("user").FindOne(
+			c,
+			bson.M{"_id": userIDObj},
+		).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"staredTimeTableIds": user.StaredTimeTableIds})
+	})
+
 	cg.DELETE("/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		objID, err := primitive.ObjectIDFromHex(id)
