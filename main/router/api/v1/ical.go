@@ -105,7 +105,7 @@ func icalHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"msg": "iCal generated and saved successfully", "data": icalEntry.ID.Hex()})
+		c.JSON(http.StatusOK, gin.H{"msg": "iCal generated and saved successfully", "id": icalEntry.ID.Hex()})
 	})
 
 	cg.GET("/", func(c *gin.Context) {
