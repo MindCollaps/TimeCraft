@@ -173,6 +173,16 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 
+		var user bson.M
+		err = database.MongoDB.Collection("user").FindOne(
+			c,
+			bson.M{"_id": userID, "staredTimeTableIds": timeTableID},
+		).Decode(&user)
+		if err == nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Favor already exists"})
+			return
+		}
+
 		result, err := database.MongoDB.Collection("user").UpdateOne(
 			c,
 			bson.M{"_id": userID},
