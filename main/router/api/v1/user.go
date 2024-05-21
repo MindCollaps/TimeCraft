@@ -150,6 +150,47 @@ func userHandler(cg *gin.RouterGroup) {
 		c.JSON(http.StatusOK, gin.H{"msg": "Created user"})
 	})
 
+	cg.POST("/favor", func(c *gin.Context) {
+		var requestBody struct {
+			UserID      string `json:"userId" binding:"required"`
+			TimeTableID string `json:"timeTableId" binding:"required"`
+		}
+
+		if err := c.ShouldBindJSON(&requestBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
+			return
+		}
+
+		userID, err := primitive.ObjectIDFromHex(requestBody.UserID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid userID"})
+			return
+		}
+
+		timeTableID, err := primitive.ObjectIDFromHex(requestBody.TimeTableID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid timeTableID"})
+			return
+		}
+
+		result, err := database.MongoDB.Collection("user").UpdateOne(
+			c,
+			bson.M{"_id": userID},
+			bson.M{"$addToSet": bson.M{"staredTimeTableIds": timeTableID}},
+		)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			return
+		}
+
+		if result.ModifiedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"msg": "Favor added successfully"})
+	})
+
 	cg.DELETE("/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		objID, err := primitive.ObjectIDFromHex(id)
