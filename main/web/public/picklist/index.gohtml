@@ -1,0 +1,103 @@
+{{define "title"}}TimeCraft{{end}}
+{{define "metaDescription"}}TimeCraft, your way of creating smart timetables{{end}}
+{{define "content"}}
+{{template "topdoc"}}
+
+    <style>
+        div#banner {
+            background-color: #0288D1;
+            height: 100px;
+            box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        #banner-content img {
+            height: 45px;
+            width: 50px;
+        }
+
+        #banner-right a {
+            font-size: 17px;
+            margin-right: 2rem;
+            text-decoration: none;
+        }
+
+        .dropdown-menu a:hover {
+            color: #0288D1;
+        }
+
+        .btn-custom {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            color: #0288D1;
+            box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+            width: 500px;
+            height: 500px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-custom:hover {
+            background-color: #0289d121;
+            color: white;
+        }
+
+        .btn-custom .btn-text {
+            margin-bottom: 10px;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 100px;
+            margin-top: 140px;
+            height: calc(100vh - 100px);
+        }
+    </style>
+</head>
+
+<body style="background-color:#DFEBF2;">
+<div id="banner" class="d-flex align-items-center justify-content-between">
+    <div id="banner-content" class="d-flex align-items-center text-white fs-1 ms-3">
+        <img src="New Logo White.png" alt="Bild konnte nicht angezeigt werden.">
+        <span id="heading" class="ms-3"><b>Timecraft</b></span>
+    </div>
+    <div id="banner-right" class="d-flex align-items-center me-3">
+        <a href="#" class="text-white" style="font-weight: normal;">Time Table</a>
+        <a href="#" class="text-white" style="font-weight: normal;">Favorite List</a>
+        <a href="#" class="text-white" style="font-weight: bold;">Pick List</a>
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="icon_user.png" alt="user icon" class="rounded-circle me-2">
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="dropdownUser">
+                <li><b class="dropdown-item">Menu</b></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Sign out</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="buttons-container">
+    <button class="btn btn-custom">
+        <img src="icon_study.png" alt="icon_study" style="max-height: 80%;">
+        <div class="btn-text">Studiengänge</div>
+    </button>
+    <button class="btn btn-custom">
+        <img src="assets/static/chatbubbles-sharp.png">
+        <div class="btn-text">Sprachkurse</div>
+    </button>
+</div>
+</body>
+
+{{template "botdoc"}}
+{{end}}
