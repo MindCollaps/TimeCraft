@@ -49,13 +49,13 @@ func rmsHandler(cg *gin.RouterGroup) {
 			Name: name,
 		}
 
-		_, err = database.MongoDB.Collection("RoomSpecialisation").InsertOne(c, newRoomSpecialisation, options.InsertOne())
+		result, err := database.MongoDB.Collection("RoomSpecialisation").InsertOne(c, newRoomSpecialisation, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created RoomSpecialisation"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created RoomSpecialisation", "id": result.InsertedID})
 
 	})
 

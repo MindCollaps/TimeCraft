@@ -54,13 +54,13 @@ func lgrpHandler(cg *gin.RouterGroup) {
 			TimeTableId: timeTableId,
 		}
 
-		_, err = database.MongoDB.Collection("LectureGroup").InsertOne(c, newLectureGroup, options.InsertOne())
+		result, err := database.MongoDB.Collection("LectureGroup").InsertOne(c, newLectureGroup, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created LectureGroup"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created LectureGroup", "id": result.InsertedID})
 
 	})
 
