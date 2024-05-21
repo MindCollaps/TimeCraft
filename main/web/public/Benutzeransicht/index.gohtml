@@ -2,34 +2,45 @@
 {{define "metaDescription"}}Time Craft, your way of creating smart timetables{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-
-    <div class="h-100 w-100 d-flex flex-column justify-content-center bg-light">
-    <div class="d-flex justify-content-center align-items-center h-100 w-100">
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">Role</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">email</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody class="table-group-divider">
-            <tr>
-                <th>Role</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>
-                    <button type="button" class="btn btn-outline-danger">delete</button>
-                    <button type="button" class="btn btn-outline-success">edit</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <body class="vw-100 vh-100" style="background-color:#DFEBF2">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        div#banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #0288D1;
+            width: 100%;
+            height: 100px;
+            box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
+        }
+        div#banner-content{
+            display: flex;
+            align-items: center;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 40px;
+            margin-left: 50px;
+        }
+        span#heading{
+            margin-left: 20px;
+        }
+    </style>
+    <div id="banner">
+        <div id="banner-content">
+            <img src="assets/static/New Logo White.png" height="45" width="50" alt="Bild konnte nicht angezeigt werden."
+            <span id="heading">
+                <b>Timecraft</b>
+            </span>
+        </div>
     </div>
-    </div>
-
+    </body>
     {{template "botdoc"}}
 {{end}}
