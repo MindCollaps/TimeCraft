@@ -3,69 +3,108 @@
 {{define "content"}}
 {{template "topdoc"}}
 
-    <style>
-        div#banner {
-            background-color: #0288D1;
-            height: 100px;
-            box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
-        }
+<style>
+    /* Banner */
+    #banner {
+        background-color: #0288D1;
+        height: 100px;
+        box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+    }
 
-        #banner-content img {
-            height: 45px;
-            width: 50px;
-        }
+    #banner-content img {
+        height: 45px;
+        width: 50px;
+    }
 
-        #banner-right a {
-            font-size: 17px;
-            margin-right: 2rem;
-            text-decoration: none;
-        }
+    #banner-right a {
+        font-size: 17px;
+        margin-right: 2rem;
+        text-decoration: none;
+    }
 
-        .dropdown-menu a:hover {
-            color: #0288D1;
-        }
+    /* Dropdown */
+    .dropdown-menu a:hover {
+        color: #0288D1;
+    }
 
-        .btn-custom {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            background-color: white;
-            color: #0288D1;
-            box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            font-size: 20px;
-            font-weight: bold;
-            transition: background-color 0.3s, color 0.3s;
-            width: 500px;
-            height: 500px;
-            border: none;
-            cursor: pointer;
-        }
+    /* Custom Button */
+    .btn-custom {
+        position: relative;
+        background-color: white;
+        color: black;
+        box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        font-size: 20px;
+        font-weight: bold;
+        width: 100%;
+        max-width: 500px;
+        height: 100%;
+        max-height: 500px;
+        border: none;
+        cursor: pointer;
+        font-size: 35px;
+    }
 
-        .btn-custom:hover {
-            background-color: #0289d121;
-            color: white;
-        }
+    .btn-custom:hover {
+        background-color: rgba(2, 136, 209, 0.2);
+        color: white;
+    }
 
-        .btn-custom .btn-text {
-            margin-bottom: 10px;
-        }
+    .btn-custom .btn-text {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        width: 100%;
+    }
 
-        .buttons-container {
-            display: flex;
-            justify-content: center;
-            gap: 100px;
-            margin-top: 140px;
-            height: calc(100vh - 100px);
-        }
-    </style>
+    .btn-custom img {
+        max-height: 80%;
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+    }
+
+    .btn-custom:hover img {
+        filter: brightness(0) invert(1); /* Ändert die Farbe des Bildes beim Hovern */
+    }
+
+    /* Buttons Container */
+    .buttons-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 50px;
+        flex-wrap: wrap;
+        padding: 20px;
+        min-height: calc(100vh - 100px);
+        margin: 0;
+    }
+
+    /* User Icon Container */
+    .user-icon-container {
+        background-color: white;
+        border-radius: 50%;
+        padding: 2px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .user-icon-container img {
+        height: 35px;
+        width: 35px;
+    }
+</style>
 </head>
-
-<body style="background-color:#DFEBF2;">
+<body style="background-color:#DFEBF2; margin: 0; display: flex; flex-direction: column;">
+<!-- Banner -->
 <div id="banner" class="d-flex align-items-center justify-content-between">
     <div id="banner-content" class="d-flex align-items-center text-white fs-1 ms-3">
-        <img src="New Logo White.png" alt="Bild konnte nicht angezeigt werden.">
+        <img src="assets/static/New Logo White.png" alt="Bild konnte nicht angezeigt werden.">
         <span id="heading" class="ms-3"><b>Timecraft</b></span>
     </div>
     <div id="banner-right" class="d-flex align-items-center me-3">
@@ -74,7 +113,9 @@
         <a href="#" class="text-white" style="font-weight: bold;">Pick List</a>
         <div class="dropdown">
             <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="icon_user.png" alt="user icon" class="rounded-circle me-2">
+                <div class="user-icon-container">
+                    <img src="assets/static/icon_user.png" alt="user icon" class="rounded-circle">
+                </div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="dropdownUser">
                 <li><b class="dropdown-item">Menu</b></li>
@@ -87,17 +128,20 @@
     </div>
 </div>
 
+<!-- Buttons Container -->
 <div class="buttons-container">
     <button class="btn btn-custom">
-        <img src="icon_study.png" alt="icon_study" style="max-height: 80%;">
+        <img src="assets/static/library-sharp.png" alt="icon_study">
         <div class="btn-text">Studiengänge</div>
     </button>
     <button class="btn btn-custom">
-        <img src="assets/static/chatbubbles-sharp.png">
+        <img src="assets/static/chatbubbles-sharp.png" alt="chatbubbles">
         <div class="btn-text">Sprachkurse</div>
     </button>
 </div>
 </body>
+
+
 
 {{template "botdoc"}}
 {{end}}
