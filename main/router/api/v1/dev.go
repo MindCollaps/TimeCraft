@@ -8,6 +8,7 @@ import (
 	"src/main/database"
 	"src/main/database/models"
 	"src/main/middleware"
+	"strings"
 )
 
 // /api/v1/dev/...
@@ -54,7 +55,10 @@ func devHandler(cg *gin.RouterGroup) {
 				} else if slot.IsReExamination {
 					resData.SpecialDays = append(resData.SpecialDays, specialDay{SpecialDayName: slot.Name, Day: day.Date, IsReExamination: true})
 				} else {
-					addToResponse(&resData, slot.LecturerId.FirstName+" "+slot.LecturerId.SureName, slot.LectureId.Name)
+					name := slot.LecturerId.FirstName + " " + slot.LecturerId.SureName
+					//strip space at end and start
+					name = strings.TrimSpace(name)
+					addToResponse(&resData, name, slot.LectureId.Name)
 				}
 			}
 		}
