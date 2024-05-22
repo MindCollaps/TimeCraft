@@ -63,12 +63,12 @@
         }
 
         .dateselectleft {
-            background: url("assets/static/dateleft.png") no-repeat;
+            background: url("/assets/static/dateleft.png") no-repeat;
             margin-right: 10px;
         }
 
         .dateselectright {
-            background: url("assets/static/dateright.png") no-repeat;
+            background: url("/assets/static/dateright.png") no-repeat;
             margin-left: 10px;
         }
 
@@ -84,64 +84,63 @@
             align-self: center;
         }
     </style>
-    </head>
 
-    <body style="background-color:#DFEBF2;">
-    <div id="banner" class="d-flex align-items-center justify-content-between">
-        <div id="banner-content" class="d-flex align-items-center text-white fs-1 ms-3">
-            <img src="/assets/static/New Logo White.png" alt="Bild konnte nicht angezeigt werden.">
-            <span id="heading" class="ms-3"><b>Timecraft</b></span>
-        </div>
-        <div id="banner-right" class="d-flex align-items-center me-3">
-            <a href="#" class="me-3 text-white text-decoration-none" style="font-weight: normal;">Time Table</a>
-            <a href="#" class="me-3 text-white text-decoration-none" style="font-weight: normal;">Favorite List</a>
-            <a href="#" class="me-3 text-white text-decoration-none" style="font-weight: bold;">Pick List</a>
-            <div class="dropdown">
-                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                   id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://via.placeholder.com/30" alt="user icon" class="rounded-circle me-2">
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="dropdownUser">
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li><a class="dropdown-item" href="#">Settings</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-item" href="#">Sign out</a></li>
-                </ul>
+    <div style="background-color:#DFEBF2;">
+        <div id="banner" class="d-flex align-items-center justify-content-between">
+            <div id="banner-content" class="d-flex align-items-center text-white fs-1 ms-3">
+                <img src="/assets/static/New Logo White.png" alt="Bild konnte nicht angezeigt werden.">
+                <span id="heading" class="ms-3"><b>Timecraft</b></span>
             </div>
+            <div id="banner-right" class="d-flex align-items-center me-3">
+                <a href="#" class="me-3 text-white text-decoration-none" style="font-weight: normal;">Time Table</a>
+                <a href="#" class="me-3 text-white text-decoration-none" style="font-weight: normal;">Favorite List</a>
+                <a href="#" class="me-3 text-white text-decoration-none" style="font-weight: bold;">Pick List</a>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                       id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://via.placeholder.com/30" alt="user icon" class="rounded-circle me-2">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end text-small" aria-labelledby="dropdownUser">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
 
-    </div>
+        <div class="timetable">
+            <div class="datetime">
+                <button class="dateselectleft"></button>
+                <div class="datetimeview">29.04.2024 - 04.05.2024</div>
+                <button class="dateselectright"></button>
+            </div>
+            <!--<div class="calendar" >
+                <table class="table">
 
-    <div class="timetable">
-        <div class="datetime">
-            <button class="dateselectleft"></button>
-            <div class="datetimeview">29.04.2024 - 04.05.2024</div>
-            <button class="dateselectright"></button>
+                    <thead>
+
+                    <tr>
+                        <th bgcolor="#DFEBF2" scope="col">Time</th>
+                        <th bgcolor="#DFEBF2" scope="col">Monday</th>
+                        <th bgcolor="#DFEBF2" scope="col">Tuesday</th>
+                        <th bgcolor="#DFEBF2" scope="col">Wednesday</th>
+                        <th bgcolor="#DFEBF2" scope="col">Thursday</th>
+                        <th bgcolor="#DFEBF2" scope="col">Friday</th>
+                        <th bgcolor="#DFEBF2" scope="col">Saturday</th>
+
+
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>//-->
         </div>
-        <!--<div class="calendar" >
-            <table class="table">
-
-                <thead>
-
-                <tr>
-                    <th bgcolor="#DFEBF2" scope="col">Time</th>
-                    <th bgcolor="#DFEBF2" scope="col">Monday</th>
-                    <th bgcolor="#DFEBF2" scope="col">Tuesday</th>
-                    <th bgcolor="#DFEBF2" scope="col">Wednesday</th>
-                    <th bgcolor="#DFEBF2" scope="col">Thursday</th>
-                    <th bgcolor="#DFEBF2" scope="col">Friday</th>
-                    <th bgcolor="#DFEBF2" scope="col">Saturday</th>
-
-
-                </tr>
-                </thead>
-                <tbody>
-
-                </tbody>
-            </table>//-->
-    </div>
     </div>
 
     <script>

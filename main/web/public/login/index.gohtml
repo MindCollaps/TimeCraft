@@ -59,7 +59,7 @@
             color: black
         }
 
-        .container input[type="text"],
+        .container input[type="email"],
         .container input[type="password"] {
             width: 100%;
             height: 33px;
@@ -156,26 +156,28 @@
         <div class="container">
             <h4><b>Login</b></h4>
 
-            <div><input type="text" placeholder="Email" required</div>
+            <form method="post" action="/api/v1/usr/login">
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <input type="password" id="password" name="password" placeholder="Password" required>
 
-            <div><input type="password" placeholder="Password" required</div>
+                <div class="remember-forgot">
+                    <label>
+                        <input type="checkbox" id="remember" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <span class="psw"><a href="#figma?">Forgot password</a></span>
+                </div>
 
-            <div class="remember-forgot">
-                <label>
-                    <input type="checkbox">
-                    <span><font size="-1">Remember me</font></span>
-                </label>
-                <span class="psw"><a href="#"><font size="-1">Forgot password</font></a></span>
-            </div>
-
-            <div class="button-container">
-                <button class="button" type="submit" onclick="location.href='/dashboard'"><b>Login</b></button>
-            </div>
+                <div class="button-container">
+                    <button class="button" type="submit"><b>Login</b></button>
+                </div>
+            </form>
 
             <div style="margin-top: 10px; text-align: center;">
-                <span><a href="/register" style="color: black;"><font size="-1">Register here</font></a></span>
+                <span><a href="/register" style="color: black;">Register here</a></span>
 
             </div>
         </div>
-        {{template "botdoc"}}
+    </div>
+    {{template "botdoc"}}
 {{end}}
