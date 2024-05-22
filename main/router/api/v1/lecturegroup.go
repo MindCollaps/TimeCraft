@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
-	"src/main/core"
+	"src/main/core/utils"
 	"src/main/database"
 	"src/main/database/models"
 )
@@ -118,7 +118,7 @@ func lgrpHandler(cg *gin.RouterGroup) {
 		if requestBody.Name != "" {
 			update["name"] = requestBody.Name
 		}
-		if requestBody.TimeTableId != nil && len(requestBody.TimeTableId) > 0 && !core.ContainsNilObjectID(requestBody.TimeTableId) {
+		if requestBody.TimeTableId != nil && len(requestBody.TimeTableId) > 0 && !utils.ContainsNilObjectID(requestBody.TimeTableId) {
 			update["timeTableId"] = requestBody.TimeTableId
 		}
 

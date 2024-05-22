@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
-	joi "src/main/core"
+	joi "src/main/core/utils"
 	"src/main/crypt"
 	"src/main/database"
 	"src/main/database/models"
@@ -51,7 +51,7 @@ func userHandler(cg *gin.RouterGroup) {
 				//set cookie with age of 2 days, setting maxAge to: 3600 * 24 * 2
 				c.SetCookie("auth", token, 3600*24*2, "/", "", false, false)
 
-				c.JSON(http.StatusOK, gin.H{"msg": "Logged in"})
+				c.Redirect(http.StatusSeeOther, "/dashboard")
 			} else {
 				c.JSON(http.StatusUnauthorized, gin.H{"msg": "An error occurred", "error": "Invalid credentials"})
 				return
@@ -124,14 +124,14 @@ func userHandler(cg *gin.RouterGroup) {
 			StaredTimeTableIds: []primitive.ObjectID{},
 		}
 
-		result, err := database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
+		_, err = database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
 			log.Println(err)
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"msg": "Created user", "id": result.InsertedID})
+		c.Redirect(http.StatusSeeOther, "/dashboard")
 	})
 
 	cg.POST("/favor", func(c *gin.Context) {

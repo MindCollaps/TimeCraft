@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
-	"src/main/core"
+	"src/main/core/utils"
 	"src/main/database"
 	"src/main/database/models"
 )
@@ -131,10 +131,10 @@ func rmcHandler(cg *gin.RouterGroup) {
 		if requestBody.ExamCapacity != 0 {
 			update["examCapacity"] = requestBody.ExamCapacity
 		}
-		if requestBody.Blocks != nil && !core.ContainsNilObjectID(requestBody.Blocks) && len(requestBody.Blocks) != 0 {
+		if requestBody.Blocks != nil && !utils.ContainsNilObjectID(requestBody.Blocks) && len(requestBody.Blocks) != 0 {
 			update["blocks"] = requestBody.Blocks
 		}
-		if requestBody.Specialisation != nil && !core.ContainsNilObjectID(requestBody.Specialisation) && len(requestBody.Specialisation) != 0 {
+		if requestBody.Specialisation != nil && !utils.ContainsNilObjectID(requestBody.Specialisation) && len(requestBody.Specialisation) != 0 {
 			update["specialisation"] = requestBody.Specialisation
 		}
 

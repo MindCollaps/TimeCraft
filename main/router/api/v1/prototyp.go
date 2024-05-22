@@ -14,7 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"src/main/core"
+	"src/main/core/utils"
 	"src/main/database"
 	"src/main/database/models"
 	"strconv"
@@ -218,8 +218,8 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	if updateExistingTimeTable && ExistingTimeTableId != primitive.NilObjectID {
 		log.Println(fmt.Sprintf("found existing timetable '%s' with %s", Name, ExistingTimeTableId))
 
-		lastChangedTest := core.ConvertToLocalTimeObject(LastChanged)
-		lastModified := core.ConvertToLocalTimeObject(getTimetableLastUpdated(ExistingTimeTableId))
+		lastChangedTest := utils.ConvertToLocalTimeObject(LastChanged)
+		lastModified := utils.ConvertToLocalTimeObject(getTimetableLastUpdated(ExistingTimeTableId))
 		log.Println(fmt.Sprintf("lastChangedTest: %s, lastModified: %s", lastChangedTest, lastModified))
 
 		if LastChanged <= getTimetableLastUpdated(ExistingTimeTableId) {
@@ -243,7 +243,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 			var TimeTableDay models.TimeTableDay
 			var TimeSlotIds []primitive.ObjectID
 			TimeTableDay.ID = primitive.NewObjectID()
-			TimeTableDay.Date = core.ConvertToDateTime(time.DateTime, dayDate)
+			TimeTableDay.Date = utils.ConvertToDateTime(time.DateTime, dayDate)
 			TimeTableDay.LastUpdated = LastChanged
 
 			// iterate over the lessons
@@ -364,7 +364,7 @@ func getLastChanged(input string) primitive.DateTime {
 		input = strings.TrimPrefix(input, "Stand: ")
 	}
 	// the date format with the dots is important
-	return core.ConvertToDateTime("02.01.2006", input)
+	return utils.ConvertToDateTime("02.01.2006", input)
 }
 
 func getStartAndEndTime(date string, lessonTime string) (primitive.DateTime, primitive.DateTime) {
@@ -377,8 +377,8 @@ func getStartAndEndTime(date string, lessonTime string) (primitive.DateTime, pri
 	startTimeStr = baseDate + startTimeStr + ":00"
 	endTimeStr = baseDate + endTimeStr + ":00"
 
-	startTime := core.ConvertToDateTime(time.DateTime, startTimeStr)
-	endTime := core.ConvertToDateTime(time.DateTime, endTimeStr)
+	startTime := utils.ConvertToDateTime(time.DateTime, startTimeStr)
+	endTime := utils.ConvertToDateTime(time.DateTime, endTimeStr)
 
 	return startTime, endTime
 }

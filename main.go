@@ -9,6 +9,7 @@ import (
 	"os"
 	"src/main/core"
 	"src/main/core/logChopper"
+	"src/main/core/utils"
 	"src/main/crypt"
 	"src/main/database"
 	"src/main/env"
@@ -34,9 +35,12 @@ func main() {
 
 	//Environment setup
 	environmentSetup()
-	
+
 	//Logger
 	logChopper.LogChop()
+
+	//Timezone
+	utils.InitTimeZone()
 
 	//Banner
 	log.Println("\n" + env.BANNER + "\nTimeCraft" + "\nVersion: " + env.VERSION)

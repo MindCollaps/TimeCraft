@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"src/main/core/utils"
 	"src/main/database"
 	"time"
 )
@@ -25,8 +26,8 @@ type TimeTableDayStruct struct {
 func TimeTableDayToStruct(c *gin.Context, timeTableDay TimeTableDay) (TimeTableDayStruct, error) {
 	timeTableDayStruct := TimeTableDayStruct{
 		ID:          timeTableDay.ID.Hex(),
-		Date:        timeTableDay.Date.Time().Format(time.DateTime),
-		LastUpdated: timeTableDay.LastUpdated.Time().Format(time.DateTime),
+		Date:        utils.ConvertToLocalTimeFormat(time.DateTime, timeTableDay.Date),
+		LastUpdated: utils.ConvertToLocalTimeFormat(time.DateTime, timeTableDay.LastUpdated),
 	}
 
 	// Load TimeSlotIds
