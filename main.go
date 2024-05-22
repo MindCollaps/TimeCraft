@@ -27,6 +27,8 @@ func main() {
 		return
 	}
 
+	env.Files = Files
+
 	// command line arguments
 	flags()
 

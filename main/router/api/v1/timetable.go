@@ -18,7 +18,6 @@ import (
 // /api/v1/tbl/...
 func tblHandler(cg *gin.RouterGroup) {
 	cg.POST("/", func(c *gin.Context) {
-		//check body for username and password
 		var requestBody struct {
 			Name string               `json:"name" binding:"required"`
 			Days []primitive.ObjectID `json:"days" binding:"required"`
@@ -54,18 +53,24 @@ func tblHandler(cg *gin.RouterGroup) {
 			Days: days,
 		}
 
-		_, err = database.MongoDB.Collection("TimeTable").InsertOne(c, newTable, options.InsertOne())
+		result, err := database.MongoDB.Collection("TimeTable").InsertOne(c, newTable, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable", "id": result.InsertedID})
 	})
 
 	cg.GET("/", func(c *gin.Context) {
-		var timetables []models.TimeTable
-		cursor, err := database.MongoDB.Collection("TimeTable").Find(c, bson.M{})
+		type TimeTableResponse struct {
+			ID   primitive.ObjectID `json:"id" bson:"_id"`
+			Name string             `json:"name" bson:"name"`
+		}
+
+		var timetables []TimeTableResponse
+		opts := options.Find().SetProjection(bson.M{"name": 1, "_id": 1})
+		cursor, err := database.MongoDB.Collection("TimeTable").Find(c, bson.M{}, opts)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
@@ -76,6 +81,7 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
+		
 		c.JSON(http.StatusOK, timetables)
 	})
 

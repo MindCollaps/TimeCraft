@@ -57,13 +57,13 @@ func sgrpHandler(cg *gin.RouterGroup) {
 			SpecialisationsIds: specialisationsIds,
 		}
 
-		_, err = database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())
+		result, err := database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created Semester Group"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created Semester Group", "id": result.InsertedID})
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {
@@ -86,6 +86,22 @@ func sgrpHandler(cg *gin.RouterGroup) {
 			return
 		}
 		c.JSON(http.StatusOK, semestergroup)
+	})
+
+	cg.GET("/", func(c *gin.Context) {
+		var semestergroups []models.SemesterGroup
+		cursor, err := database.MongoDB.Collection("SemesterGroup").Find(c, bson.M{})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		if err = cursor.All(c, &semestergroups); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, semestergroups)
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {

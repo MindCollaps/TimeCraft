@@ -555,6 +555,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+    get:
+      summary: Get all semester groups
+      description: Get a list of all available semester groups
+      tags:
+        - Semester Group
+      security:
+        - session_key: []
+        - api_key: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /sgrp/{id}:
     summary: Delete Semester Group
     get:

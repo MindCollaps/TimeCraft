@@ -14,8 +14,8 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/rmc/...
 func rmcHandler(cg *gin.RouterGroup) {
-	//    /api/v1/rmc/...
 	cg.POST("/", func(c *gin.Context) {
 
 		var requestBody struct {
@@ -64,8 +64,8 @@ func rmcHandler(cg *gin.RouterGroup) {
 			Specialisation: specialisation,
 		}
 
-		database.MongoDB.Collection("RoomConfig").InsertOne(c, newRoomConfig, options.InsertOne())
-		c.JSON(http.StatusOK, gin.H{"msg": "Created RoomConfig"})
+		result, err := database.MongoDB.Collection("RoomConfig").InsertOne(c, newRoomConfig, options.InsertOne())
+		c.JSON(http.StatusOK, gin.H{"msg": "Created RoomConfig", "id": result.InsertedID})
 
 	})
 

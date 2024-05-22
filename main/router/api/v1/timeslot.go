@@ -13,8 +13,8 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/tsl/...
 func tslHandler(cg *gin.RouterGroup) {
-	//    /api/v1/tsl/...
 	cg.POST("/", func(c *gin.Context) {
 
 		var requestBody struct {
@@ -85,13 +85,13 @@ func tslHandler(cg *gin.RouterGroup) {
 			RoomConfigId:    roomConfigId,
 		}
 
-		_, err = database.MongoDB.Collection("TimeSlot").InsertOne(c, newTimeSlot, options.InsertOne())
+		result, err := database.MongoDB.Collection("TimeSlot").InsertOne(c, newTimeSlot, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created TimeSlot"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created TimeSlot", "id": result.InsertedID})
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {
