@@ -13,8 +13,8 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/rms/...
 func rmsHandler(cg *gin.RouterGroup) {
-	//    /api/v1/rms/...
 	cg.POST("/", func(c *gin.Context) {
 
 		var requestBody struct {

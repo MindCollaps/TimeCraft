@@ -13,8 +13,8 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/tsl/...
 func tslHandler(cg *gin.RouterGroup) {
-	//    /api/v1/tsl/...
 	cg.POST("/", func(c *gin.Context) {
 
 		var requestBody struct {

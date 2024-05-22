@@ -16,8 +16,8 @@ import (
 	"time"
 )
 
+// /api/v1/ical/...
 func icalHandler(cg *gin.RouterGroup) {
-	// /api/v1/ical/...
 	cg.POST("/tbl/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)

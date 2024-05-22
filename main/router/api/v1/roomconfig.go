@@ -14,8 +14,8 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/rmc/...
 func rmcHandler(cg *gin.RouterGroup) {
-	//    /api/v1/rmc/...
 	cg.POST("/", func(c *gin.Context) {
 
 		var requestBody struct {
