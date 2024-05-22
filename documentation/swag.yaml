@@ -346,6 +346,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Created Timetable",
+                    "id": "66460cd79b49f6b058a7e631"
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -379,6 +385,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetables",
+                    "data": [
+                      {
+                        "id": "66460cd79b49f6b058a7e631",
+                        "name": "S1 dIT2022 4.Semester"
+                      },
+                      {
+                        "id": "664ca57b9b2d4da7af796c52",
+                        "name": "S1 dIT2022 4.Semester"
+                      },
+                      {
+                        "id": "664ca6309b2d4da7af796db8",
+                        "name": "S1 dIT2023 4.Semester"
+                      },
+                      {
+                        "id": "664cbdb7374196cb7e7c4574",
+                        "name": "S2 dIT2022 4.Semester"
+                      }
+                    ]
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -419,6 +448,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetable",
+                    "data": {
+                      "id": "66460cd79b49f6b058a7e631",
+                      "name": "S1 dIT2022 4.Semester",
+                      "days": [
+                        "664ca5619b2d4da7af796aea",
+                        "664ca5659b2d4da7af796af2",
+                        "664ca5669b2d4da7af796afa",
+                        "664ca5679b2d4da7af796b02",
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ],
+                      "lastUpdated": "2024-05-19T22:00:00Z"
+                    }
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -464,6 +511,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "TimeTable updated successfully",
+                    "data": {
+                      "id": "66460cd79b49f6b058a7e631",
+                      "name": "S1 dIT2022 4.Semester",
+                      "days": [
+                        "664ca5619b2d4da7af796aea",
+                        "664ca5659b2d4da7af796af2",
+                        "664ca5669b2d4da7af796afa",
+                        "664ca5679b2d4da7af796b02",
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ],
+                      "lastUpdated": "2024-05-19T22:00:00Z"
+                    }
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -2130,9 +2195,9 @@ components:
     TimeTable:
       type: object
       properties:
-        name:
+        Name:
           type: string
-        days:
+        Days:
           type: array
           items:
             type: string
