@@ -2,10 +2,6 @@
 {{define "metaDescription"}}Timecraft Login Page{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Timecraft Login</title>
     <style>
         body {
             background-color: #DFEBF2;
@@ -36,7 +32,7 @@
         }
 
         span#heading {
-          margin-left: 20px;
+            margin-left: 20px;
         }
 
         .flex-container {
@@ -143,48 +139,43 @@
             border: none;
             border-radius: 50px;
             width: 50%;
-            padding: 5px ;
+            padding: 5px;
             font-size: 16px;
             display: inline-block;
         }
     </style>
-</head>
-<body>
 
-<div id="banner">
-    <div id="banner-content">
-        <img src="/assets/static/LogoWhite.png" alt="Bild konnte nicht angezeigt werden.">
-        <span id="heading"><b>Timecraft</b></span>
-    </div>
-</div>
-
-<div class="flex-container">
-    <div class="container">
-        <h4><b>Login</b></h4>
-
-        <div><input type="text" placeholder="Email" required</div>
-
-        <div><input type="password" placeholder="Password" required</div>
-
-        <div class="remember-forgot">
-            <label>
-                <input type="checkbox">
-                <span><font size="-1">Remember me</font></span>
-            </label>
-            <span class="psw"><a href="#"><font size="-1">Forgot password</font></a></span>
+    <div id="banner">
+        <div id="banner-content">
+            <img src="/assets/static/LogoWhite.png" alt="Bild konnte nicht angezeigt werden.">
+            <span id="heading"><b>Timecraft</b></span>
         </div>
-
-        <div class="button-container">
-            <button class="button" type="submit" onclick="location.href='/dashboard'"><b>Login</b></button>
-        </div>
-
-        <div style="margin-top: 10px; text-align: center;">
-            <span><a href="/register" style="color: black;"><font size="-1">Register here</font></a></span>
-
     </div>
-</div>
 
-</body>
-</html>
-    {{template "botdoc"}}
+    <div class="flex-container">
+        <div class="container">
+            <h4><b>Login</b></h4>
+
+            <div><input type="text" placeholder="Email" required</div>
+
+            <div><input type="password" placeholder="Password" required</div>
+
+            <div class="remember-forgot">
+                <label>
+                    <input type="checkbox">
+                    <span><font size="-1">Remember me</font></span>
+                </label>
+                <span class="psw"><a href="#"><font size="-1">Forgot password</font></a></span>
+            </div>
+
+            <div class="button-container">
+                <button class="button" type="submit" onclick="location.href='/dashboard'"><b>Login</b></button>
+            </div>
+
+            <div style="margin-top: 10px; text-align: center;">
+                <span><a href="/register" style="color: black;"><font size="-1">Register here</font></a></span>
+
+            </div>
+        </div>
+        {{template "botdoc"}}
 {{end}}

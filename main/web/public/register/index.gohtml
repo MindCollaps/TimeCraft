@@ -55,7 +55,7 @@ l{{define "title"}}WeebsKingdom{{end}}
             font-size: 20px;
             margin-bottom: 20px;
             text-align: left;
-            padding-left:10px;
+            padding-left: 10px;
         }
 
         div#box-form {
@@ -111,33 +111,34 @@ l{{define "title"}}WeebsKingdom{{end}}
             color: black;
         }
     </style>
-    </head>
 
-    <body style="background-color:#DFEBF2;">
-    <div id="banner">
-        <div id="banner-content">
-            <img src="assets/static/New Logo White.png" height="45" width="50" alt="Bild konnte nicht angezeigt werden.">
-            <span id="heading"><b>Timecraft</b></span>
+    <div style="background-color:#DFEBF2;">
+        <div id="banner">
+            <div id="banner-content">
+                <img src="assets/static/New Logo White.png" height="45" width="50"
+                     alt="Bild konnte nicht angezeigt werden.">
+                <span id="heading"><b>Timecraft</b></span>
+            </div>
+        </div>
+
+        <div id="box">
+            <div id="box-heading">
+                <b>Sign Up</b>
+            </div>
+            <div id="box-form">
+                <form>
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <input type="password" id="conf.password" name="conf.password" placeholder=Confirm Password"
+                    required>
+                    <input type="submit" value="Create Account">
+                    <div id="login-link">
+                        Already got an account? Login <a href="#"> here</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-
-    <div id="box">
-        <div id="box-heading">
-            <b>Sign Up</b>
-        </div>
-        <div id="box-form">
-            <form>
-                <input type="email" id="email" name="email" placeholder="Email" required>
-                <input type="password" id="password" name="password" placeholder="Password" required>
-                <input type="password" id="conf.password" name="conf.password" placeholder=Confirm Password" required>
-                <input type="submit" value="Create Account">
-                <div id="login-link">
-                    Already got an account? Login <a href="#"> here</a>
-                </div>
-            </form>
-        </div>
-    </div>
-    </body>
 
     <script>
         var app = Vue.createApp({
