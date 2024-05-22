@@ -152,6 +152,28 @@ func userHandler(cg *gin.RouterGroup) {
 		c.JSON(http.StatusOK, gin.H{"msg": "Created user", "id": result.InsertedID})
 	})
 
+	// TODO: patch
+
+	cg.DELETE("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		objID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
+			return
+		}
+		result, err := database.MongoDB.Collection("user").DeleteOne(c, bson.M{"_id": objID})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
+			log.Println(err)
+			return
+		}
+		if result.DeletedCount == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"msg": "Deleted user"})
+	})
+
 	cg.POST("/favor", func(c *gin.Context) {
 		var requestBody struct {
 			UserID      primitive.ObjectID `json:"userId" binding:"required"`
@@ -199,6 +221,31 @@ func userHandler(cg *gin.RouterGroup) {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"msg": "Favorite added successfully"})
+	})
+
+	cg.GET("/favor/:userId", func(c *gin.Context) {
+		userID := c.Param("userId")
+
+		userIDObj, err := primitive.ObjectIDFromHex(userID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid userID"})
+			return
+		}
+
+		var user struct {
+			StaredTimeTableIds []primitive.ObjectID `bson:"staredTimeTableIds"`
+		}
+
+		err = database.MongoDB.Collection("user").FindOne(
+			c,
+			bson.M{"_id": userIDObj},
+		).Decode(&user)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"msg": "Favorites found", "data": user.StaredTimeTableIds})
 	})
 
 	cg.DELETE("/favor", func(c *gin.Context) {
@@ -257,50 +304,5 @@ func userHandler(cg *gin.RouterGroup) {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"msg": "Favorite removed successfully"})
-	})
-
-	cg.GET("/favor/:userId", func(c *gin.Context) {
-		userID := c.Param("userId")
-
-		userIDObj, err := primitive.ObjectIDFromHex(userID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid userID"})
-			return
-		}
-
-		var user struct {
-			StaredTimeTableIds []primitive.ObjectID `bson:"staredTimeTableIds"`
-		}
-
-		err = database.MongoDB.Collection("user").FindOne(
-			c,
-			bson.M{"_id": userIDObj},
-		).Decode(&user)
-		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"staredTimeTableIds": user.StaredTimeTableIds})
-	})
-
-	cg.DELETE("/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		objID, err := primitive.ObjectIDFromHex(id)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid ID"})
-			return
-		}
-		result, err := database.MongoDB.Collection("user").DeleteOne(c, bson.M{"_id": objID})
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
-			log.Println(err)
-			return
-		}
-		if result.DeletedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Deleted user"})
 	})
 }

@@ -358,12 +358,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestRes'
-        '404':
-          description: User not found
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+  /usr/favor/{id}:
+    get:
+      summary: Get favorite timetables by UserID
+      description: Get all favorite timetables for a user
+      tags:
+        - User
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Favorites found",
+                    "data": [
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ]
+                  }
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
         '500':
           description: Internal server error
           content:
@@ -371,30 +420,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
     delete:
-      summary: Remove favorite TimeTable
-      description: Used to remove a favorite TimeTable from the user
+      summary: Remove a favorite timetable
+      description: Remove a timetable from the favorites
       tags:
         - User
       security:
         - session_key: []
         - api_key: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                timeTableId:
-                  type: string
-              example:
-                userId: 664cc3835c2cc3f523668061
-                timeTableId: 664ca57b9b2d4da7af796c52
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: Favorite removed successfully
+          description: Removed from favorites
           content:
             application/json:
               schema:
@@ -411,12 +452,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InternalServerError'
         '500':
           description: Internal server error
           content:
@@ -445,6 +480,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Created Timetable",
+                    "id": "66460cd79b49f6b058a7e631"
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -478,6 +519,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetables",
+                    "data": [
+                      {
+                        "id": "66460cd79b49f6b058a7e631",
+                        "name": "S1 dIT2022 4.Semester"
+                      },
+                      {
+                        "id": "664ca57b9b2d4da7af796c52",
+                        "name": "S1 dIT2022 4.Semester"
+                      },
+                      {
+                        "id": "664ca6309b2d4da7af796db8",
+                        "name": "S1 dIT2023 4.Semester"
+                      },
+                      {
+                        "id": "664cbdb7374196cb7e7c4574",
+                        "name": "S2 dIT2022 4.Semester"
+                      }
+                    ]
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -518,6 +582,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetable",
+                    "data": {
+                      "id": "66460cd79b49f6b058a7e631",
+                      "name": "S1 dIT2022 4.Semester",
+                      "days": [
+                        "664ca5619b2d4da7af796aea",
+                        "664ca5659b2d4da7af796af2",
+                        "664ca5669b2d4da7af796afa",
+                        "664ca5679b2d4da7af796b02",
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ],
+                      "lastUpdated": "2024-05-19T22:00:00Z"
+                    }
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -563,6 +645,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "TimeTable updated successfully",
+                    "data": {
+                      "id": "66460cd79b49f6b058a7e631",
+                      "name": "S1 dIT2022 4.Semester",
+                      "days": [
+                        "664ca5619b2d4da7af796aea",
+                        "664ca5659b2d4da7af796af2",
+                        "664ca5669b2d4da7af796afa",
+                        "664ca5679b2d4da7af796b02",
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ],
+                      "lastUpdated": "2024-05-19T22:00:00Z"
+                    }
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -2229,9 +2329,9 @@ components:
     TimeTable:
       type: object
       properties:
-        name:
+        Name:
           type: string
-        days:
+        Days:
           type: array
           items:
             type: string

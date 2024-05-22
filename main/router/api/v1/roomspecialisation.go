@@ -77,7 +77,7 @@ func rmsHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, roomspecialisation)
+		c.JSON(http.StatusOK, gin.H{"msg": "RoomSpecialisation found", "data": roomspecialisation})
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {
@@ -135,7 +135,7 @@ func rmsHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, updatedRoomSpecialisation)
+		c.JSON(http.StatusOK, gin.H{"msg": "RoomSpecialisation updated", "data": updatedRoomSpecialisation})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {
