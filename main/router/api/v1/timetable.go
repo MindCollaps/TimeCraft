@@ -18,7 +18,6 @@ import (
 // /api/v1/tbl/...
 func tblHandler(cg *gin.RouterGroup) {
 	cg.POST("/", func(c *gin.Context) {
-		//check body for username and password
 		var requestBody struct {
 			Name string               `json:"name" binding:"required"`
 			Days []primitive.ObjectID `json:"days" binding:"required"`
@@ -54,13 +53,13 @@ func tblHandler(cg *gin.RouterGroup) {
 			Days: days,
 		}
 
-		_, err = database.MongoDB.Collection("TimeTable").InsertOne(c, newTable, options.InsertOne())
+		result, err := database.MongoDB.Collection("TimeTable").InsertOne(c, newTable, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable", "id": result.InsertedID})
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {

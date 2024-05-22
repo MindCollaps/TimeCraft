@@ -57,13 +57,13 @@ func sgrpHandler(cg *gin.RouterGroup) {
 			SpecialisationsIds: specialisationsIds,
 		}
 
-		_, err = database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())
+		result, err := database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created Semester Group"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created Semester Group", "id": result.InsertedID})
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {
