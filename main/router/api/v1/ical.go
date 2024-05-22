@@ -139,7 +139,7 @@ func icalHandler(cg *gin.RouterGroup) {
 			})
 		}
 
-		c.JSON(http.StatusOK, gin.H{"data": listItems})
+		c.JSON(http.StatusOK, gin.H{"msg": "Fetched all ical entries", "data": listItems})
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {
