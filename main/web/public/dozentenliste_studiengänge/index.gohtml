@@ -1,0 +1,88 @@
+{{define "title"}}TimeCraft{{end}}
+{{define "metaDescription"}}Welcome to TimeCraft{{end}}
+{{define "content"}}
+    {{template "topdoc"}}
+    <style>
+        .item-element {
+            width: calc(100vw - 20px); /* Maximale Breite des Bildschirms abzüglich des gewünschten Abstands */
+            max-width: 1559px; /* Maximale Breite für den Inhalt */
+            height: 64px;
+            font-size: 24px;
+            margin: 10px auto; /* Automatische Zentrierung und Abstand oben/unten */
+            overflow: hidden; /* Überlauf verstecken, um sicherzustellen, dass keine horizontalen Scrollleisten erscheinen */
+        }
+    </style>
+    <div id="app" class="vh-100 vw-100 d-flex flex-column">
+        <div class="h-100 w-100 d-flex flex-column">
+            <div class="bg-primary text-white p-3 d-flex justify-content-between align-items-center" style="padding-bottom: 10px;">
+                <h1 class="m-0">Timecraft</h1>
+                <div class="d-flex align-items-center">
+                    <a href="/dashboard" class="text-white mx-2">Dashboard</a>
+                    <a href="#" class="text-white mx-2">Favorite List</a>
+                    <a href="#" class="text-white mx-2">Pick List</a>
+                    <div class="d-flex align-items-center">
+                        <span class="material-icons" style="font-size: 36px;">account_circle</span>
+                        <span class="material-icons" style="font-size: 24px;">arrow_drop_down</span>
+                    </div>
+                </div>
+            </div>
+            <div id="page-title" class="w-100 d-flex justify-content-start px-5" style="margin-top: 30px;">
+                <h2 class="text-primary mb-4">Übersicht</h2>
+            </div>
+            <div id="content" class="flex-grow-1 d-flex flex-column align-items-center justify-content-start" style="padding-top: 10px;">
+                <!-- Hauptinhalt hier -->
+                <div class="d-flex gap-5 mt-4">
+                    <button id="students-btn" class="btn btn-outline-primary btn-lg" style="width: 474px; height: 101px; font-size: 24px;">Studiengänge</button>
+                    <button id="dozenten-btn" class="btn btn-outline-primary btn-lg" style="width: 474px; height: 101px; font-size: 24px;">Dozenten</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function createItemElement(name) {
+            return `<div class="item-element bg-light border d-flex align-items-center justify-content-center">
+                        ${name}
+                    </div>`;
+        }
+
+        function showDozenten() {
+            document.getElementById('page-title').innerHTML = '<h2 class="text-primary mb-4"><a href="#" id="back-to-overview" class="text-primary text-decoration-none">Übersicht</a> &gt; Dozenten</h2>';
+            const content = document.getElementById('content');
+            content.innerHTML = '';
+            const dozenten = ['Dozent 1', 'Dozent 2', 'Dozent 3', 'Dozent 4', 'Dozent 5'];
+            dozenten.forEach(dozent => {
+                content.innerHTML += createItemElement(dozent);
+            });
+            document.getElementById('back-to-overview').addEventListener('click', showOverview);
+        }
+
+        function showStudiengaenge() {
+            document.getElementById('page-title').innerHTML = '<h2 class="text-primary mb-4"><a href="#" id="back-to-overview" class="text-primary text-decoration-none">Übersicht</a> &gt; Studiengänge</h2>';
+            const content = document.getElementById('content');
+            content.innerHTML = '';
+            const studiengaenge = ['Business Administration', 'Integrierte Unternehmensführung', 'Embedded Automatic Design', 'IT-Security', 'Health Management', 'Strategische Unternehmensführung', 'Wirtschaftsinformatik', 'Business Administration (Teil-/ Vollzeit)', 'Sprachkurse'];
+            studiengaenge.forEach(studiengang => {
+                content.innerHTML += createItemElement(studiengang);
+            });
+            document.getElementById('back-to-overview').addEventListener('click', showOverview);
+        }
+
+        function showOverview() {
+            document.getElementById('page-title').innerHTML = '<h2 class="text-primary mb-4">Übersicht</h2>';
+            document.getElementById('content').innerHTML = `
+                <div class="d-flex gap-5 mt-4">
+                    <button id="students-btn" class="btn btn-outline-primary btn-lg" style="width: 474px; height: 101px; font-size: 24px;">Studiengänge</button>
+                    <button id="dozenten-btn" class="btn btn-outline-primary btn-lg" style="width: 474px; height: 101px; font-size: 24px;">Dozenten</button>
+                </div>
+            `;
+            addEventListeners();
+        }
+
+        function addEventListeners() {
+            document.getElementById('dozenten-btn').addEventListener('click', showDozenten);
+            document.getElementById('students-btn').addEventListener('click', showStudiengaenge);
+        }
+
+        addEventListeners();
+    </script>
+{{end}}

@@ -13,13 +13,12 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/rms/...
 func rmsHandler(cg *gin.RouterGroup) {
-	//    /api/v1/rms/...
 	cg.POST("/", func(c *gin.Context) {
 
 		var requestBody struct {
-			ID   primitive.ObjectID `json:"id" binding:"required"`
-			Name string             `json:"name" binding:"required"`
+			Name string `json:"name" binding:"required"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -49,13 +48,13 @@ func rmsHandler(cg *gin.RouterGroup) {
 			Name: name,
 		}
 
-		_, err = database.MongoDB.Collection("RoomSpecialisation").InsertOne(c, newRoomSpecialisation, options.InsertOne())
+		result, err := database.MongoDB.Collection("RoomSpecialisation").InsertOne(c, newRoomSpecialisation, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created RoomSpecialisation"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created RoomSpecialisation", "id": result.InsertedID})
 
 	})
 

@@ -18,7 +18,6 @@ import (
 // /api/v1/tbl/...
 func tblHandler(cg *gin.RouterGroup) {
 	cg.POST("/", func(c *gin.Context) {
-		//check body for username and password
 		var requestBody struct {
 			Name string               `json:"name" binding:"required"`
 			Days []primitive.ObjectID `json:"days" binding:"required"`
@@ -54,13 +53,36 @@ func tblHandler(cg *gin.RouterGroup) {
 			Days: days,
 		}
 
-		_, err = database.MongoDB.Collection("TimeTable").InsertOne(c, newTable, options.InsertOne())
+		result, err := database.MongoDB.Collection("TimeTable").InsertOne(c, newTable, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable", "id": result.InsertedID})
+	})
+
+	cg.GET("/", func(c *gin.Context) {
+		type TimeTableResponse struct {
+			ID   primitive.ObjectID `json:"id" bson:"_id"`
+			Name string             `json:"name" bson:"name"`
+		}
+
+		var timetables []TimeTableResponse
+		opts := options.Find().SetProjection(bson.M{"name": 1, "_id": 1})
+		cursor, err := database.MongoDB.Collection("TimeTable").Find(c, bson.M{}, opts)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		if err = cursor.All(c, &timetables); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		
+		c.JSON(http.StatusOK, timetables)
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {
@@ -159,6 +181,16 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
+
+		// Delete all TimeTableDays and TimeSlots associated with the TimeTable
+		timeTableDaysIDs := getAllTimeTableDays(objectID)
+		for _, dayID := range timeTableDaysIDs {
+			for _, timeSlotID := range getAllTimeSlots(dayID) {
+				deleteTimeSlot(timeSlotID)
+			}
+			deleteTimeTableDay(dayID)
+		}
+
 		result, err := database.MongoDB.Collection("TimeTable").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
