@@ -364,12 +364,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
-        '404':
-          description: Favorite not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InternalServerError'
         '500':
           description: Internal server error
           content:
