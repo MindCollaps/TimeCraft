@@ -40,7 +40,7 @@
             spinner.classList.remove('d-none');
             message.textContent = '';
 
-            fetch('http://127.0.0.1:8080/api/v1/prt/import/excel', {
+            fetch('/api/v1/prt/import/excel', {
                 method: 'POST',
                 body: formData
             })
