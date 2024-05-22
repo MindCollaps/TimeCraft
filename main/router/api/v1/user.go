@@ -142,14 +142,14 @@ func userHandler(cg *gin.RouterGroup) {
 			StaredTimeTableIds: []primitive.ObjectID{},
 		}
 
-		_, err = database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
+		result, err := database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
 			log.Println(err)
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"msg": "Created user"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created user", "id": result.InsertedID})
 	})
 
 	cg.POST("/favor", func(c *gin.Context) {

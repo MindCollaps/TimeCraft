@@ -16,8 +16,8 @@ import (
 	"time"
 )
 
+// /api/v1/ical/...
 func icalHandler(cg *gin.RouterGroup) {
-	// /api/v1/ical/...
 	cg.POST("/tbl/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
@@ -105,7 +105,7 @@ func icalHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"msg": "iCal generated and saved successfully", "data": icalEntry.ID.Hex()})
+		c.JSON(http.StatusOK, gin.H{"msg": "iCal generated and saved successfully", "id": icalEntry.ID.Hex()})
 	})
 
 	cg.GET("/", func(c *gin.Context) {
