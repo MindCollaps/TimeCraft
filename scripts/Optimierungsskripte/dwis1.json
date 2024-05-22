@@ -1,0 +1,22 @@
+{
+    "name": "dWI22 S1 4.Semester",
+    "lecturers": [
+        {"name": " Stephanus", "lectures": [{"name": "SiS", "amount": 7}]},
+        {"name": " Lobachev", "lectures": [{"name": "Projekt", "amount": 15}]},
+        {
+            "name": " Neumann-Brosig",
+            "lectures": [
+                {"name": "Stat II", "amount": 5},
+                {"name": "AZ2", "amount": 5}
+            ]
+        },
+        {"name": " Birzer", "lectures": [{"name": "ACC", "amount": 2}]},
+        {"name": " Ahlers", "lectures": [{"name": "PF", "amount": 6}]},
+        {"name": " Ibrahim", "lectures": [{"name": "ITAA", "amount": 6}]},
+        {"name": " Werner", "lectures": [{"name": "GCC", "amount": 4}]},
+        {"name": " Schaper", "lectures": [{"name": "ITIL", "amount": 2}]},
+        {"name": " Riebandt", "lectures": [{"name": "ITG/C", "amount": 6}]},
+        {"name": " Neubauer", "lectures": [{"name": "Krypto", "amount": 2}]},
+        {"name": " Peine-Paulsen", "lectures": [{"name": "ITS-M", "amount": 5}]}
+    ]
+}
