@@ -65,8 +65,8 @@ func rmcHandler(cg *gin.RouterGroup) {
 			Specialisation: specialisation,
 		}
 
-		database.MongoDB.Collection("RoomConfig").InsertOne(c, newRoomConfig, options.InsertOne())
-		c.JSON(http.StatusOK, gin.H{"msg": "Created RoomConfig"})
+		result, err := database.MongoDB.Collection("RoomConfig").InsertOne(c, newRoomConfig, options.InsertOne())
+		c.JSON(http.StatusOK, gin.H{"msg": "Created RoomConfig", "id": result.InsertedID})
 
 	})
 
