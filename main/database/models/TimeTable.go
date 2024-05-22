@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"src/main/database"
+	"time"
 )
 
 type TimeTable struct {
@@ -23,8 +24,10 @@ type TimeTableStruct struct {
 
 func TimeTableToStruct(c *gin.Context, timeTable TimeTable) (TimeTableStruct, error) {
 	timeTableStruct := TimeTableStruct{
-		ID:   timeTable.ID.Hex(),
-		Name: timeTable.Name,
+		ID:          timeTable.ID.Hex(),
+		Name:        timeTable.Name,
+		Days:        []TimeTableDayStruct{},
+		LastUpdated: timeTable.LastUpdated.Time().Format(time.DateTime),
 	}
 
 	// Load TimeTableDays

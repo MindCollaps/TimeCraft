@@ -32,84 +32,84 @@ paths:
                   type: string
               example:
                 json_data: [
-                              {
-                                  "study_subject": "dIT22",
-                                  "semester_group": "S2",
-                                  "semester": "SoSe 2024",
-                                  "semester_year": "4. Semester",
-                                  "last_changed": "Stand: 19.03.2024"
-                              },
-                              {
-                                "days": [
-                                    {
-                                        "date": "2024-03-25 00:00:00",
-                                        "lessons": [
-                                            {
-                                                "time": "8:00-16:15",
-                                                "isHoliday": false,
-                                                "name": "no lesson --> freetime",
-                                                "isOnline": false,
-                                                "isReExamination": false,
-                                                "isExam": false,
-                                                "wasCanceled": false,
-                                                "wasMoved": false,
-                                                "lecturer": null,
-                                                "isEvent": false
-                                            },
-                                            {
-                                                "time": "16:30-19:45",
-                                                "isHoliday": false,
-                                                "name": "SiS",
-                                                "isOnline": false,
-                                                "isReExamination": false,
-                                                "isExam": false,
-                                                "wasCanceled": false,
-                                                "wasMoved": false,
-                                                "lecturer": null,
-                                                "isEvent": false
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "date": "2024-03-29 00:00:00",
-                                        "lessons": [
-                                            {
-                                                "time": "8:00-19:45",
-                                                "isHoliday": true,
-                                                "name": "Feiertag: Karfreitag",
-                                                "isOnline": false,
-                                                "isReExamination": false,
-                                                "isExam": false,
-                                                "wasCanceled": false,
-                                                "wasMoved": false,
-                                                "lecturer": null,
-                                                "isEvent": false
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "date": "2024-03-30 00:00:00",
-                                        "lessons": [
-                                            {
-                                                "time": "8:00-19:45",
-                                                "isHoliday": false,
-                                                "name": "no lesson --> freetime",
-                                                "isOnline": false,
-                                                "isReExamination": false,
-                                                "isExam": false,
-                                                "wasCanceled": false,
-                                                "wasMoved": false,
-                                                "lecturer": null,
-                                                "isEvent": false
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "calendarweek": 13,
-                                "start_row": 5,
-                                "end_row": 13
-                            }
+                  {
+                    "study_subject": "dIT22",
+                    "semester_group": "S2",
+                    "semester": "SoSe 2024",
+                    "semester_year": "4. Semester",
+                    "last_changed": "Stand: 19.03.2024"
+                  },
+                  {
+                    "days": [
+                      {
+                        "date": "2024-03-25 00:00:00",
+                        "lessons": [
+                          {
+                            "time": "8:00-16:15",
+                            "isHoliday": false,
+                            "name": "no lesson --> freetime",
+                            "isOnline": false,
+                            "isReExamination": false,
+                            "isExam": false,
+                            "wasCanceled": false,
+                            "wasMoved": false,
+                            "lecturer": null,
+                            "isEvent": false
+                          },
+                          {
+                            "time": "16:30-19:45",
+                            "isHoliday": false,
+                            "name": "SiS",
+                            "isOnline": false,
+                            "isReExamination": false,
+                            "isExam": false,
+                            "wasCanceled": false,
+                            "wasMoved": false,
+                            "lecturer": null,
+                            "isEvent": false
+                          }
                         ]
+                      },
+                      {
+                        "date": "2024-03-29 00:00:00",
+                        "lessons": [
+                          {
+                            "time": "8:00-19:45",
+                            "isHoliday": true,
+                            "name": "Feiertag: Karfreitag",
+                            "isOnline": false,
+                            "isReExamination": false,
+                            "isExam": false,
+                            "wasCanceled": false,
+                            "wasMoved": false,
+                            "lecturer": null,
+                            "isEvent": false
+                          }
+                        ]
+                      },
+                      {
+                        "date": "2024-03-30 00:00:00",
+                        "lessons": [
+                          {
+                            "time": "8:00-19:45",
+                            "isHoliday": false,
+                            "name": "no lesson --> freetime",
+                            "isOnline": false,
+                            "isReExamination": false,
+                            "isExam": false,
+                            "wasCanceled": false,
+                            "wasMoved": false,
+                            "lecturer": null,
+                            "isEvent": false
+                          }
+                        ]
+                      }
+                    ],
+                    "calendarweek": 13,
+                    "start_row": 5,
+                    "end_row": 13
+                  }
+                ]
       responses:
         '200':
           description: Successful operation
@@ -291,8 +291,8 @@ paths:
       tags:
         - User
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -324,24 +324,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
-  /tbl:
+  /usr/favor:
+    summary: favor TimeTables
     post:
-      summary: Create TimeTable
-      description: Create a new TimeTable
+      summary: Add favorite TimeTable
+      description: Used to add a TimeTable to the users favorites
       tags:
-        - Timetable
-      security:
-        - session_key: []
-        - api_key: []
+        - User
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TimeTable'
+              type: object
+              properties:
+                userId:
+                  type: string
+                timeTableId:
+                  type: string
+              example:
+                userId: 664cc3835c2cc3f523668061
+                timeTableId: 664ca57b9b2d4da7af796c52
       responses:
         '200':
-          description: TimeTable created successfully
+          description: Favorite added successfully
           content:
             application/json:
               schema:
@@ -358,12 +364,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
-  /tbl/{id}:
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /usr/favor/{id}:
     get:
-      summary: Get timetable by ID
-      description: Get the timetable for a user
+      summary: Get favorite timetables by UserID
+      description: Get all favorite timetables for a user
       tags:
-        - Timetable
+        - User
       security:
         - session_key: []
         - api_key: []
@@ -380,6 +392,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Favorites found",
+                    "data": [
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ]
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -392,14 +413,219 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Remove a favorite timetable
+      description: Remove a timetable from the favorites
+      tags:
+        - User
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Removed from favorites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /tbl:
+    post:
+      summary: Create TimeTable
+      description: Create a new TimeTable
+      tags:
+        - Timetable
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeTable'
+      responses:
+        '200':
+          description: TimeTable created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Created Timetable",
+                    "id": "66460cd79b49f6b058a7e631"
+                  }
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    get:
+      summary: Get all timetables
+      description: Get a list of all available timetables
+      tags:
+        - Timetable
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetables",
+                    "data": [
+                      {
+                        "id": "66460cd79b49f6b058a7e631",
+                        "name": "S1 dIT2022 4.Semester"
+                      },
+                      {
+                        "id": "664ca57b9b2d4da7af796c52",
+                        "name": "S1 dIT2022 4.Semester"
+                      },
+                      {
+                        "id": "664ca6309b2d4da7af796db8",
+                        "name": "S1 dIT2023 4.Semester"
+                      },
+                      {
+                        "id": "664cbdb7374196cb7e7c4574",
+                        "name": "S2 dIT2022 4.Semester"
+                      }
+                    ]
+                  }
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /tbl/{id}:
+    get:
+      summary: Get timetable by ID
+      description: Get the timetable for a user
+      tags:
+        - Timetable
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetable",
+                    "data": {
+                      "id": "66460cd79b49f6b058a7e631",
+                      "name": "S1 dIT2022 4.Semester",
+                      "days": [
+                        "664ca5619b2d4da7af796aea",
+                        "664ca5659b2d4da7af796af2",
+                        "664ca5669b2d4da7af796afa",
+                        "664ca5679b2d4da7af796b02",
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ],
+                      "lastUpdated": "2024-05-19T22:00:00Z"
+                    }
+                  }
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     patch:
       summary: Update timetable by ID
       description: Update the timetable
       tags:
         - Timetable
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -419,6 +645,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "TimeTable updated successfully",
+                    "data": {
+                      "id": "66460cd79b49f6b058a7e631",
+                      "name": "S1 dIT2022 4.Semester",
+                      "days": [
+                        "664ca5619b2d4da7af796aea",
+                        "664ca5659b2d4da7af796af2",
+                        "664ca5669b2d4da7af796afa",
+                        "664ca5679b2d4da7af796b02",
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ],
+                      "lastUpdated": "2024-05-19T22:00:00Z"
+                    }
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -431,14 +675,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     delete:
       summary: Delete timetable by ID
       description: Delete the timetable for a user
       tags:
         - Timetable
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -458,6 +708,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /sgrp:
     post:
       summary: Create Semester Group
@@ -465,8 +721,8 @@ paths:
       tags:
         - Semester Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       requestBody:
         required: true
         content:
@@ -492,6 +748,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    get:
+      summary: Get all semester groups
+      description: Get a list of all available semester groups
+      tags:
+        - Semester Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /sgrp/{id}:
     summary: Delete Semester Group
     get:
@@ -500,8 +795,8 @@ paths:
       tags:
         - Semester Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -527,14 +822,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     patch:
       summary: Update semester group by ID
       description: Update the name of a semester group (orga permission required)
       tags:
         - Semester Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -571,14 +872,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     delete:
       summary: Delete semester group by ID
       description: Delete a semester group (orga permission required)
       tags:
         - Semester Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -604,6 +911,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /stgrp:
     post:
       summary: Create StudentGroup
@@ -611,8 +924,8 @@ paths:
       tags:
         - Student Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       requestBody:
         required: true
         content:
@@ -638,6 +951,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /stgrp/{id}:
     summary: Get Student Group
     get:
@@ -646,8 +965,8 @@ paths:
       tags:
         - Student Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -673,14 +992,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     patch:
       summary: Update student group by ID
       description: Update the name of a student group (orga permission required)
       tags:
         - Student Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -717,14 +1042,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
     delete:
       summary: Delete student group by ID
       description: Delete a student group (orga permission required)
       tags:
         - Student Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -750,6 +1081,1181 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /dev/opt/model:
+    summary: Develeopment endpoint
+    get:
+      summary: Get test data
+      description: Get a list of all available timetables
+      tags:
+        - Development
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetables",
+                    "timetables": [
+                      "dIT22 S2 4.Semester",
+                      "test_"
+                    ]
+                  }
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      summary: Get a specific timetable
+      description: Get a timetable by its name
+      tags:
+        - Development
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              example:
+            example:
+              name: dIT22 S2 4.Semester
+      responses:
+        '200':
+          description: TimeTable created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "name": "dIT22 S2 4.Semester",
+                    "lecturers": [
+                      {
+                        "lecturerName": " Stephanus",
+                        "lectures": [
+                          {
+                            "lectureName": "SiS",
+                            "amount": 7
+                          }
+                        ]
+                      },
+                      {
+                        "lecturerName": " Lobachev",
+                        "lectures": [
+                          {
+                            "lectureName": "Projekt",
+                            "amount": 15
+                          }
+                        ]
+                      },
+                      {
+                        "lecturerName": " Neumann-Brosig",
+                        "lectures": [
+                          {
+                            "lectureName": "Stat II",
+                            "amount": 5
+                          },
+                          {
+                            "lectureName": "AZ2",
+                            "amount": 5
+                          }
+                        ]
+                      }
+                    ]
+                  }
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /splitgrp:
+    post:
+      summary: Create SplitGroup
+      description: Create a new SplitGroup
+      tags:
+        - Split Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SplitGroup'
+      responses:
+        '200':
+          description: SplitGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /splitgrp/{id}:
+    get:
+      summary: Get split group by ID
+      description: Get the details of a student group
+      tags:
+        - Split Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update split group by ID
+      description: Update the name of a student group (orga permission required)
+      tags:
+        - Split Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              example:
+                name: New Split Group Name
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete split group by ID
+      description: Delete a Split Group (orga permission required)
+      tags:
+        - Split Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /lgrp:
+    post:
+      summary: Create LectureGroup
+      description: Create a new SplitGroup
+      tags:
+        - Lecture Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SplitGroup'
+      responses:
+        '200':
+          description: Lecture Group created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /lgrp/{id}:
+    get:
+      summary: Get Lecture Group by ID
+      description: Get the details of a student group
+      tags:
+        - Lecture Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update Lecture Group by ID
+      description: Update the name of a student group (orga permission required)
+      tags:
+        - Lecture Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              example:
+                name: New Lecture Group Name
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete Lecture Group by ID
+      description: Delete a Lecture Group (orga permission required)
+      tags:
+        - Lecture Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /tsl:
+    post:
+      summary: Create TimeSlot
+      description: Create a new TimeSlot
+      tags:
+        - TimeSlot
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSlot'
+      responses:
+        '200':
+          description: TimeSlot created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /tsl/{id}:
+    get:
+      summary: Get TimeSlot by ID
+      description: Get a TimeSlot
+      tags:
+        - TimeSlot
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update TimeSlot by ID
+      description: Update the TimeSlot
+      tags:
+        - TimeSlot
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSlot'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete TimeSlot by ID
+      description: Delete a TimeSlot
+      tags:
+        - TimeSlot
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /rmc:
+    post:
+      summary: Create RoomConfig
+      description: Create a new RoomConfig
+      tags:
+        - RoomConfig
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomConfig'
+      responses:
+        '200':
+          description: RoomConfig successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /rmc/{id}:
+    get:
+      summary: Get RoomConfig by ID
+      description: Get a RoomConfig
+      tags:
+        - RoomConfig
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update RoomConfig by ID
+      description: Update a RoomConfig
+      tags:
+        - RoomConfig
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomConfig'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete RoomConfig by ID
+      description: Delete a RoomConfig
+      tags:
+        - RoomConfig
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /rms:
+    post:
+      summary: Create RoomSpecialisation
+      description: Create a new RoomSpecialisation
+      tags:
+        - RoomSpecialisation
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomSpecialisation'
+      responses:
+        '200':
+          description: RoomSpecialisation successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /rms/{id}:
+    get:
+      summary: Get RoomSpecialisation by ID
+      description: Get a RoomSpecialisation
+      tags:
+        - RoomSpecialisation
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update RoomSpecialisation by ID
+      description: Update a RoomSpecialisation
+      tags:
+        - RoomSpecialisation
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomSpecialisation'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete RoomSpecialisation by ID
+      description: Delete a RoomSpecialisation
+      tags:
+        - RoomSpecialisation
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /ical/tbl/{id}:
+    post:
+      summary: Create iCal from a specific TimeTable
+      description: Create a new iCal from a specific TimeTable using its ID
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      responses:
+        '200':
+          description: iCal successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    get:
+      summary: Get existing iCal by TimeTable ID
+      description: Get an existing iCal calendar by the TimeTable ID
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /ical:
+    get:
+      summary: Get all iCals
+      description: Get a list of all available iCals
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /ical/{id}:
+    get:
+      summary: Get iCal by ID
+      description: Get an iCal by its ID
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    
+    patch:
+      summary: Update iCal by ID
+      description: Update an iCal
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSlot'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete iCal by ID
+      description: Delete an iCal
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+
 components:
   securitySchemes:
     session_key:
@@ -823,12 +2329,9 @@ components:
     TimeTable:
       type: object
       properties:
-        id:
+        Name:
           type: string
-          format: uuid
-        name:
-          type: string
-        days:
+        Days:
           type: array
           items:
             type: string
@@ -836,9 +2339,6 @@ components:
     Lecture:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         contactHours:
@@ -846,9 +2346,6 @@ components:
     LectureGroup:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         timeTableId:
@@ -857,9 +2354,6 @@ components:
     Lecturer:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         firstName:
           type: string
         lastName:
@@ -880,9 +2374,6 @@ components:
     RoomConfig:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         roomNr:
@@ -904,16 +2395,11 @@ components:
     RoomSpecialisation:
       type: object
       properties:
-        id:
-          type: integer
         name:
           type: string
     SemesterGroup:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         studentGroupIds:
@@ -932,9 +2418,6 @@ components:
     StudentGroup:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         lectureGroupIds:
@@ -945,12 +2428,24 @@ components:
         timeTableId:
           type: string
           format: uuid
+    SplitGroup:
+      type: object
+      properties:
+        name:
+          type: string
+        timeTableId:
+          type: string
+          format: uuid
+        splitsStudent:
+          type: array
+          items:
+            type: string
+          format: uuid
+        size:
+          type: integer
     TimeSlot:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         lecturerID:
@@ -983,9 +2478,6 @@ components:
     TimeTableDay:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         date:
           type: string
           format: date-time

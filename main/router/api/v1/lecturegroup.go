@@ -14,13 +14,13 @@ import (
 	"src/main/database/models"
 )
 
-// /api/v1/stgrp/...
-func stgrpHandler(cg *gin.RouterGroup) {
+// /api/v1/lgrp/...
+func lgrpHandler(cg *gin.RouterGroup) {
 	cg.POST("/", func(c *gin.Context) {
+		//check body for name and timeTableId
 		var requestBody struct {
-			Name            string               `json:"name" binding:"required"`
-			LectureGroupIds []primitive.ObjectID `json:"lectureGroupIds" binding:"required"`
-			TimeTableId     primitive.ObjectID   `json:"timeTableId" binding:"required"`
+			Name        string             `json:"name" binding:"required"`
+			TimeTableId primitive.ObjectID `json:"timeTableId" binding:"required"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -30,37 +30,37 @@ func stgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		name := requestBody.Name
-		lectureGroupIds := requestBody.LectureGroupIds
+		timeTableId := requestBody.TimeTableId
 
-		var existingStgrp models.StudentGroup
-		err := database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"name": name}).Decode(&existingStgrp)
+		var existinglgrp models.LectureGroup
+		err := database.MongoDB.Collection("LectureGroup").FindOne(c, bson.M{"Name": name}).Decode(&existinglgrp)
 
 		if err == nil {
-			// Study Group with same name already exists
-			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "Study Group already exists"})
-			log.Println("Study Group already exists")
+			// LectureGroup with the same name already exists
+			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "LectureGroup already exists"})
+			log.Println("LectureGroup already exists")
 			return
 		} else if !errors.Is(err, mongo.ErrNoDocuments) {
-			// other db query errors
+			// Handle other database query errors
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
 
-		newStudentGroup := models.StudentGroup{
-			ID:              primitive.NewObjectID(),
-			Name:            name,
-			LectureGroupIds: lectureGroupIds,
-			TimeTableId:     primitive.NewObjectID(),
+		newLectureGroup := models.LectureGroup{
+			ID:          primitive.NewObjectID(),
+			Name:        name,
+			TimeTableId: timeTableId,
 		}
 
-		result, err := database.MongoDB.Collection("StudentGroup").InsertOne(c, newStudentGroup, options.InsertOne())
+		result, err := database.MongoDB.Collection("LectureGroup").InsertOne(c, newLectureGroup, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created Semester Group", "id": result.InsertedID})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created LectureGroup", "id": result.InsertedID})
+
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {
@@ -71,18 +71,19 @@ func stgrpHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		var studentgroup models.StudentGroup
-		err = database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&studentgroup)
+
+		var lecturegroup models.LectureGroup
+		err = database.MongoDB.Collection("LectureGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&lecturegroup)
 		if err != nil {
 			if errors.Is(err, mongo.ErrNoDocuments) {
-				c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "StudentGroup not found"})
+				c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "LectureGroup not found"})
 			} else {
 				c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			}
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "StudentGroup found", "data": studentgroup})
+		c.JSON(http.StatusOK, gin.H{"msg": "LectureGroup found", "data": lecturegroup})
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {
@@ -94,18 +95,17 @@ func stgrpHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		var existingStgrp models.StudentGroup
-		err = database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&existingStgrp)
+		var existinglgrp models.LectureGroup
+		err = database.MongoDB.Collection("LectureGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&existinglgrp)
 		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "StudentGroup not found"})
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "LectureGroup not found"})
 			log.Println(err)
 			return
 		}
 
 		var requestBody struct {
-			Name            string               `json:"name"`
-			LectureGroupIds []primitive.ObjectID `json:"lectureGroupIds"`
-			TimeTableId     *primitive.ObjectID  `json:"timeTableId"`
+			Name        string               `json:"name"`
+			TimeTableId []primitive.ObjectID `json:"timeTableId"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -118,16 +118,11 @@ func stgrpHandler(cg *gin.RouterGroup) {
 		if requestBody.Name != "" {
 			update["name"] = requestBody.Name
 		}
-
-		if requestBody.LectureGroupIds != nil && !core.ContainsNilObjectID(requestBody.LectureGroupIds) && len(requestBody.LectureGroupIds) != 0 {
-			update["lectureGroupIds"] = requestBody.LectureGroupIds
-		}
-
-		if requestBody.TimeTableId != nil && *requestBody.TimeTableId != primitive.NilObjectID {
+		if requestBody.TimeTableId != nil && len(requestBody.TimeTableId) > 0 && !core.ContainsNilObjectID(requestBody.TimeTableId) {
 			update["timeTableId"] = requestBody.TimeTableId
 		}
 
-		result, err := database.MongoDB.Collection("StudentGroup").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
+		result, err := database.MongoDB.Collection("LectureGroup").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
@@ -136,19 +131,19 @@ func stgrpHandler(cg *gin.RouterGroup) {
 
 		if result.ModifiedCount == 0 {
 			c.JSON(http.StatusNotModified, gin.H{"msg": "Nothing was updated", "error": "No data provided to update"})
-			log.Println("Warning: No data provided to update the StudentGroup")
+			log.Println("Warning: No data provided to update the LectureGroup")
 			return
 		}
 
-		var updatedStudentGroup models.StudentGroup
-		err = database.MongoDB.Collection("StudentGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedStudentGroup)
+		var updatedLectureGroup models.LectureGroup
+		err = database.MongoDB.Collection("LectureGroup").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedLectureGroup)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"msg": "StudentGroup updated", "data": updatedStudentGroup})
+		c.JSON(http.StatusOK, gin.H{"msg": "LectureGroup updated", "data": updatedLectureGroup})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {
@@ -159,17 +154,17 @@ func stgrpHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		result, err := database.MongoDB.Collection("StudentGroup").DeleteOne(c, bson.M{"_id": objectID})
+		result, err := database.MongoDB.Collection("LectureGroup").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
 		if result.DeletedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "StudentGroup not found"})
-			log.Println("Error: StudentGroup not found")
+			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "LectureGroup not found"})
+			log.Println("Error: LectureGroup not found")
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "StudentGroup deleted"})
+		c.JSON(http.StatusOK, gin.H{"msg": "LectureGroup deleted"})
 	})
 }

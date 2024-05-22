@@ -13,7 +13,7 @@ class excel_parser():
         self.TABLE_HEIGHT = 9
         self.TABLE_WIDTH = 8
         self.CELLS_BETWEEN_TABLES = 1
-        self.TABLE_START_OFFSET = 4
+        self.TABLE_START_OFFSET = 3
 
         self.weekdays = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
 
@@ -138,10 +138,10 @@ class excel_parser():
         tables = []
 
         # header values
-        study_subject = None            # dIT2022
-        self.semester_group = None           # S1, S2, A1, A2
+        self.semester_group = None      # dIT2022
+        self.student_group = None       # S1, S2, A1, A2
         semester = None                 # WS2023/2024
-        self.semester_year = None            # 3. Semester
+        self.semester_year = None       # 3. Semester
         last_changed = None             # Stand: 06.11.2023
 
         # start values
@@ -169,26 +169,30 @@ class excel_parser():
                         continue
 
                     if not header_parsed:
-                        if row_counter == self.TABLE_START_OFFSET + 1:
-                            header_parsed = True
+                        # check if we parsed the header (all rows before the first table)
+                        # Normally we can use TABLE_START_OFFSET, but that is not constant anymore
+                        # it varies between 3 and 4. Therefore we need to check if we reached  the cell with "KW" 
+                        if row_counter >= self.TABLE_START_OFFSET + 1:
+                            if cell.value != None and "KW" in cell.value:
+                                header_parsed = True
 
-                            # save the header at the first position
-                            tables.append({
-                                "study_subject": study_subject,
-                                "semester_group": self.semester_group,
-                                "semester": semester,
-                                "semester_year": self.semester_year,
-                                "last_changed": last_changed,
-                            })
+                                # save the header at the first position
+                                tables.append({
+                                    "semester_group": self.semester_group,
+                                    "student_group": self.student_group,
+                                    "semester": semester,
+                                    "semester_year": self.semester_year,
+                                    "last_changed": last_changed,
+                                })
 
                     if not header_parsed:
                         # empty cells in the header are not important
                         if cell.value != None:
 
-                            if self.containsYear(cell.value) and not ("WS" in cell.value or "SS" in cell.value or "SoSe" in cell.value or "WiSe" in cell.value) and not self.containsLastChanged(cell.value):
-                                study_subject, self.semester_group = self.extractSemesterGroup(cell.value)
+                            if self.containsYear(cell.value) and not self.containsSemesterSeason(cell.value) and not self.containsLastChanged(cell.value):
+                                self.semester_group, self.student_group = self.extractSemesterAndStudentGroup(cell.value)
 
-                            elif ("WS" in cell.value or "SS" in cell.value or "SoSe" in cell.value or "WiSe" in cell.value):
+                            elif self.containsSemesterSeason(cell.value):
                                 semester = cell.value
 
                             elif self.containsSemester(cell.value):
@@ -363,15 +367,6 @@ class excel_parser():
                                     else:
                                         table["days"][current_day]["lessons"][index_counter]["isEvent"] = False
 
-                                    # table["days"][current_day]["lessons"][index_counter]["room"] = self.getRoom(
-                                    #     table["days"][current_day]["lessons"][index_counter]["name"],
-                                    #     cell,
-                                    #     table["days"][current_day]["date"],
-                                    #     study_subject,
-                                    #     self.semester_group,
-                                    #     lecturer
-                                    # )
-
                             self.updateDayCounter()
 
                         elif "KW" in cell_content:
@@ -428,6 +423,9 @@ class excel_parser():
         # https://regex101.com/r/6aET8G/1
         match = re.search(r'\d{1,2}.?\sSemester', value)
         return match != None
+
+    def containsSemesterSeason(self, value):
+        return "WS" in value or "SS" in value or "SoSe" in value or "WiSe" in value
 
     def containsLastChanged(self, value):
         # https://regex101.com/r/WJNP5m/1
@@ -587,7 +585,7 @@ class excel_parser():
         if match:
             lecturer = match.group(1)
         else:
-            lecturer = self.KnownLecturer.get(self.semester_year, {}).get(self.semester_group, {}).get(value, None)
+            lecturer = self.KnownLecturer.get(self.semester_year, {}).get(self.student_group, {}).get(value, None)
 
         return lecturer
 
@@ -685,7 +683,7 @@ class excel_parser():
             self.current_day_counter += 1
 
     # extract methods
-    def extractSemesterGroup(self, value):
+    def extractSemesterAndStudentGroup(self, value):
         # https://regex101.com/r/nLR5HB/1
         match = re.search(r'([a-zA-z]{3,5}\d{2,4})\s?([a-zA-Z]\d)?', value)
         return match.group(1), match.group(2)

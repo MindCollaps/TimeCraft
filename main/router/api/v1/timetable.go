@@ -17,10 +17,8 @@ import (
 
 // /api/v1/tbl/...
 func tblHandler(cg *gin.RouterGroup) {
-	cg.POST("/create", func(c *gin.Context) {
-		//check body for username and password
+	cg.POST("/", func(c *gin.Context) {
 		var requestBody struct {
-			Id   primitive.ObjectID   `json:"id" binding:"required"`
 			Name string               `json:"name" binding:"required"`
 			Days []primitive.ObjectID `json:"days" binding:"required"`
 		}
@@ -35,7 +33,7 @@ func tblHandler(cg *gin.RouterGroup) {
 		days := requestBody.Days
 
 		var existingTbl models.TimeTable
-		err := database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"Name": name}).Decode(&existingTbl)
+		err := database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"name": name}).Decode(&existingTbl)
 
 		if err == nil {
 			// Table with the same name already exists
@@ -55,14 +53,36 @@ func tblHandler(cg *gin.RouterGroup) {
 			Days: days,
 		}
 
-		_, err = database.MongoDB.Collection("TimeTable").InsertOne(c, newTable, options.InsertOne())
+		result, err := database.MongoDB.Collection("TimeTable").InsertOne(c, newTable, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable", "id": result.InsertedID})
+	})
 
+	cg.GET("/", func(c *gin.Context) {
+		type TimeTableResponse struct {
+			ID   primitive.ObjectID `json:"id" bson:"_id"`
+			Name string             `json:"name" bson:"name"`
+		}
+
+		var timetables []TimeTableResponse
+		opts := options.Find().SetProjection(bson.M{"name": 1, "_id": 1})
+		cursor, err := database.MongoDB.Collection("TimeTable").Find(c, bson.M{}, opts)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		if err = cursor.All(c, &timetables); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"msg": "Fetched timetables", "data": timetables})
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {
@@ -84,7 +104,7 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, timetable)
+		c.JSON(http.StatusOK, gin.H{"msg": "Fetched timetable", "data": timetable})
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {
@@ -116,20 +136,18 @@ func tblHandler(cg *gin.RouterGroup) {
 		}
 
 		update := bson.M{}
-		if requestBody.Name == "" {
-			update["name"] = existingtbl.Name
-		} else {
+		if requestBody.Name != "" {
 			update["name"] = requestBody.Name
 		}
 
-		if requestBody.Days == nil {
-			update["days"] = existingtbl.Days
-		} else {
+		if requestBody.Days != nil && !core.ContainsNilObjectID(requestBody.Days) && len(requestBody.Days) != 0 {
 			update["days"] = requestBody.Days
 		}
 
-		lastUpdated := core.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime))
-		update["lastUpdated"] = lastUpdated
+		if len(update) > 0 {
+			lastUpdated := core.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime))
+			update["lastUpdated"] = lastUpdated
+		}
 
 		result, err := database.MongoDB.Collection("TimeTable").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
 		if err != nil {
@@ -139,10 +157,11 @@ func tblHandler(cg *gin.RouterGroup) {
 		}
 
 		if result.ModifiedCount == 0 {
-			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "TimeTable not found"})
-			log.Println("Error: TimeTable not found")
+			c.JSON(http.StatusNotModified, gin.H{"msg": "Nothing was updated", "error": "No data provided to update"})
+			log.Println("Warning: No data provided to update the TimeTable")
 			return
 		}
+
 		var updatedTimetable models.TimeTable
 		err = database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{"_id": objectID}).Decode(&updatedTimetable)
 		if err != nil {
@@ -151,7 +170,7 @@ func tblHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, updatedTimetable)
+		c.JSON(http.StatusOK, gin.H{"msg": "TimeTable updated successfully", "data": updatedTimetable})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {
@@ -162,6 +181,16 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
+
+		// Delete all TimeTableDays and TimeSlots associated with the TimeTable
+		timeTableDaysIDs := getAllTimeTableDays(objectID)
+		for _, dayID := range timeTableDaysIDs {
+			for _, timeSlotID := range getAllTimeSlots(dayID) {
+				deleteTimeSlot(timeSlotID)
+			}
+			deleteTimeTableDay(dayID)
+		}
+
 		result, err := database.MongoDB.Collection("TimeTable").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
