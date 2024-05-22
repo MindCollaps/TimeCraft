@@ -2,45 +2,32 @@
 {{define "metaDescription"}}Time Craft, your way of creating smart timetables{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-    <body class="vw-100 vh-100" style="background-color:#DFEBF2">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        div#banner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: #0288D1;
-            width: 100%;
-            height: 100px;
-            box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
-        }
-        div#banner-content{
-            display: flex;
-            align-items: center;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 40px;
-            margin-left: 50px;
-        }
-        span#heading{
-            margin-left: 20px;
-        }
-    </style>
-    <div id="banner">
-        <div id="banner-content">
-            <img src="assets/static/New Logo White.png" height="45" width="50" alt="Bild konnte nicht angezeigt werden."
-            <span id="heading">
-                <b>Timecraft</b>
-            </span>
+    <body style="background-color:#DFEBF2;">
+    <div id="banner" class="d-flex align-items-center justify-content-between" style="background-color: #0288D1; height: 100px; box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);">
+        <div id="banner-content" class="d-flex align-items-center text-white fs-1 ms-3">
+            <img src="assets/static/New Logo White.png" alt="Bild konnte nicht angezeigt werden." height="45" width="50">
+            <span id="heading"><b>Timecraft</b></span>
+        </div>
+        <div id="banner-right" class="d-flex align-items-center me-3">
+            <a href="#" class="text-white" style="font-weight: normal;">Time Table</a>
+            <a href="#" class="text-white" style="font-weight: normal;">Favorite List</a>
+            <a href="#" class="text-white" style="font-weight: bold;">Pick List</a>
         </div>
     </div>
+    <div class="container">
+        <ul class="list-group mt-5" style="display: flex; flex-direction: column; align-items: center; width: 300px;">
+            <li class="list-group-item" style="text-align: center;">An item</li>
+            <li class="list-group-item" style="text-align: center;">A second item</li>
+            <li class="list-group-item" style="text-align: center;">A third item</li>
+            <li class="list-group-item" style="text-align: center;">A fourth item</li>
+            <li class="list-group-item" style="text-align: center;">And a fifth one</li>
+        </ul>
+    </div>
+
     </body>
+
+
+
+
     {{template "botdoc"}}
 {{end}}
