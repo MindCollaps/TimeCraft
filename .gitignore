@@ -188,3 +188,6 @@ cython_debug/
 .idea/
 *.old
 .vscode/
+
+# Optimierungs json-Dateien
+!scripts/Optimierungsskripte/*
