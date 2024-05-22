@@ -62,6 +62,29 @@ func tblHandler(cg *gin.RouterGroup) {
 		c.JSON(http.StatusOK, gin.H{"msg": "Created Timetable", "id": result.InsertedID})
 	})
 
+	cg.GET("/", func(c *gin.Context) {
+		type TimeTableResponse struct {
+			ID   primitive.ObjectID `json:"id" bson:"_id"`
+			Name string             `json:"name" bson:"name"`
+		}
+
+		var timetables []TimeTableResponse
+		opts := options.Find().SetProjection(bson.M{"name": 1, "_id": 1})
+		cursor, err := database.MongoDB.Collection("TimeTable").Find(c, bson.M{}, opts)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		if err = cursor.All(c, &timetables); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		
+		c.JSON(http.StatusOK, timetables)
+	})
+
 	cg.GET("/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)
@@ -158,6 +181,16 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
+
+		// Delete all TimeTableDays and TimeSlots associated with the TimeTable
+		timeTableDaysIDs := getAllTimeTableDays(objectID)
+		for _, dayID := range timeTableDaysIDs {
+			for _, timeSlotID := range getAllTimeSlots(dayID) {
+				deleteTimeSlot(timeSlotID)
+			}
+			deleteTimeTableDay(dayID)
+		}
+
 		result, err := database.MongoDB.Collection("TimeTable").DeleteOne(c, bson.M{"_id": objectID})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})

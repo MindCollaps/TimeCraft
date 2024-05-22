@@ -14,12 +14,11 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/rmc/...
 func rmcHandler(cg *gin.RouterGroup) {
-	//    /api/v1/rmc/...
 	cg.POST("/", func(c *gin.Context) {
 
 		var requestBody struct {
-			ID             primitive.ObjectID   `json:"id" binding:"required"`
 			Name           string               `json:"name" binding:"required"`
 			RoomNr         string               `json:"roomNr" binding:"required"`
 			Capacity       int                  `json:"capacity" binding:"required"`
@@ -105,7 +104,6 @@ func rmcHandler(cg *gin.RouterGroup) {
 		err = database.MongoDB.Collection("RoomConfig").FindOne(c, bson.M{"_id": objectID}).Decode(&existingrmc)
 
 		var requestBody struct {
-			ID             primitive.ObjectID   `json:"id"`
 			Name           string               `json:"name"`
 			RoomNr         string               `json:"roomNr"`
 			Capacity       int                  `json:"capacity"`

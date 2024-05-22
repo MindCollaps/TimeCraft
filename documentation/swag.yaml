@@ -364,6 +364,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+    get:
+      summary: Get all timetables
+      description: Get a list of all available timetables
+      tags:
+        - Timetable
+      security:
+        - session_key: []
+        - api_key: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /tbl/{id}:
     get:
       summary: Get timetable by ID
@@ -500,6 +533,39 @@ paths:
       responses:
         '200':
           description: SemesterGroup created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    get:
+      summary: Get all semester groups
+      description: Get a list of all available semester groups
+      tags:
+        - Semester Group
+      security:
+        - session_key: []
+        - api_key: []
+      responses:
+        '200':
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -1289,7 +1355,6 @@ paths:
               application/json:
                 schema:
                   $ref: '#/components/schemas/InternalServerError'
-
   /tsl:
     post:
       summary: Create TimeSlot
@@ -1330,7 +1395,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
-
   /tsl/{id}:
     get:
       summary: Get TimeSlot by ID
@@ -1449,7 +1513,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
-
   /rmc:
     post:
       summary: Create RoomConfig
@@ -1490,7 +1553,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
-
   /rmc/{id}:
     get:
       summary: Get RoomConfig by ID
@@ -1609,7 +1671,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
-
   /rms:
     post:
       summary: Create RoomSpecialisation
@@ -1650,7 +1711,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
-
   /rms/{id}:
     get:
       summary: Get RoomSpecialisation by ID
@@ -1769,6 +1829,233 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+  /ical/tbl/{id}:
+    post:
+      summary: Create iCal from a specific TimeTable
+      description: Create a new iCal from a specific TimeTable using its ID
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      responses:
+        '200':
+          description: iCal successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    get:
+      summary: Get existing iCal by TimeTable ID
+      description: Get an existing iCal calendar by the TimeTable ID
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /ical:
+    get:
+      summary: Get all iCals
+      description: Get a list of all available iCals
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'    
+  /ical/{id}:
+    get:
+      summary: Get iCal by ID
+      description: Get an iCal by its ID
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    
+    patch:
+      summary: Update iCal by ID
+      description: Update an iCal
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSlot'
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete iCal by ID
+      description: Delete an iCal
+      tags:
+        - iCal
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
 
 components:
   securitySchemes:
