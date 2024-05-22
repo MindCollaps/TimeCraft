@@ -18,10 +18,9 @@ import (
 func sgrpHandler(cg *gin.RouterGroup) {
 	cg.POST("/", func(c *gin.Context) {
 		var requestBody struct {
-			Name               string               `json:"name" binding:"required"`
-			StudentGroupIds    []primitive.ObjectID `json:"studentGroupIds" binding:"required"`
-			TimeTableId        primitive.ObjectID   `json:"timeTableId" binding:"required"`
-			SpecialisationsIds []primitive.ObjectID `json:"specialisationsIds" binding:"required"`
+			Name            string               `json:"name" binding:"required"`
+			StudentGroupIds []primitive.ObjectID `json:"studentGroupIds" binding:"required"`
+			TimeTableId     primitive.ObjectID   `json:"timeTableId" binding:"required"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -32,7 +31,6 @@ func sgrpHandler(cg *gin.RouterGroup) {
 
 		name := requestBody.Name
 		studentGroupIds := requestBody.StudentGroupIds
-		specialisationsIds := requestBody.SpecialisationsIds
 
 		var existingSgrp models.SemesterGroup
 		err := database.MongoDB.Collection("SemesterGroup").FindOne(c, bson.M{"name": name}).Decode(&existingSgrp)
@@ -50,11 +48,10 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		newSemesterGroup := models.SemesterGroup{
-			ID:                 primitive.NewObjectID(),
-			Name:               name,
-			StudentGroupIds:    studentGroupIds,
-			TimeTableId:        primitive.NewObjectID(),
-			SpecialisationsIds: specialisationsIds,
+			ID:              primitive.NewObjectID(),
+			Name:            name,
+			StudentGroupIds: studentGroupIds,
+			TimeTableId:     primitive.NewObjectID(),
 		}
 
 		_, err = database.MongoDB.Collection("SemesterGroup").InsertOne(c, newSemesterGroup, options.InsertOne())
@@ -106,10 +103,9 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		}
 
 		var requestBody struct {
-			Name               string               `json:"name"`
-			StudentGroupIds    []primitive.ObjectID `json:"studentGroupIds"`
-			TimeTableId        *primitive.ObjectID  `json:"timeTableId"`
-			SpecialisationsIds []primitive.ObjectID `json:"specialisationsIds"`
+			Name            string               `json:"name"`
+			StudentGroupIds []primitive.ObjectID `json:"studentGroupIds"`
+			TimeTableId     *primitive.ObjectID  `json:"timeTableId"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -129,10 +125,6 @@ func sgrpHandler(cg *gin.RouterGroup) {
 
 		if requestBody.TimeTableId != nil && *requestBody.TimeTableId != primitive.NilObjectID {
 			update["timeTableId"] = requestBody.TimeTableId
-		}
-
-		if requestBody.SpecialisationsIds != nil && !core.ContainsNilObjectID(requestBody.SpecialisationsIds) && len(requestBody.SpecialisationsIds) != 0 {
-			update["specialisationsIds"] = requestBody.SpecialisationsIds
 		}
 
 		result, err := database.MongoDB.Collection("SemesterGroup").UpdateOne(c, bson.M{"_id": objectID}, bson.M{"$set": update})
