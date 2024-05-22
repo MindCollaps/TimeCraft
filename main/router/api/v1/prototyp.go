@@ -321,7 +321,6 @@ func parseJson(data ExcelJson, c *gin.Context) {
 		SemesterGroup.Name = header.SemesterGroup
 		SemesterGroup.TimeTableId = TimeTable.ID
 		SemesterGroup.StudentGroupIds = []primitive.ObjectID{StudentGroupID}
-		// TODO: SemesterGroup.SpecialisationsIds
 
 		saveSemesterGroup(SemesterGroup)
 	} else {
