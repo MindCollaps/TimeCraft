@@ -8,19 +8,17 @@ import (
 )
 
 type SemesterGroup struct {
-	ID                 primitive.ObjectID   `json:"id" bson:"_id"`
-	Name               string               `json:"name" bson:"name"`
-	StudentGroupIds    []primitive.ObjectID `json:"studentGroupIds" bson:"studentGroupIds"`
-	TimeTableId        primitive.ObjectID   `json:"timeTableId" bson:"timeTableId"`
-	SpecialisationsIds []primitive.ObjectID `json:"specialisationsIds" bson:"specialisationsIds"`
+	ID              primitive.ObjectID   `json:"id" bson:"_id"`
+	Name            string               `json:"name" bson:"name"`
+	StudentGroupIds []primitive.ObjectID `json:"studentGroupIds" bson:"studentGroupIds"`
+	TimeTableId     primitive.ObjectID   `json:"timeTableId" bson:"timeTableId"`
 }
 
 type SemesterGroupStruct struct {
-	ID                 string               `json:"id" bson:"_id"`
-	Name               string               `json:"name" bson:"name"`
-	StudentGroupIds    []StudentGroupStruct `json:"studentGroupIds" bson:"studentGroupIds"`
-	TimeTableId        TimeTableStruct      `json:"timeTableId" bson:"timeTableId"`
-	SpecialisationsIds []StudentGroupStruct `json:"specialisationsIds" bson:"specialisationsIds"`
+	ID              string               `json:"id" bson:"_id"`
+	Name            string               `json:"name" bson:"name"`
+	StudentGroupIds []StudentGroupStruct `json:"studentGroupIds" bson:"studentGroupIds"`
+	TimeTableId     TimeTableStruct      `json:"timeTableId" bson:"timeTableId"`
 }
 
 func SemesterGroupToStruct(c *gin.Context, semesterGroup SemesterGroup) (SemesterGroupStruct, error) {
@@ -37,14 +35,6 @@ func SemesterGroupToStruct(c *gin.Context, semesterGroup SemesterGroup) (Semeste
 	}
 
 	semesterGroupStruct.StudentGroupIds = studentGroups
-
-	// Convert SpecialisationsIds to []RoomSpecialisationStruct
-	specialisations, err := LoadStudentGroups(c, semesterGroup.SpecialisationsIds)
-	if err != nil {
-		return SemesterGroupStruct{}, err
-	}
-
-	semesterGroupStruct.SpecialisationsIds = specialisations
 
 	// Load TimeTableId
 	if !semesterGroup.TimeTableId.IsZero() {

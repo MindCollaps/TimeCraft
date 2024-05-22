@@ -19,7 +19,6 @@ func lgrpHandler(cg *gin.RouterGroup) {
 	cg.POST("/", func(c *gin.Context) {
 		//check body for name and timeTableId
 		var requestBody struct {
-			Id          primitive.ObjectID `json:"id" binding:"required"`
 			Name        string             `json:"name" binding:"required"`
 			TimeTableId primitive.ObjectID `json:"timeTableId" binding:"required"`
 		}
@@ -54,13 +53,13 @@ func lgrpHandler(cg *gin.RouterGroup) {
 			TimeTableId: timeTableId,
 		}
 
-		_, err = database.MongoDB.Collection("LectureGroup").InsertOne(c, newLectureGroup, options.InsertOne())
+		result, err := database.MongoDB.Collection("LectureGroup").InsertOne(c, newLectureGroup, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"msg": "Created LectureGroup"})
+		c.JSON(http.StatusOK, gin.H{"msg": "Created LectureGroup", "id": result.InsertedID})
 
 	})
 
