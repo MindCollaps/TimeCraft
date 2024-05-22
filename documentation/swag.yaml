@@ -19,6 +19,9 @@ paths:
     post:
       summary: Import API
       description: Used to import a timetable from an json file
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
       tags:
         - Import
       requestBody:
@@ -147,6 +150,9 @@ paths:
     post:
       summary: Import API
       description: Used to import a timetable from an excel file
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
       tags:
         - Import
       requestBody:
@@ -329,6 +335,9 @@ paths:
     post:
       summary: Add favorite TimeTable
       description: Used to add a TimeTable to the users favorites
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
       tags:
         - User
       requestBody:
