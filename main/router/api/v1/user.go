@@ -154,8 +154,8 @@ func userHandler(cg *gin.RouterGroup) {
 
 	cg.POST("/favor", func(c *gin.Context) {
 		var requestBody struct {
-			UserID      string `json:"userId" binding:"required"`
-			TimeTableID string `json:"timeTableId" binding:"required"`
+			UserID      primitive.ObjectID `json:"userId" binding:"required"`
+			TimeTableID primitive.ObjectID `json:"timeTableId" binding:"required"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -163,22 +163,20 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		userID, err := primitive.ObjectIDFromHex(requestBody.UserID)
-		if err != nil {
+		if requestBody.UserID == primitive.NilObjectID {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid userID"})
 			return
 		}
 
-		timeTableID, err := primitive.ObjectIDFromHex(requestBody.TimeTableID)
-		if err != nil {
+		if requestBody.TimeTableID == primitive.NilObjectID {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid timeTableID"})
 			return
 		}
 
 		var user bson.M
-		err = database.MongoDB.Collection("user").FindOne(
+		err := database.MongoDB.Collection("user").FindOne(
 			c,
-			bson.M{"_id": userID, "staredTimeTableIds": timeTableID},
+			bson.M{"_id": requestBody.UserID, "staredTimeTableIds": requestBody.TimeTableID},
 		).Decode(&user)
 		if err == nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Favorite already exists"})
@@ -187,8 +185,8 @@ func userHandler(cg *gin.RouterGroup) {
 
 		result, err := database.MongoDB.Collection("user").UpdateOne(
 			c,
-			bson.M{"_id": userID},
-			bson.M{"$addToSet": bson.M{"staredTimeTableIds": timeTableID}},
+			bson.M{"_id": requestBody.UserID},
+			bson.M{"$addToSet": bson.M{"staredTimeTableIds": requestBody.TimeTableID}},
 		)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
@@ -205,8 +203,8 @@ func userHandler(cg *gin.RouterGroup) {
 
 	cg.DELETE("/favor", func(c *gin.Context) {
 		var requestBody struct {
-			UserID      string `json:"userId" binding:"required"`
-			TimeTableID string `json:"timeTableId" binding:"required"`
+			UserID      primitive.ObjectID `json:"userId" binding:"required"`
+			TimeTableID primitive.ObjectID `json:"timeTableId" binding:"required"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -214,22 +212,20 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		userID, err := primitive.ObjectIDFromHex(requestBody.UserID)
-		if err != nil {
+		if requestBody.UserID == primitive.NilObjectID {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid userID"})
 			return
 		}
 
-		timeTableID, err := primitive.ObjectIDFromHex(requestBody.TimeTableID)
-		if err != nil {
+		if requestBody.TimeTableID == primitive.NilObjectID {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid timeTableID"})
 			return
 		}
 
 		var user bson.M
-		err = database.MongoDB.Collection("user").FindOne(
+		err := database.MongoDB.Collection("user").FindOne(
 			c,
-			bson.M{"_id": userID},
+			bson.M{"_id": requestBody.UserID},
 		).Decode(&user)
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "User not found"})
@@ -238,7 +234,7 @@ func userHandler(cg *gin.RouterGroup) {
 
 		err = database.MongoDB.Collection("user").FindOne(
 			c,
-			bson.M{"_id": userID, "staredTimeTableIds": timeTableID},
+			bson.M{"_id": requestBody.UserID, "staredTimeTableIds": requestBody.TimeTableID},
 		).Decode(&user)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Favorite not found"})
@@ -247,8 +243,8 @@ func userHandler(cg *gin.RouterGroup) {
 
 		result, err := database.MongoDB.Collection("user").UpdateOne(
 			c,
-			bson.M{"_id": userID},
-			bson.M{"$pull": bson.M{"staredTimeTableIds": timeTableID}},
+			bson.M{"_id": requestBody.UserID},
+			bson.M{"$pull": bson.M{"staredTimeTableIds": requestBody.TimeTableID}},
 		)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
