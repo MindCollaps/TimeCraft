@@ -13,13 +13,12 @@ import (
 	"src/main/database/models"
 )
 
+// /api/v1/rms/...
 func rmsHandler(cg *gin.RouterGroup) {
-	//    /api/v1/rms/...
 	cg.POST("/", func(c *gin.Context) {
 
 		var requestBody struct {
-			ID   primitive.ObjectID `json:"id" binding:"required"`
-			Name string             `json:"name" binding:"required"`
+			Name string `json:"name" binding:"required"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {

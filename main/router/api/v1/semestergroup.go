@@ -88,6 +88,22 @@ func sgrpHandler(cg *gin.RouterGroup) {
 		c.JSON(http.StatusOK, semestergroup)
 	})
 
+	cg.GET("/", func(c *gin.Context) {
+		var semestergroups []models.SemesterGroup
+		cursor, err := database.MongoDB.Collection("SemesterGroup").Find(c, bson.M{})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		if err = cursor.All(c, &semestergroups); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
+			log.Println(err)
+			return
+		}
+		c.JSON(http.StatusOK, semestergroups)
+	})
+
 	cg.PATCH("/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		objectID, err := primitive.ObjectIDFromHex(id)

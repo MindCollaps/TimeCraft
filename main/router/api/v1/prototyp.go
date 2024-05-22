@@ -204,7 +204,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	var Name string
 	var TimeTableDays []primitive.ObjectID
 	var TimeTable models.TimeTable
-	var SemsterGroup models.SemesterGroup
+	var SemesterGroup models.SemesterGroup
 	var StudentGroup models.StudentGroup
 	var updateExistingTimeTable bool
 	var ExistingTimeTableId primitive.ObjectID
@@ -218,14 +218,15 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	if updateExistingTimeTable && ExistingTimeTableId != primitive.NilObjectID {
 		log.Println(fmt.Sprintf("found existing timetable '%s' with %s", Name, ExistingTimeTableId))
 
+		lastChangedTest := core.ConvertToLocalTimeObject(LastChanged)
+		lastModified := core.ConvertToLocalTimeObject(getTimetableLastUpdated(ExistingTimeTableId))
+		log.Println(fmt.Sprintf("lastChangedTest: %s, lastModified: %s", lastChangedTest, lastModified))
+
 		if LastChanged <= getTimetableLastUpdated(ExistingTimeTableId) {
 			c.JSON(http.StatusNotModified, gin.H{"msg": "no changes - timetable is already up2date"})
 			return
 		}
 	}
-
-	SemsterGroup.Name = header.SemesterGroup
-	StudentGroup.Name = header.StudentGroup
 
 	for index, element := range data {
 		if index == 0 {
@@ -252,7 +253,7 @@ func parseJson(data ExcelJson, c *gin.Context) {
 					continue
 				}
 
-				startTime, endTime := getStartAndEndTime(lesson.Time)
+				startTime, endTime := getStartAndEndTime(day.Date, lesson.Time)
 				timeslot := models.TimeSlot{
 					ID:              primitive.NewObjectID(),
 					Name:            lesson.Name,
@@ -290,7 +291,6 @@ func parseJson(data ExcelJson, c *gin.Context) {
 				deleteTimeSlot(timeSlotID)
 			}
 			deleteTimeTableDay(dayID)
-			StudentGroup.TimeTableId = TimeTable.ID
 		}
 	} else {
 		TimeTable.ID = primitive.NewObjectID()
@@ -300,8 +300,38 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	TimeTable.Days = TimeTableDays
 	TimeTable.LastUpdated = LastChanged
 
-	var studentGroupIDs = []primitive.ObjectID{saveStudentGroup(StudentGroup.Name, TimeTable.ID)}
-	saveSemsterGroup(SemsterGroup.Name, TimeTable.ID, studentGroupIDs)
+	var StudentGroupID primitive.ObjectID
+	err, ExistingStudentGroupID := getStudentGroup(header.StudentGroup)
+	if err != nil {
+		// create new StudentGroup
+		StudentGroup.ID = primitive.NewObjectID()
+		StudentGroup.Name = header.StudentGroup
+		StudentGroup.TimeTableId = TimeTable.ID
+		// TODO: StudentGroup.LectureGroupIds
+
+		StudentGroupID = saveStudentGroup(StudentGroup)
+	} else {
+		// Use the existing StudentGroup
+		StudentGroupID = ExistingStudentGroupID
+	}
+
+	err, existingSemesterGroup := getSemesterGroup(header.SemesterGroup)
+	if err != nil {
+		SemesterGroup.ID = primitive.NewObjectID()
+		SemesterGroup.Name = header.SemesterGroup
+		SemesterGroup.TimeTableId = TimeTable.ID
+		SemesterGroup.StudentGroupIds = []primitive.ObjectID{StudentGroupID}
+		// TODO: SemesterGroup.SpecialisationsIds
+
+		saveSemesterGroup(SemesterGroup)
+	} else {
+		err := checkStudentGroupIDsInSemesterGroup(StudentGroupID)
+
+		if err != nil {
+			existingSemesterGroup.StudentGroupIds = append(existingSemesterGroup.StudentGroupIds, StudentGroupID)
+			updateSemesterGroup(existingSemesterGroup)
+		}
+	}
 
 	var id primitive.ObjectID
 	if updateExistingTimeTable {
@@ -324,6 +354,12 @@ func parseJson(data ExcelJson, c *gin.Context) {
 	}
 }
 
+func checkStudentGroupIDsInSemesterGroup(studentGroupID primitive.ObjectID) error {
+	var semesterGroup models.SemesterGroup
+	err := database.MongoDB.Collection("SemesterGroup").FindOne(context.Background(), bson.M{"studentGroupIds": studentGroupID}).Decode(&semesterGroup)
+	return err
+}
+
 func getLastChanged(input string) primitive.DateTime {
 	if strings.HasPrefix(input, "Stand: ") {
 		input = strings.TrimPrefix(input, "Stand: ")
@@ -332,13 +368,15 @@ func getLastChanged(input string) primitive.DateTime {
 	return core.ConvertToDateTime("02.01.2006", input)
 }
 
-func getStartAndEndTime(lessonTime string) (primitive.DateTime, primitive.DateTime) {
+func getStartAndEndTime(date string, lessonTime string) (primitive.DateTime, primitive.DateTime) {
 	timeRange := strings.Split(lessonTime, "-")
 	startTimeStr := timeRange[0]
 	endTimeStr := timeRange[1]
 
-	startTimeStr = "2020-01-01 " + startTimeStr + ":00"
-	endTimeStr = "2020-01-01 " + endTimeStr + ":00"
+	baseDate := strings.Split(date, "00:00:00")[0]
+
+	startTimeStr = baseDate + startTimeStr + ":00"
+	endTimeStr = baseDate + endTimeStr + ":00"
 
 	startTime := core.ConvertToDateTime(time.DateTime, startTimeStr)
 	endTime := core.ConvertToDateTime(time.DateTime, endTimeStr)
@@ -425,36 +463,47 @@ func getTimetableLastUpdated(id primitive.ObjectID) primitive.DateTime {
 	}
 }
 
-func saveSemsterGroup(semsterGroup string, timeTableID primitive.ObjectID, studentGroupID []primitive.ObjectID) primitive.ObjectID {
-	semsterGroupObj := models.SemesterGroup{
-		ID:              primitive.NewObjectID(),
-		Name:            semsterGroup,
-		TimeTableId:     timeTableID,
-		StudentGroupIds: studentGroupID,
-	}
+func getSemesterGroup(name string) (error, models.SemesterGroup) {
+	var semesterGroup models.SemesterGroup
+	err := database.MongoDB.Collection("SemesterGroup").FindOne(context.Background(), bson.M{"name": name}).Decode(&semesterGroup)
 
-	_, err := database.MongoDB.Collection("SemsterGroup").InsertOne(context.Background(), semsterGroupObj)
 	if err != nil {
-		log.Println("Error creating new SemsterGroup:", err)
-		return primitive.NilObjectID
+		// log.Println("Error getting semesterGroup:", err)
+		return err, models.SemesterGroup{}
 	} else {
-		return semsterGroupObj.ID
+		return nil, semesterGroup
 	}
 }
 
-func saveStudentGroup(studentGroup string, timeTableID primitive.ObjectID) primitive.ObjectID {
-	studentGroupObj := models.StudentGroup{
-		ID:          primitive.NewObjectID(),
-		Name:        studentGroup,
-		TimeTableId: timeTableID,
-	}
+func getStudentGroup(name string) (error, primitive.ObjectID) {
+	var studentGroup models.StudentGroup
+	err := database.MongoDB.Collection("StudentGroup").FindOne(context.Background(), bson.M{"name": name}).Decode(&studentGroup)
 
-	_, err := database.MongoDB.Collection("StudentGroup").InsertOne(context.Background(), studentGroupObj)
+	if err != nil {
+		// log.Println("Error getting studentGroup:", err)
+		return err, primitive.NilObjectID
+	} else {
+		return nil, studentGroup.ID
+	}
+}
+
+func saveSemesterGroup(semesterGroup models.SemesterGroup) primitive.ObjectID {
+	_, err := database.MongoDB.Collection("SemesterGroup").InsertOne(context.Background(), semesterGroup)
+	if err != nil {
+		log.Println("Error creating new SemesterGroup:", err)
+		return primitive.NilObjectID
+	} else {
+		return semesterGroup.ID
+	}
+}
+
+func saveStudentGroup(studentGroup models.StudentGroup) primitive.ObjectID {
+	_, err := database.MongoDB.Collection("StudentGroup").InsertOne(context.Background(), studentGroup)
 	if err != nil {
 		log.Println("Error creating new StudentGroup:", err)
 		return primitive.NilObjectID
 	} else {
-		return studentGroupObj.ID
+		return studentGroup.ID
 	}
 }
 
@@ -541,6 +590,17 @@ func updateTimeTable(timeTable models.TimeTable) primitive.ObjectID {
 	} else {
 		return timeTable.ID
 	}
+}
+
+func updateSemesterGroup(semesterGroup models.SemesterGroup) primitive.ObjectID {
+	_, err := database.MongoDB.Collection("SemesterGroup").ReplaceOne(context.Background(), bson.M{"_id": semesterGroup.ID}, semesterGroup)
+	if err != nil {
+		log.Println("Error updating semesterGroup:", err)
+		return primitive.NilObjectID
+	} else {
+		return semesterGroup.ID
+	}
+
 }
 
 func deleteTimeTableDay(id primitive.ObjectID) {

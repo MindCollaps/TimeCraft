@@ -24,11 +24,17 @@ func ConvertToDateTime(layout string, input string) primitive.DateTime {
 	if err != nil {
 		log.Println("Error parsing time:", err)
 	}
-	return primitive.DateTime(primitive.NewDateTimeFromTime(parsedTime))
+	return primitive.NewDateTimeFromTime(parsedTime)
 }
 
-func ConvertToLocalTime(layout string, input primitive.DateTime) string {
+func ConvertToLocalTimeFormat(layout string, input primitive.DateTime) string {
 	//set timezone to local
 	timezone := getTimeZone()
 	return input.Time().In(timezone).Format(layout)
+}
+
+func ConvertToLocalTimeObject(input primitive.DateTime) time.Time {
+	//set timezone to local
+	timezone := getTimeZone()
+	return input.Time().In(timezone)
 }
