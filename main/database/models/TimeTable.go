@@ -43,10 +43,10 @@ func TimeTableToStruct(c *gin.Context, timeTable TimeTable) (TimeTableStruct, er
 
 func LoadTimeTables(c *gin.Context, timeTableIDs []primitive.ObjectID) ([]TimeTableStruct, error) {
 	var timeTablesStruct []TimeTableStruct
-	for _, timeTableID := range timeTableIDs {
+	for _, timeTableId := range timeTableIDs {
 		var timeTable TimeTable
 		err := database.MongoDB.Collection("TimeTable").FindOne(c, bson.M{
-			"_id": timeTableID,
+			"_id": timeTableId,
 		}).Decode(&timeTable)
 
 		if err != nil {
