@@ -28,7 +28,7 @@ func icalHandler(cg *gin.RouterGroup) {
 		}
 
 		var existingIcal models.IcalEntry
-		err = database.MongoDB.Collection("IcalEntry").FindOne(c, bson.M{"name": objectID}).Decode(&existingIcal)
+		err = database.MongoDB.Collection("IcalEntry").FindOne(c, bson.M{"timeTableId": objectID}).Decode(&existingIcal)
 		if err == nil {
 			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "iCal already exists"})
 			log.Println("iCal already exists")
@@ -50,11 +50,11 @@ func icalHandler(cg *gin.RouterGroup) {
 		cal := ics.NewCalendar()
 		cal.SetMethod(ics.MethodRequest)
 
-		for _, timeTableDayID := range timetable.Days {
+		for _, timeTableDayId := range timetable.Days {
 
 			// get the TimeTableDay
 			var timeTableDay models.TimeTableDay
-			err := database.MongoDB.Collection("TimeTableDay").FindOne(c, bson.M{"_id": timeTableDayID}).Decode(&timeTableDay)
+			err := database.MongoDB.Collection("TimeTableDay").FindOne(c, bson.M{"_id": timeTableDayId}).Decode(&timeTableDay)
 			if err != nil {
 				c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "TimeTableDay not found"})
 				log.Println(err)
@@ -170,7 +170,7 @@ func icalHandler(cg *gin.RouterGroup) {
 		}
 
 		var icalEntry models.IcalEntry
-		err = database.MongoDB.Collection("IcalEntry").FindOne(c, bson.M{"timeTableID": id}).Decode(&icalEntry)
+		err = database.MongoDB.Collection("IcalEntry").FindOne(c, bson.M{"timeTableId": id}).Decode(&icalEntry)
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"msg": "An error occurred", "error": "iCal not found"})
 			log.Println(err)

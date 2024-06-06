@@ -177,7 +177,7 @@ func userHandler(cg *gin.RouterGroup) {
 	cg.POST("/favor", func(c *gin.Context) {
 		var requestBody struct {
 			UserID      primitive.ObjectID `json:"userId" binding:"required"`
-			TimeTableID primitive.ObjectID `json:"timeTableId" binding:"required"`
+			TimeTableId primitive.ObjectID `json:"timeTableId" binding:"required"`
 		}
 
 		if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -190,15 +190,15 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		if requestBody.TimeTableID == primitive.NilObjectID {
-			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid timeTableID"})
+		if requestBody.TimeTableId == primitive.NilObjectID {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid timeTableId"})
 			return
 		}
 
 		var user bson.M
 		err := database.MongoDB.Collection("user").FindOne(
 			c,
-			bson.M{"_id": requestBody.UserID, "staredTimeTableIds": requestBody.TimeTableID},
+			bson.M{"_id": requestBody.UserID, "staredTimeTableIds": requestBody.TimeTableId},
 		).Decode(&user)
 		if err == nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Favorite already exists"})
@@ -208,7 +208,7 @@ func userHandler(cg *gin.RouterGroup) {
 		result, err := database.MongoDB.Collection("user").UpdateOne(
 			c,
 			bson.M{"_id": requestBody.UserID},
-			bson.M{"$addToSet": bson.M{"staredTimeTableIds": requestBody.TimeTableID}},
+			bson.M{"$addToSet": bson.M{"staredTimeTableIds": requestBody.TimeTableId}},
 		)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database error"})
