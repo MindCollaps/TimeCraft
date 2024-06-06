@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"src/main/core/utils"
 	"src/main/database"
 	"time"
 )
@@ -48,8 +49,8 @@ func TimeSlotToStruct(c *gin.Context, timeSlot TimeSlot) (TimeSlotStruct, error)
 	timeSlotStruct := TimeSlotStruct{
 		ID:              timeSlot.ID.Hex(),
 		Name:            timeSlot.Name,
-		TimeStart:       timeSlot.TimeStart.Time().Format(time.DateTime),
-		TimeEnd:         timeSlot.TimeEnd.Time().Format(time.DateTime),
+		TimeStart:       utils.ConvertToLocalTimeFormat(time.DateTime, timeSlot.TimeStart),
+		TimeEnd:         utils.ConvertToLocalTimeFormat(time.DateTime, timeSlot.TimeEnd),
 		IsOnline:        timeSlot.IsOnline,
 		IsReExamination: timeSlot.IsReExamination,
 		IsExam:          timeSlot.IsExam,
@@ -57,7 +58,7 @@ func TimeSlotToStruct(c *gin.Context, timeSlot TimeSlot) (TimeSlotStruct, error)
 		WasMoved:        timeSlot.WasMoved,
 		IsEvent:         timeSlot.IsEvent,
 		IsHoliday:       timeSlot.IsHoliday,
-		LastUpdated:     timeSlot.LastUpdated.Time().Format(time.DateTime),
+		LastUpdated:     utils.ConvertToLocalTimeFormat(time.DateTime, timeSlot.LastUpdated),
 	}
 
 	// Load LectureId

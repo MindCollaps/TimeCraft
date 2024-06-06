@@ -23,7 +23,7 @@
     </div>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
             var formData = new FormData();
@@ -55,8 +55,8 @@
                             message.style.color = 'green';
                         });
                     } else if (response.status === 304) {
-                            message.textContent = 'File already uploaded! TimeTable is up to date.';
-                            message.style.color = 'orange';
+                        message.textContent = 'File already uploaded! TimeTable is up to date.';
+                        message.style.color = 'orange';
                     } else {
                         return response.text().then(data => {
                             var jsonData = JSON.parse(data);

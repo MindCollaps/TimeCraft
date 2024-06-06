@@ -2,53 +2,139 @@ l{{define "title"}}WeebsKingdom{{end}}
 {{define "metaDescription"}}Welcome to TimeCraft{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-    <div id="app" class="vh-100">
-        <div class="d-flex align-items-stretch flex-column h-100">
-            <div class="d-flex justify-content-center align-items-center flex-column h-100 w-100">
-                <div>
-                    <h1 class="text-white mb-3">
-                        Register
-                    </h1>
-                    <div class="form-floating mb-3">
-                        <input v-model="username" type="text" class="form-control" id="username"
-                               placeholder="ASO" name="username">
-                        <label for="username">Username</label>
-                        <div id="helper" class="form-text">The Username should be:
-                            Between 3 and 30 characters long,
-                            contains only upper
-                            and lower case characters,
-                            . and _ (but not at the end)
-                        </div>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        div#banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #0288D1;
+            width: 100%;
+            height: 100px;
+            box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        div#banner-content {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 40px;
+            margin-left: 50px;
+        }
+
+        span#heading {
+            margin-left: 20px;
+        }
+
+        div#box {
+            position: absolute;
+            width: 600px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 2px rgb(120, 120, 120);
+            box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        div#box-heading {
+            color: black;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        div#box-form {
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        div#box-form input {
+            display: block;
+            width: calc(100% - 20px);
+            height: 33px;
+            border: 1px solid grey;
+            border-radius: 2.5px;
+            margin: 0 auto 20px;
+            padding: 8px 10px;
+            box-sizing: border-box;
+            background-color: white;
+            color: black;
+        }
+
+        div#box-form input[type="submit"] {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0288D1;
+            color: white;
+            font-size: 16px;
+            width: 200px;
+            height: 40px;
+            cursor: pointer;
+            border-radius: 20px;
+            margin: 20px auto 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+        }
+
+        div#login-link {
+            margin-top: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            color: black;
+        }
+
+        div#login-link a {
+            text-decoration: underline;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            color: black;
+        }
+
+        div#login-link a:hover {
+            text-decoration: underline;
+            color: black;
+        }
+    </style>
+
+    <div style="background-color:#DFEBF2;">
+        <div id="banner">
+            <div id="banner-content">
+                <img src="assets/static/New Logo White.png" height="45" width="50"
+                     alt="Bild konnte nicht angezeigt werden.">
+                <span id="heading"><b>Timecraft</b></span>
+            </div>
+        </div>
+
+        <div id="box">
+            <div id="box-heading">
+                <b>Sign Up</b>
+            </div>
+            <div id="box-form">
+                <form method="post" action="/api/v1/usr/register">
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <input type="password" id="passwordRepeat" name="passwordRepeat" placeholder="Confirm Password" required>
+                    <input type="submit" value="Create Account">
+                    <div id="login-link">
+                        Already got an account? Login <a href="/login"> here</a>
                     </div>
-                    <div class="form-floating mb-3">
-                        <input v-model="email" type="email" class="form-control" id="email"
-                               placeholder="ASO" name="email">
-                        <label for="email">E-Mail</label>
-                        <div id="helper" class="form-text">The Email should be:
-                            Between 5 and 50 characters long.
-                            The Email is looked up for validation.
-                        </div>
-                    </div>
-                    <div class="mb-3 form-floating">
-                        <input v-model="password1" type="password" class="form-control" id="password"
-                               placeholder="Password" @keyup.enter="register()">
-                        <label for="password">Password</label>
-                        <div id="helper" class="form-text">The Password should be:
-                            Between 8 and 50 characters long,
-                            contains only upper and lower case characters,
-                            numbers,
-                            and special characters . _ ! ? # - *
-                        </div>
-                    </div>
-                    <div class="mb-3 form-floating">
-                        <input v-model="password2" type="password" class="form-control" id="repeatPassword"
-                               placeholder="Repeat Password" @keyup.enter="register()">
-                        <label for="repeatPassword">Repeat Password</label>
-                    </div>
-                    <div class="mb-3 d-flex justify-content-center">
-                        <button @click="register()" class="btn btn-primary align-center">Register</button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>

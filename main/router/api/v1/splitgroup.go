@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
-	"src/main/core"
+	"src/main/core/utils"
 	"src/main/database"
 	"src/main/database/models"
 )
@@ -124,7 +124,7 @@ func splitgrpHandler(cg *gin.RouterGroup) {
 			update["timeTableId"] = requestBody.TimeTableId
 		}
 
-		if requestBody.SplitsStudent != nil && len(requestBody.SplitsStudent) != 0 && !core.ContainsNilObjectID(requestBody.SplitsStudent) {
+		if requestBody.SplitsStudent != nil && len(requestBody.SplitsStudent) != 0 && !utils.ContainsNilObjectID(requestBody.SplitsStudent) {
 			update["splitsStudent"] = requestBody.SplitsStudent
 		}
 

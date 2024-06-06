@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"src/main/core/utils"
 	"src/main/database"
 	"time"
 )
@@ -27,7 +28,7 @@ func TimeTableToStruct(c *gin.Context, timeTable TimeTable) (TimeTableStruct, er
 		ID:          timeTable.ID.Hex(),
 		Name:        timeTable.Name,
 		Days:        []TimeTableDayStruct{},
-		LastUpdated: timeTable.LastUpdated.Time().Format(time.DateTime),
+		LastUpdated: utils.ConvertToLocalTimeFormat(time.DateTime, timeTable.LastUpdated),
 	}
 
 	// Load TimeTableDays

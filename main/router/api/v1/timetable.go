@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
-	"src/main/core"
+	"src/main/core/utils"
 	"src/main/database"
 	"src/main/database/models"
 	"time"
@@ -81,7 +81,7 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-
+    
 		c.JSON(http.StatusOK, gin.H{"msg": "Fetched timetables", "data": timetables})
 	})
 
@@ -140,12 +140,12 @@ func tblHandler(cg *gin.RouterGroup) {
 			update["name"] = requestBody.Name
 		}
 
-		if requestBody.Days != nil && !core.ContainsNilObjectID(requestBody.Days) && len(requestBody.Days) != 0 {
+		if requestBody.Days != nil && !utils.ContainsNilObjectID(requestBody.Days) && len(requestBody.Days) != 0 {
 			update["days"] = requestBody.Days
 		}
 
 		if len(update) > 0 {
-			lastUpdated := core.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime))
+			lastUpdated := utils.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime))
 			update["lastUpdated"] = lastUpdated
 		}
 

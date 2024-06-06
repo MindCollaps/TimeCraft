@@ -1,0 +1,34 @@
+{{define "title"}}Time Craft{{end}}
+{{define "metaDescription"}}Time Craft, your way of creating smart timetables{{end}}
+{{define "content"}}
+    {{template "topdoc"}}
+    <body style="background-color:#C3E3F5;">
+    <div class="d-flex align-items-center justify-content-between"
+         style="background-color: #0288D1; height: 100px; box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);">
+        <div class="d-flex align-items-center text-white fs-1 ms-3 mx-20">
+            <img src="assets/static/New Logo White.png" alt="Bild konnte nicht angezeigt werden." height="45"
+                 width="50">
+            <p class="h1" style="margin-left: 20px">Timecraft</p>
+        </div>
+        <div class="d-flex align-items-center me-3">
+            <a href="#" class="text-white" style="font-weight: normal; margin-right: 50px">Time Table</a>
+            <a href="#" class="text-white" style="font-weight: normal;margin-right: 35px">Favorite List</a>
+            <a href="#" class="text-white" style="font-weight: bold; margin-right: 20px">Pick List</a>
+        </div>
+    </div>
+    <p class="h1" style="margin-left: 90px; font-weight: bold; margin-top: 20px; color: #404040">Benutzeransicht</p>
+    <div class="container mx-4 my-4 p-4 bg-white shadow-sm rounded">
+        <div class="user-box p-3 mb-3 bg-light rounded shadow-sm">
+            <p>Benutzer</p>
+        </div>
+        <div class="user-box p-3 mb-3 bg-light rounded shadow-sm">
+            <p>Benutzer 2</p>
+        </div>
+        <div class="user-box p-3 mb-3 bg-light rounded shadow-sm">
+            <p>Benutzer 3</p>
+        </div>
+    </div>
+
+    </body>
+    {{template "botdoc"}}
+{{end}}

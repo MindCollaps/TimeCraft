@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
-	joi "src/main/core"
+	joi "src/main/core/utils"
 	"src/main/crypt"
 	"src/main/database"
 	"src/main/database/models"
@@ -21,22 +21,22 @@ func userHandler(cg *gin.RouterGroup) {
 	cg.POST("/login", func(c *gin.Context) {
 		//check body for username and password
 		var requestBody struct {
-			Username string `json:"username" binding:"required"`
-			Password string `json:"password" binding:"required"`
+			Email    string `form:"email"  binding:"required"`
+			Password string `form:"password" binding:"required"`
 		}
 
-		if err := c.ShouldBindJSON(&requestBody); err != nil {
+		if err := c.ShouldBind(&requestBody); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
 			log.Println(err)
 			return
 		}
 
-		username := strings.ToLower(requestBody.Username)
+		email := strings.ToLower(requestBody.Email)
 		password := requestBody.Password
 
 		//check if user exists
 		var user models.User
-		err := database.MongoDB.Collection("user").FindOne(c, bson.M{"username": username}).Decode(&user)
+		err := database.MongoDB.Collection("user").FindOne(c, bson.M{"email": email}).Decode(&user)
 		//if user exists, check password using crypt
 		if err == nil {
 			if crypt.CheckPasswordHash(password, user.Password) {
@@ -51,13 +51,13 @@ func userHandler(cg *gin.RouterGroup) {
 				//set cookie with age of 2 days, setting maxAge to: 3600 * 24 * 2
 				c.SetCookie("auth", token, 3600*24*2, "/", "", false, false)
 
-				c.JSON(http.StatusOK, gin.H{"msg": "Logged in"})
+				c.Redirect(http.StatusSeeOther, "/dashboard")
 			} else {
 				c.JSON(http.StatusUnauthorized, gin.H{"msg": "An error occurred", "error": "Invalid credentials"})
 				return
 			}
 		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{"msg": "An error occurred", "error": "Database error"})
+			c.JSON(http.StatusUnauthorized, gin.H{"msg": "An error occurred", "error": "Invalid credentials"})
 			log.Println(err)
 			return
 		}
@@ -65,25 +65,18 @@ func userHandler(cg *gin.RouterGroup) {
 
 	cg.POST("/register", func(c *gin.Context) {
 		var requestBody struct {
-			Username           string `json:"username"`
-			Password           string `json:"password"`
-			Email              string `json:"email"`
-			StaredTimeTableIds []primitive.ObjectID
+			PasswordRepeat string `form:"passwordRepeat" binding:"required"`
+			Password       string `form:"password" binding:"required"`
+			Email          string `form:"email" binding:"required"`
 		}
 
-		if err := c.ShouldBindJSON(&requestBody); err != nil {
+		if err := c.ShouldBind(&requestBody); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Invalid request body"})
 			log.Println(err)
 			return
 		}
 
 		//joi validation
-		if err := joi.UsernameSchema.Validate(requestBody.Username); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Username invalid. Please follow the username rules"})
-			log.Println(err)
-			return
-		}
-
 		if err := joi.PasswordSchema.Validate(requestBody.Password); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Password invalid. Please follow the password rules"})
 			log.Println(err)
@@ -96,28 +89,18 @@ func userHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		username := strings.ToLower(requestBody.Username)
+		if requestBody.Password != requestBody.PasswordRepeat {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": "An error occurred", "error": "Passwords do not match"})
+			return
+		}
+
 		password := requestBody.Password
 		email := strings.ToLower(requestBody.Email)
 
 		// Check if the user already exists in the database by querying with the username
 		var existingUser models.User
-		err := database.MongoDB.Collection("user").FindOne(c, bson.M{"username": username}).Decode(&existingUser)
 
-		// when the user exists, there is no error --> only continue with error, because then the user doesn't exist yet
-		if err == nil {
-			c.JSON(http.StatusConflict, gin.H{"msg": "An error occurred", "error": "Username or Email already exists"})
-			log.Println("Username or Email already exists")
-			return
-		} else if !errors.Is(err, mongo.ErrNoDocuments) {
-			// Handle other database query errors
-			// mongo.ErrNoDocuments is expected when the user does not exist
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
-			log.Println(err)
-			return
-		}
-
-		err = database.MongoDB.Collection("user").FindOne(c, bson.M{"email": email}).Decode(&existingUser)
+		err := database.MongoDB.Collection("user").FindOne(c, bson.M{"email": email}).Decode(&existingUser)
 
 		// when the email exists, there is no error --> only continue with error, because then the email doesn't exist yet
 		if err == nil {
@@ -136,20 +119,19 @@ func userHandler(cg *gin.RouterGroup) {
 
 		newUser := models.User{
 			ID:                 primitive.NewObjectID(),
-			Username:           username,
 			Password:           hashedPassword,
 			Email:              email,
 			StaredTimeTableIds: []primitive.ObjectID{},
 		}
 
-		result, err := database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
+		_, err = database.MongoDB.Collection("user").InsertOne(c, newUser, options.InsertOne())
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"msg": "An error occurred", "error": "Database	error"})
 			log.Println(err)
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"msg": "Created user", "id": result.InsertedID})
+		c.Redirect(http.StatusSeeOther, "/dashboard")
 	})
 
 	// TODO: patch

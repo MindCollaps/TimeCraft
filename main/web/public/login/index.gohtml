@@ -1,74 +1,183 @@
-{{define "title"}}Time Craft{{end}}
-{{define "metaDescription"}}Time Craft, your way of creating smart timetables{{end}}
+{{define "title"}}Timecraft Login{{end}}
+{{define "metaDescription"}}Timecraft Login Page{{end}}
 {{define "content"}}
     {{template "topdoc"}}
-    <div id="app" class="d-flex justify-content-center align-items-center w-100 vh-100">
-        <div class="w-50 vh-50">
-            <div class="mb-3">
-                <label for="username" class="form-label">Email address or Username</label>
-                <input v-model="username" @keyup.enter="submit()" type="text" class="form-control" id="username"
-                       aria-describedby="emailHelp"
-                       placeholder="Email/Username" name="username">
-                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                    else.</small>
-            </div>
-            <div class="mb-3">
-                <label for="password">Password</label>
-                <input v-model="password" @keyup.enter="submit()" type="password" name="password" class="form-control"
-                       id="password"
-                       placeholder="Password">
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="Check1">
-                <label class="form-check-label" for="Check1">Remember me</label>
-            </div>
-            <div>
-                <button @click="submit()" class="btn btn-primary">Login</button>
-            </div>
-            <div>
-                <a href="/reset" type="button" class="btn btn-outline-primary">Reset Password</a>
-            </div>
-            <div>
-                <a href="/register" type="button" class="btn btn-outline-primary">Register</a>
-            </div>
+    <style>
+        body {
+            background-color: #DFEBF2;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #0288D1;
+            padding: 10px;
+            box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        #banner img {
+            height: 45px;
+            width: 50px;
+        }
+
+        #banner-content {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 40px;
+        }
+
+        span#heading {
+            margin-left: 20px;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 100px);
+            background-color: #DFEBF2;
+            padding: 20px;
+        }
+
+        .container {
+            border-radius: 5px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
+            width: 50%;
+            max-width: 400px;
+        }
+
+        .container h4 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: black
+        }
+
+        .container input[type="email"],
+        .container input[type="password"] {
+            width: 100%;
+            height: 33px;
+            margin-bottom: 10px;
+            padding: 2px 5px;
+            border-radius: 2.5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            background-color: white;
+            color: black;
+        }
+
+        .container input[type="text"]::placeholder,
+        .container input[type="password"]::placeholder {
+            font-size: 14px;
+        }
+
+        .container input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: white;
+            display: inline-block;
+            position: relative;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .container input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            width: 3px;
+            height: 8px;
+            border: solid black;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .container .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            background-color: white;
+            color: black;
+        }
+
+        .container .remember-forgot label {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .container .remember-forgot a {
+            color: black;
+            text-decoration: none;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        .button {
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: white;
+            background-color: #0288D1;
+            border: none;
+            border-radius: 50px;
+            width: 50%;
+            padding: 5px;
+            font-size: 16px;
+            display: inline-block;
+        }
+    </style>
+
+    <div id="banner">
+        <div id="banner-content">
+            <img src="/assets/static/LogoWhite.png" alt="Bild konnte nicht angezeigt werden.">
+            <span id="heading"><b>Timecraft</b></span>
         </div>
     </div>
 
-    <script>
-        var app = Vue.createApp({
-            delimiters: ['${', '}'],
-            data: () => ({
-                username: "",
-                password: "",
-            }),
-            methods: {
-                async submit() {
-                    if (this.username == '' || this.password == '') {
-                        alert('Please fill in all fields')
-                        return
-                    }
+    <div class="flex-container">
+        <div class="container">
+            <h4><b>Login</b></h4>
 
-                    let response = await fetch('/api/v1/usr/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            username: this.username,
-                            password: this.password
-                        })
-                    }).then((res) => {
-                        return res;
-                    });
+            <form method="post" action="/api/v1/usr/login">
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <input type="password" id="password" name="password" placeholder="Password" required>
 
-                    if (response.status == 200) {
-                        window.location.href = '/dashboard'
-                    } else {
-                        alert('Invalid username or password')
-                    }
-                }
-            }
-        }).mount("#app")
-    </script>
+                <div class="remember-forgot">
+                    <label>
+                        <input type="checkbox" id="remember" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <span class="psw"><a href="#figma?">Forgot password</a></span>
+                </div>
+
+                <div class="button-container">
+                    <button class="button" type="submit"><b>Login</b></button>
+                </div>
+            </form>
+
+            <div style="margin-top: 10px; text-align: center;">
+                <span><a href="/register" style="color: black;">Register here</a></span>
+
+            </div>
+        </div>
+    </div>
     {{template "botdoc"}}
 {{end}}

@@ -12,9 +12,9 @@ type User struct {
 	Email              string               `json:"email" bson:"email"`
 	Password           string               `json:"password" bson:"password"`
 	IsVerifiedEmail    bool                 `json:"isVerifiedEmail" bson:"isVerifiedEmail"`
-	Username           string               `json:"username" bson:"username"`
+	FirstName          string               `json:"firstName" bson:"firstName"`
+	LastName           string               `json:"lastName" bson:"lastName"`
 	Permissions        []primitive.ObjectID `json:"permissions" bson:"permissions"`
-	SSOToken           string               `json:"SSOToken" bson:"SSOToken"`
 	StaredTimeTableIds []primitive.ObjectID `json:"staredTimeTableIds" bson:"staredTimeTableIds"`
 }
 
@@ -23,9 +23,9 @@ type UserStruct struct {
 	Email              string             `json:"email" bson:"email"`
 	Password           string             `json:"password" bson:"password"`
 	IsVerifiedEmail    bool               `json:"isVerifiedEmail" bson:"isVerifiedEmail"`
-	Username           string             `json:"username" bson:"username"`
+	FirstName          string             `json:"firstName" bson:"firstName"`
+	LastName           string             `json:"lastName" bson:"lastName"`
 	Permissions        []PermissionStruct `json:"permissions" bson:"permissions"`
-	SSOToken           string             `json:"SSOToken" bson:"SSOToken"`
 	StaredTimeTableIds []TimeTableStruct  `json:"staredTimeTableIds" bson:"staredTimeTableIds"`
 }
 
@@ -35,8 +35,8 @@ func UserToStruct(c *gin.Context, user User) (UserStruct, error) {
 		Email:           user.Email,
 		Password:        user.Password,
 		IsVerifiedEmail: user.IsVerifiedEmail,
-		Username:        user.Username,
-		SSOToken:        user.SSOToken,
+		FirstName:       user.FirstName,
+		LastName:        user.LastName,
 	}
 
 	// Load Permissions

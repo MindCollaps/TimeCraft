@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"net/http"
-	"src/main/core"
+	"src/main/core/utils"
 	"src/main/database"
 	"src/main/database/models"
 	"time"
@@ -76,8 +76,8 @@ func icalHandler(cg *gin.RouterGroup) {
 					return
 				}
 
-				start := core.ConvertToLocalTimeObject(timeslot.TimeStart)
-				end := core.ConvertToLocalTimeObject(timeslot.TimeEnd)
+				start := utils.ConvertToLocalTimeObject(timeslot.TimeStart)
+				end := utils.ConvertToLocalTimeObject(timeslot.TimeEnd)
 				event.SetStartAt(start)
 				event.SetEndAt(end)
 				event.SetSummary(timeslot.Name)
@@ -96,7 +96,7 @@ func icalHandler(cg *gin.RouterGroup) {
 			Name:        timetable.Name,
 			Text:        icalString,
 			TimeTableId: objectID,
-			LastUpdated: core.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime)),
+			LastUpdated: utils.ConvertToDateTime(time.DateTime, time.Now().Format(time.DateTime)),
 		}
 		err = SaveIcalEntry(c, icalEntry)
 		if err != nil {

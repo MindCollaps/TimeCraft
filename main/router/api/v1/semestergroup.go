@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
-	"src/main/core"
+	"src/main/core/utils"
 	"src/main/database"
 	"src/main/database/models"
 )
@@ -135,7 +135,7 @@ func sgrpHandler(cg *gin.RouterGroup) {
 			update["name"] = requestBody.Name
 		}
 
-		if requestBody.StudentGroupIds != nil && !core.ContainsNilObjectID(requestBody.StudentGroupIds) && len(requestBody.StudentGroupIds) != 0 {
+		if requestBody.StudentGroupIds != nil && !utils.ContainsNilObjectID(requestBody.StudentGroupIds) && len(requestBody.StudentGroupIds) != 0 {
 			update["studentGroupIds"] = requestBody.StudentGroupIds
 		}
 

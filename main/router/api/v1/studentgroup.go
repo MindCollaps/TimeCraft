@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
-	"src/main/core"
+	"src/main/core/utils"
 	"src/main/database"
 	"src/main/database/models"
 )
@@ -119,7 +119,7 @@ func stgrpHandler(cg *gin.RouterGroup) {
 			update["name"] = requestBody.Name
 		}
 
-		if requestBody.LectureGroupIds != nil && !core.ContainsNilObjectID(requestBody.LectureGroupIds) && len(requestBody.LectureGroupIds) != 0 {
+		if requestBody.LectureGroupIds != nil && !utils.ContainsNilObjectID(requestBody.LectureGroupIds) && len(requestBody.LectureGroupIds) != 0 {
 			update["lectureGroupIds"] = requestBody.LectureGroupIds
 		}
 
