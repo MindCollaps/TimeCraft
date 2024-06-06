@@ -728,7 +728,7 @@ class excel_parser():
             # return the new time (like 8:00-9:00)
             return f"{start}-{time}"
         elif not "-" in value and not "Beginn" in value and not "ab" in value and not "bis" in value:
-            return f"{value}-{old_time.split("-")[1]}"  # start time is new
+            return f"{value}-{old_time.split('-')[1]}"  # start time is new
         else:
             return value
 

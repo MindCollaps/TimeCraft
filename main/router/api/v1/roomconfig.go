@@ -89,7 +89,7 @@ func rmcHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, roomconfig)
+		c.JSON(http.StatusOK, gin.H{"msg": "RoomConfig found", "data": roomconfig})
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {
@@ -159,7 +159,7 @@ func rmcHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, updatedRoomConfig)
+		c.JSON(http.StatusOK, gin.H{"msg": "RoomConfig updated", "data": updatedRoomConfig})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {

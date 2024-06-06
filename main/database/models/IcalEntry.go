@@ -11,7 +11,7 @@ type IcalEntry struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id"`
 	Name        string             `json:"name" bson:"name"`
 	Text        string             `json:"text" bson:"text"`
-	TimeTableId primitive.ObjectID `json:"timeTableID" bson:"timeTableID"`
+	TimeTableId primitive.ObjectID `json:"timeTableId" bson:"timeTableId"`
 	LastUpdated primitive.DateTime `json:"lastUpdated" bson:"lastUpdated"`
 }
 

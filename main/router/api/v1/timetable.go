@@ -81,8 +81,8 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-
-		c.JSON(http.StatusOK, timetables)
+    
+		c.JSON(http.StatusOK, gin.H{"msg": "Fetched timetables", "data": timetables})
 	})
 
 	cg.GET("/:id", func(c *gin.Context) {
@@ -104,7 +104,7 @@ func tblHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, timetable)
+		c.JSON(http.StatusOK, gin.H{"msg": "Fetched timetable", "data": timetable})
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {
@@ -170,7 +170,7 @@ func tblHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, updatedTimetable)
+		c.JSON(http.StatusOK, gin.H{"msg": "TimeTable updated successfully", "data": updatedTimetable})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {

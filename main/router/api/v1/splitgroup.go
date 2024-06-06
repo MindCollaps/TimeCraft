@@ -82,7 +82,7 @@ func splitgrpHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, existingSplitGroup)
+		c.JSON(http.StatusOK, gin.H{"msg": "SplitGroup found", "data": existingSplitGroup})
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {
@@ -153,7 +153,7 @@ func splitgrpHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, updatedSplitGroup)
+		c.JSON(http.StatusOK, gin.H{"msg": "SplitGroup updated", "data": updatedSplitGroup})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {

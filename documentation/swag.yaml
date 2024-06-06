@@ -19,6 +19,9 @@ paths:
     post:
       summary: Import API
       description: Used to import a timetable from an json file
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
       tags:
         - Import
       requestBody:
@@ -32,84 +35,84 @@ paths:
                   type: string
               example:
                 json_data: [
-                              {
-                                  "study_subject": "dIT22",
-                                  "semester_group": "S2",
-                                  "semester": "SoSe 2024",
-                                  "semester_year": "4. Semester",
-                                  "last_changed": "Stand: 19.03.2024"
-                              },
-                              {
-                                "days": [
-                                    {
-                                        "date": "2024-03-25 00:00:00",
-                                        "lessons": [
-                                            {
-                                                "time": "8:00-16:15",
-                                                "isHoliday": false,
-                                                "name": "no lesson --> freetime",
-                                                "isOnline": false,
-                                                "isReExamination": false,
-                                                "isExam": false,
-                                                "wasCanceled": false,
-                                                "wasMoved": false,
-                                                "lecturer": null,
-                                                "isEvent": false
-                                            },
-                                            {
-                                                "time": "16:30-19:45",
-                                                "isHoliday": false,
-                                                "name": "SiS",
-                                                "isOnline": false,
-                                                "isReExamination": false,
-                                                "isExam": false,
-                                                "wasCanceled": false,
-                                                "wasMoved": false,
-                                                "lecturer": null,
-                                                "isEvent": false
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "date": "2024-03-29 00:00:00",
-                                        "lessons": [
-                                            {
-                                                "time": "8:00-19:45",
-                                                "isHoliday": true,
-                                                "name": "Feiertag: Karfreitag",
-                                                "isOnline": false,
-                                                "isReExamination": false,
-                                                "isExam": false,
-                                                "wasCanceled": false,
-                                                "wasMoved": false,
-                                                "lecturer": null,
-                                                "isEvent": false
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "date": "2024-03-30 00:00:00",
-                                        "lessons": [
-                                            {
-                                                "time": "8:00-19:45",
-                                                "isHoliday": false,
-                                                "name": "no lesson --> freetime",
-                                                "isOnline": false,
-                                                "isReExamination": false,
-                                                "isExam": false,
-                                                "wasCanceled": false,
-                                                "wasMoved": false,
-                                                "lecturer": null,
-                                                "isEvent": false
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "calendarweek": 13,
-                                "start_row": 5,
-                                "end_row": 13
-                            }
+                  {
+                    "study_subject": "dIT22",
+                    "semester_group": "S2",
+                    "semester": "SoSe 2024",
+                    "semester_year": "4. Semester",
+                    "last_changed": "Stand: 19.03.2024"
+                  },
+                  {
+                    "days": [
+                      {
+                        "date": "2024-03-25 00:00:00",
+                        "lessons": [
+                          {
+                            "time": "8:00-16:15",
+                            "isHoliday": false,
+                            "name": "no lesson --> freetime",
+                            "isOnline": false,
+                            "isReExamination": false,
+                            "isExam": false,
+                            "wasCanceled": false,
+                            "wasMoved": false,
+                            "lecturer": null,
+                            "isEvent": false
+                          },
+                          {
+                            "time": "16:30-19:45",
+                            "isHoliday": false,
+                            "name": "SiS",
+                            "isOnline": false,
+                            "isReExamination": false,
+                            "isExam": false,
+                            "wasCanceled": false,
+                            "wasMoved": false,
+                            "lecturer": null,
+                            "isEvent": false
+                          }
                         ]
+                      },
+                      {
+                        "date": "2024-03-29 00:00:00",
+                        "lessons": [
+                          {
+                            "time": "8:00-19:45",
+                            "isHoliday": true,
+                            "name": "Feiertag: Karfreitag",
+                            "isOnline": false,
+                            "isReExamination": false,
+                            "isExam": false,
+                            "wasCanceled": false,
+                            "wasMoved": false,
+                            "lecturer": null,
+                            "isEvent": false
+                          }
+                        ]
+                      },
+                      {
+                        "date": "2024-03-30 00:00:00",
+                        "lessons": [
+                          {
+                            "time": "8:00-19:45",
+                            "isHoliday": false,
+                            "name": "no lesson --> freetime",
+                            "isOnline": false,
+                            "isReExamination": false,
+                            "isExam": false,
+                            "wasCanceled": false,
+                            "wasMoved": false,
+                            "lecturer": null,
+                            "isEvent": false
+                          }
+                        ]
+                      }
+                    ],
+                    "calendarweek": 13,
+                    "start_row": 5,
+                    "end_row": 13
+                  }
+                ]
       responses:
         '200':
           description: Successful operation
@@ -147,6 +150,9 @@ paths:
     post:
       summary: Import API
       description: Used to import a timetable from an excel file
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
       tags:
         - Import
       requestBody:
@@ -291,8 +297,8 @@ paths:
       tags:
         - User
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -324,6 +330,143 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
+  /usr/favor:
+    summary: favor TimeTables
+    post:
+      summary: Add favorite TimeTable
+      description: Used to add a TimeTable to the users favorites
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                timeTableId:
+                  type: string
+              example:
+                userId: 664cc3835c2cc3f523668061
+                timeTableId: 664ca57b9b2d4da7af796c52
+      responses:
+        '200':
+          description: Favorite added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /usr/favor/{id}:
+    get:
+      summary: Get favorite timetables by UserID
+      description: Get all favorite timetables for a user
+      tags:
+        - User
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Favorites found",
+                    "data": [
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ]
+                  }
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Remove a favorite timetable
+      description: Remove a timetable from the favorites
+      tags:
+        - User
+      security:
+        - session_key: []
+        - api_key: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Removed from favorites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /tbl:
     post:
       summary: Create TimeTable
@@ -331,8 +474,8 @@ paths:
       tags:
         - Timetable
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       requestBody:
         required: true
         content:
@@ -346,6 +489,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Created Timetable",
+                    "id": "66460cd79b49f6b058a7e631"
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -370,8 +519,8 @@ paths:
       tags:
         - Timetable
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       responses:
         '200':
           description: Successful operation
@@ -379,6 +528,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetables",
+                    "data": [
+                      {
+                        "id": "66460cd79b49f6b058a7e631",
+                        "name": "S1 dIT2022 4.Semester"
+                      },
+                      {
+                        "id": "664ca57b9b2d4da7af796c52",
+                        "name": "S1 dIT2022 4.Semester"
+                      },
+                      {
+                        "id": "664ca6309b2d4da7af796db8",
+                        "name": "S1 dIT2023 4.Semester"
+                      },
+                      {
+                        "id": "664cbdb7374196cb7e7c4574",
+                        "name": "S2 dIT2022 4.Semester"
+                      }
+                    ]
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -404,8 +576,8 @@ paths:
       tags:
         - Timetable
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -419,6 +591,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetable",
+                    "data": {
+                      "id": "66460cd79b49f6b058a7e631",
+                      "name": "S1 dIT2022 4.Semester",
+                      "days": [
+                        "664ca5619b2d4da7af796aea",
+                        "664ca5659b2d4da7af796af2",
+                        "664ca5669b2d4da7af796afa",
+                        "664ca5679b2d4da7af796b02",
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ],
+                      "lastUpdated": "2024-05-19T22:00:00Z"
+                    }
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -443,8 +633,8 @@ paths:
       tags:
         - Timetable
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -464,6 +654,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "TimeTable updated successfully",
+                    "data": {
+                      "id": "66460cd79b49f6b058a7e631",
+                      "name": "S1 dIT2022 4.Semester",
+                      "days": [
+                        "664ca5619b2d4da7af796aea",
+                        "664ca5659b2d4da7af796af2",
+                        "664ca5669b2d4da7af796afa",
+                        "664ca5679b2d4da7af796b02",
+                        "664ca5689b2d4da7af796b0a",
+                        "664ca5699b2d4da7af796b0e",
+                      ],
+                      "lastUpdated": "2024-05-19T22:00:00Z"
+                    }
+                  }
         '400':
           description: Request body contains errors
           content:
@@ -488,8 +696,8 @@ paths:
       tags:
         - Timetable
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -522,8 +730,8 @@ paths:
       tags:
         - Semester Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       requestBody:
         required: true
         content:
@@ -561,8 +769,8 @@ paths:
       tags:
         - Semester Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       responses:
         '200':
           description: Successful operation
@@ -596,8 +804,8 @@ paths:
       tags:
         - Semester Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -635,8 +843,8 @@ paths:
       tags:
         - Semester Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -685,8 +893,8 @@ paths:
       tags:
         - Semester Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -725,8 +933,8 @@ paths:
       tags:
         - Student Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       requestBody:
         required: true
         content:
@@ -766,8 +974,8 @@ paths:
       tags:
         - Student Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -805,8 +1013,8 @@ paths:
       tags:
         - Student Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -855,8 +1063,8 @@ paths:
       tags:
         - Student Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       parameters:
         - name: id
           in: path
@@ -889,134 +1097,134 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
   /dev/opt/model:
-      summary: Develeopment endpoint
-      get:
-        summary: Get test data
-        description: Get a list of all available timetables
-        tags:
-          - Development
-        security:
-          - session_key: []
-          - api_key: []
-        responses:
-          '200':
-            description: Successful operation
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SuccessRes'
-                examples:
-                  example1:
-                    value: {
-                      "msg": "Fetched timetables",
-                      "timetables": [
-                        "dIT22 S2 4.Semester",
-                        "test_"
-                      ]
-                    }
-          '400':
-            description: Request body contains errors
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BadRequestRes'
-          '401':
-            description: Not Authorized
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotAuthorizedRes'
-          '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
-      post:
-        summary: Get a specific timetable
-        description: Get a timetable by its name
-        tags:
-          - Development
-        security:
-          - session_key: []
-          - api_key: []
-        requestBody:
-          required: true
+    summary: Develeopment endpoint
+    get:
+      summary: Get test data
+      description: Get a list of all available timetables
+      tags:
+        - Development
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      responses:
+        '200':
+          description: Successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-                  password:
-                    type: string
-                example:
+                $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "msg": "Fetched timetables",
+                    "timetables": [
+                      "dIT22 S2 4.Semester",
+                      "test_"
+                    ]
+                  }
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      summary: Get a specific timetable
+      description: Get a timetable by its name
+      tags:
+        - Development
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
               example:
-                name: dIT22 S2 4.Semester
-        responses:
-          '200':
-            description: TimeTable created successfully
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SuccessRes'
-                examples:
-                  example1:
-                    value: {
-                      "name": "dIT22 S2 4.Semester",
-                      "lecturers": [
-                        {
-                          "lecturerName": " Stephanus",
-                          "lectures": [
-                            {
-                              "lectureName": "SiS",
-                              "amount": 7
-                            }
-                          ]
-                        },
-                        {
-                          "lecturerName": " Lobachev",
-                          "lectures": [
-                            {
-                              "lectureName": "Projekt",
-                              "amount": 15
-                            }
-                          ]
-                        },
-                        {
-                          "lecturerName": " Neumann-Brosig",
-                          "lectures": [
-                            {
-                              "lectureName": "Stat II",
-                              "amount": 5
-                            },
-                            {
-                              "lectureName": "AZ2",
-                              "amount": 5
-                            }
-                          ]
-                        }
-                      ]
-                    }
-          '400':
-            description: Request body contains errors
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BadRequestRes'
-          '401':
-            description: Not Authorized
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotAuthorizedRes'
-          '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
+            example:
+              name: dIT22 S2 4.Semester
+      responses:
+        '200':
+          description: TimeTable created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+              examples:
+                example1:
+                  value: {
+                    "name": "dIT22 S2 4.Semester",
+                    "lecturers": [
+                      {
+                        "lecturerName": " Stephanus",
+                        "lectures": [
+                          {
+                            "lectureName": "SiS",
+                            "amount": 7
+                          }
+                        ]
+                      },
+                      {
+                        "lecturerName": " Lobachev",
+                        "lectures": [
+                          {
+                            "lectureName": "Projekt",
+                            "amount": 15
+                          }
+                        ]
+                      },
+                      {
+                        "lecturerName": " Neumann-Brosig",
+                        "lectures": [
+                          {
+                            "lectureName": "Stat II",
+                            "amount": 5
+                          },
+                          {
+                            "lectureName": "AZ2",
+                            "amount": 5
+                          }
+                        ]
+                      }
+                    ]
+                  }
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /splitgrp:
     post:
       summary: Create SplitGroup
@@ -1024,8 +1232,8 @@ paths:
       tags:
         - Split Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       requestBody:
         required: true
         content:
@@ -1058,134 +1266,134 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
   /splitgrp/{id}:
-      get:
-        summary: Get split group by ID
-        description: Get the details of a student group
-        tags:
-          - Split Group
-        security:
-          - session_key: []
-          - api_key: []
-        parameters:
-          - name: id
-            in: path
-            required: true
-            schema:
-              type: string
-        responses:
-          '200':
-            description: Successful operation
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SuccessRes'
-          '400':
-            description: Request body contains errors
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BadRequestRes'
-          '401':
-            description: Not Authorized
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotAuthorizedRes'
-          '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
-      patch:
-        summary: Update split group by ID
-        description: Update the name of a student group (orga permission required)
-        tags:
-          - Split Group
-        security:
-          - session_key: []
-          - api_key: []
-        parameters:
-          - name: id
-            in: path
-            required: true
-            schema:
-              type: string
-        requestBody:
+    get:
+      summary: Get split group by ID
+      description: Get the details of a student group
+      tags:
+        - Split Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
           required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                example:
-                  name: New Split Group Name
-        responses:
-          '200':
-            description: Updated successfully
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SuccessRes'
-          '400':
-            description: Request body contains errors
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BadRequestRes'
-          '401':
-            description: Not Authorized
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotAuthorizedRes'
-          '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
-      delete:
-        summary: Delete split group by ID
-        description: Delete a Split Group (orga permission required)
-        tags:
-          - Split Group
-        security:
-          - session_key: []
-          - api_key: []
-        parameters:
-          - name: id
-            in: path
-            required: true
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update split group by ID
+      description: Update the name of a student group (orga permission required)
+      tags:
+        - Split Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
             schema:
-              type: string
-        responses:
-          '200':
-            description: Deleted successfully
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SuccessRes'
-          '400':
-            description: Request body contains errors
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BadRequestRes'
-          '401':
-            description: Not Authorized
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotAuthorizedRes'
-          '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
+              type: object
+              properties:
+                name:
+                  type: string
+              example:
+                name: New Split Group Name
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete split group by ID
+      description: Delete a Split Group (orga permission required)
+      tags:
+        - Split Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /lgrp:
     post:
       summary: Create LectureGroup
@@ -1193,8 +1401,8 @@ paths:
       tags:
         - Lecture Group
       security:
-        - session_key: []
-        - api_key: []
+        - session_key: [ ]
+        - api_key: [ ]
       requestBody:
         required: true
         content:
@@ -1227,134 +1435,134 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
   /lgrp/{id}:
-      get:
-        summary: Get Lecture Group by ID
-        description: Get the details of a student group
-        tags:
-          - Lecture Group
-        security:
-          - session_key: []
-          - api_key: []
-        parameters:
-          - name: id
-            in: path
-            required: true
-            schema:
-              type: string
-        responses:
-          '200':
-            description: Successful operation
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SuccessRes'
-          '400':
-            description: Request body contains errors
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BadRequestRes'
-          '401':
-            description: Not Authorized
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotAuthorizedRes'
-          '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
-      patch:
-        summary: Update Lecture Group by ID
-        description: Update the name of a student group (orga permission required)
-        tags:
-          - Lecture Group
-        security:
-          - session_key: []
-          - api_key: []
-        parameters:
-          - name: id
-            in: path
-            required: true
-            schema:
-              type: string
-        requestBody:
+    get:
+      summary: Get Lecture Group by ID
+      description: Get the details of a student group
+      tags:
+        - Lecture Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
           required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                example:
-                  name: New Lecture Group Name
-        responses:
-          '200':
-            description: Updated successfully
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SuccessRes'
-          '400':
-            description: Request body contains errors
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BadRequestRes'
-          '401':
-            description: Not Authorized
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotAuthorizedRes'
-          '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
-      delete:
-        summary: Delete Lecture Group by ID
-        description: Delete a Lecture Group (orga permission required)
-        tags:
-          - Lecture Group
-        security:
-          - session_key: []
-          - api_key: []
-        parameters:
-          - name: id
-            in: path
-            required: true
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      summary: Update Lecture Group by ID
+      description: Update the name of a student group (orga permission required)
+      tags:
+        - Lecture Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
             schema:
-              type: string
-        responses:
-          '200':
-            description: Deleted successfully
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/SuccessRes'
-          '400':
-            description: Request body contains errors
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BadRequestRes'
-          '401':
-            description: Not Authorized
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotAuthorizedRes'
-          '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
+              type: object
+              properties:
+                name:
+                  type: string
+              example:
+                name: New Lecture Group Name
+      responses:
+        '200':
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      summary: Delete Lecture Group by ID
+      description: Delete a Lecture Group (orga permission required)
+      tags:
+        - Lecture Group
+      security:
+        - session_key: [ ]
+        - api_key: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessRes'
+        '400':
+          description: Request body contains errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestRes'
+        '401':
+          description: Not Authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotAuthorizedRes'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
   /tsl:
     post:
       summary: Create TimeSlot
@@ -1935,7 +2143,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InternalServerError'    
+                $ref: '#/components/schemas/InternalServerError'
   /ical/{id}:
     get:
       summary: Get iCal by ID
@@ -2130,9 +2338,9 @@ components:
     TimeTable:
       type: object
       properties:
-        name:
+        Name:
           type: string
-        days:
+        Days:
           type: array
           items:
             type: string

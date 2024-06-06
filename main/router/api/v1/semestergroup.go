@@ -82,7 +82,7 @@ func sgrpHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, semestergroup)
+		c.JSON(http.StatusOK, gin.H{"msg": "SemesterGroup found", "data": semestergroup})
 	})
 
 	cg.GET("/", func(c *gin.Context) {
@@ -98,7 +98,7 @@ func sgrpHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, semestergroups)
+		c.JSON(http.StatusOK, gin.H{"msg": "SemesterGroups found", "data": semestergroups})
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {
@@ -163,7 +163,7 @@ func sgrpHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, updatedSemesterGroup)
+		c.JSON(http.StatusOK, gin.H{"msg": "SemesterGroup updated", "data": updatedSemesterGroup})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {

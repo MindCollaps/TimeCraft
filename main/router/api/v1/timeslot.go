@@ -113,7 +113,7 @@ func tslHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, timeslot)
+		c.JSON(http.StatusOK, gin.H{"msg": "TimeSlot found", "data": timeslot})
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {
@@ -212,7 +212,7 @@ func tslHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, updatedTimeslot)
+		c.JSON(http.StatusOK, gin.H{"msg": "TimeSlot updated", "data": updatedTimeslot})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {

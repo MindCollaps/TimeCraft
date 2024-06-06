@@ -83,7 +83,7 @@ func lgrpHandler(cg *gin.RouterGroup) {
 			log.Println(err)
 			return
 		}
-		c.JSON(http.StatusOK, lecturegroup)
+		c.JSON(http.StatusOK, gin.H{"msg": "LectureGroup found", "data": lecturegroup})
 	})
 
 	cg.PATCH("/:id", func(c *gin.Context) {
@@ -143,7 +143,7 @@ func lgrpHandler(cg *gin.RouterGroup) {
 			return
 		}
 
-		c.JSON(http.StatusOK, updatedLectureGroup)
+		c.JSON(http.StatusOK, gin.H{"msg": "LectureGroup updated", "data": updatedLectureGroup})
 	})
 
 	cg.DELETE("/:id", func(c *gin.Context) {
