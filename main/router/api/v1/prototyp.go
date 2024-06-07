@@ -17,6 +17,7 @@ import (
 	"src/main/core/utils"
 	"src/main/database"
 	"src/main/database/models"
+	"src/main/middleware"
 	"strconv"
 	"strings"
 	"time"
@@ -52,7 +53,7 @@ type Day struct {
 
 // /api/v1/prt/...
 func prtHandler(cg *gin.RouterGroup) {
-	cg.POST("/import/excel", func(c *gin.Context) {
+	cg.POST("/import/excel", middleware.LoginToken(), func(c *gin.Context) {
 		const maxFileSize = 1 << 20 // 1 MiB
 
 		// get file from body
@@ -138,7 +139,7 @@ func prtHandler(cg *gin.RouterGroup) {
 		}
 	})
 
-	cg.POST("/import/json", func(c *gin.Context) {
+	cg.POST("/import/json", middleware.LoginToken(), func(c *gin.Context) {
 		// get json data from body
 		var requestBody struct {
 			JsonData ExcelJson `json:"json_data"`
