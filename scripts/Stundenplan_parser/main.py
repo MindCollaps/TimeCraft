@@ -467,9 +467,9 @@ class excel_parser():
         return cell.font.strike
 
     def isCustomTime(self, value):
-        # https://regex101.com/r/DzObO7/1
+        # https://regex101.com/r/DzObO7/2
         match = re.search(
-            r'[0-9]{1,2}:[0-9]{2}-[0-9]{1,2}:[0-9]{2}|Beginn [0-9]{1,2}:[0-9]{2}|ab [0-9]{1,2}:[0-9]{2}|bis [0-9]{1,2}:[0-9]{2}|[0-9]{1,2}:[0-9]{2}',
+            r'[0-9]{1,2}:[0-9]{2}-[0-9]{1,2}:[0-9]{2}|Beginn [0-9]{1,2}:[0-9]{2}|ab [0-9]{1,2}:[0-9]{2}|bis [0-9]{1,2}:[0-9]{2}|[0-9]{1,2}:[0-9]{2}|[0-9]{1,2}:[0-9]{2} Uhr',
             value)
         return match != None
 
@@ -544,6 +544,7 @@ class excel_parser():
                 return til[0]
         elif custom_start != []:
             if returnAll:
+                custom_start.append("Uhr") # 12:00 Uhr Projekt
                 return custom_start
             elif len(custom_start) < 1:
                 return custom_start[1]
