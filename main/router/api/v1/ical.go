@@ -49,6 +49,8 @@ func icalHandler(cg *gin.RouterGroup) {
 
 		cal := ics.NewCalendar()
 		cal.SetMethod(ics.MethodRequest)
+		cal.SetXWRCalName(timetable.Name)
+		cal.SetName(timetable.Name)
 
 		for _, timeTableDayId := range timetable.Days {
 
